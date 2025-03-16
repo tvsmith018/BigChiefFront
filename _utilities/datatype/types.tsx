@@ -1,15 +1,16 @@
 export interface ArticleType {
-    image1x1Url?:string,
-    image4x3Url?:string,
-    image16x9Url?:string,
-    id?:string,
-    title?:string,
-    altImage?:string,
-    category?:string,
-    author?:{
-        firstname?:string,
-        lastname?:string,
-        bio?:string,
+    node:{
+        image1x1Url?:string,
+        image4x3Url?:string,
+        image16x9Url?:string,
+        id?:string,
+        title?:string,
+        altImage?:string,
+        category?:string,
+        author?:{
+            firstname?:string,
+            lastname?:string,
+            bio?:string,
         dob?:string,
         avatarUrl?:string,
     },
@@ -17,4 +18,6 @@ export interface ArticleType {
     featuredType?:string,
     videoLink?:string,
     body?:string,
+    created?:string
+}
 }

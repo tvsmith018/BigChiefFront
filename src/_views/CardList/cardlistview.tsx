@@ -52,7 +52,8 @@ export default function CardListView({list, title, category}:{list:ArticleType[]
             <h3 className="mb-4">{title}</h3>
             <Row className='g-4 mb-2'>
                 {
-                    articleList.map((node:any, index:number)=>{
+                    articleList.map((node:ArticleType, index:number)=>{
+                        
                         const article = node["node"];
 
                         return <Col sm={6} lg={4} key={index}>
@@ -61,8 +62,8 @@ export default function CardListView({list, title, category}:{list:ArticleType[]
                                     <Col xs={12}>
                                         <div className="ratio ratio-16x9">
                                             <Image 
-                                                src={article.image4x3Url}
-                                                alt={article.altImage}
+                                                src={article.image4x3Url ?? ""}
+                                                alt={article.altImage ?? ""}
                                                 className="card-img"
                                                 loading="eager"
                                                 width={1000}
@@ -86,8 +87,8 @@ export default function CardListView({list, title, category}:{list:ArticleType[]
                                                     <div className="d-flex align-items-center position-relative">
                                                         <div className="avatar avatar-sm">
                                                             <Image 
-                                                                src={article.author.avatarUrl}
-                                                                alt={`Picture of ${article.firstname} ${article.lastname}`}
+                                                                src={article.author?.avatarUrl ?? ""}
+                                                                alt={`Picture of ${article.author?.firstname} ${article.author?.lastname}`}
                                                                 className="avatar-img rounded-circle" 
                                                                 loading="eager"
                                                                 width={100}
@@ -98,12 +99,12 @@ export default function CardListView({list, title, category}:{list:ArticleType[]
                                                             />
 
                                                         </div>
-                                                        <span className="ms-2">by <a className="stretched-link btn-link">{article.author.firstname} {article.author.lastname}</a></span>
+                                                        <span className="ms-2">by <a className="stretched-link btn-link">{article.author?.firstname} {article.author?.lastname}</a></span>
                                                     </div>
                                                 </Nav.Link>
                                             </Nav.Item>
                                             <Nav.Item as={"li"}>
-                                                <DateFormatter created={article.created}/>
+                                                <DateFormatter created={article.created ?? ""}/>
                                             </Nav.Item>
 
                                         </Nav>
