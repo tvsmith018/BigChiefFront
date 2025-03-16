@@ -11,8 +11,9 @@ import Link from "next/link";
 
 import Card from 'react-bootstrap/Card'
 import { DateFormatter } from "../../../_utilities/dateformatter/dateformatter";
+import { ArticleType } from "../../../_utilities/datatype/types";
 
-const CarouselView = ({articles}: {articles: any[]}) => {
+const CarouselView = ({articles}: {articles: ArticleType[]}) => {
     const [isClient, setIsClient] = useState(false);
     const [numSlides, setNumSlides] = useState(0);
 
@@ -53,16 +54,16 @@ const CarouselView = ({articles}: {articles: any[]}) => {
                     }}
                     modules={[Autoplay]}
                 > 
-                {articles.map((node:any, index:number)=>{
-                    let article = node.node;
+                {articles.map((node:ArticleType, index:number)=>{
+                    const article = node.node;
                     return (
                         <SwiperSlide key={index}>
                             <Card>
                                 <Row className="g-2">
                                     <Col xs={3}>
                                         <Image 
-                                            src={article.image1x1Url}
-                                            alt={article.altImage}
+                                            src={article?.image1x1Url ?? ""}
+                                            alt={article?.altImage ?? ""}
                                             className={"img-fluid rounded-3"}
                                             loading={"eager"}
                                             width={100}
@@ -70,7 +71,7 @@ const CarouselView = ({articles}: {articles: any[]}) => {
                                             sizes={"100vw"}
                                             placeholder={"blur"}
                                             blurDataURL={'/images/1x1placeholder.png'}
-                                            onError={(e:any) => {return <Image src="/images/1x1placeholder.png" alt={`${e}`} width={100} height={100} sizes='100vw' />}}
+                                            onError={(e) => {return <Image src="/images/1x1placeholder.png" alt={`${e}`} width={100} height={100} sizes='100vw' />}}
                                             quality={75}
                                         />
                                     </Col>
@@ -83,11 +84,11 @@ const CarouselView = ({articles}: {articles: any[]}) => {
                                         <Nav as={"ul"} className="nav-divider align-items-center small">
                                             <Nav.Item as={"li"}>
                                                 <div className={`d-flex align-items-center position-relative`}>
-                                                    <span className="ms-0">by <a className={`stretched-link btn-link`}>{article.author.firstname} {article.author.lastname}</a></span>
+                                                    <span className="ms-0">by <a className={`stretched-link btn-link`}>{article.author?.firstname} {article.author?.lastname}</a></span>
                                                 </div>
                                             </Nav.Item>
                                             <Nav.Item as={"li"}>
-                                                <DateFormatter created={article.created}/>
+                                                <DateFormatter created={article.created ?? ""}/>
                                             </Nav.Item>
                                         </Nav>
 
