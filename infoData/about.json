@@ -1,0 +1,54 @@
+{
+    "title": "About Us",
+    "content":{
+        "info":[
+            {
+                "title":"",
+                "paragraph":[
+                    "Big Chief Entertainment is a premier media production company dedicated to the vibrant world of Hip-Hop.Founded with the vision to elevate the Hip-Hop scene in Raleigh, NC, we have transcended our local roots to make a significant impact on the national stage.  Our unwavering commitment to producing high-quality content ensures that we develop fresh material every day, allowing our audience to experience the best in entertainment.  Big Chief Ent. has established itself as a driving force in high-quality production, becoming a beloved staple within the community.  We invite everyone to join us on this journey as we continue to push the boundaries of creativity and innovation in Hip-Hop media.",
+                    "At Big Chief Ent., we are deeply rooted in our community, allowing us to deliver exclusive content that not only resonates but also continues to push the boundaries of hip-hop.  Our commitment to authentic storytelling and innovative artistry ensures that we remain at the forefront of the genre.  We believe in the power of hip-hop to inspire, connect, and uplift individuals from all walks of life.Our diverse and talented team is dedicated to fostering creativity and nurturing emerging artists, making us a pivotal player in the hip-hop landscape.  Join us on this incredible journey as we celebrate the culture, share remarkable stories, and elevate the voices of our community.",
+                    "We are your premier destination for all things Hip-Hop.As a newly established site, we are excited to embark on a journey that celebrates the rich culture and dynamic evolution of Hip-Hop music and lifestyle.  Our content is thoughtfully organized into phases, each designed to enhance your experience and deepen your understanding of this vibrant genre. At Big Chief Ent., we recognize the diverse interests of our audience, which includes everyone from casual listeners to dedicated enthusiasts.  Our mission is to provide engaging and informative content that resonates with all, fostering a community where Hip-Hop culture can thrive. Join us as we explore the multifaceted world of Hip-Hop, bringing you insights, features, and stories that highlight its significance and impact.  We are committed to delivering high-quality content that reflects our passion for Hip-Hop, making Big Chief Ent. a go-to resource for anyone looking to connect with this incredible art form.  Thank you for being a part of our journey."
+                ]
+            },
+            {
+                "title":"Services",
+                "paragraph":[
+                    {
+                        "type":"list",
+                        "data":[
+                            "We focus on producing top-notch material that will engage and driving our audience.",
+                            "Exclusive content only available on our platform.",
+                            "Evolving and in tune with the latest trends and technology.",
+                            "Strong marketing strategizes for rolling out the final production.",
+                            "Follow a dedicated model with our creative process to produce professional content.",
+                            "Quality equipment with highly skilled professionals to film, edit and produce video and blog content."
+                        ]
+                    }
+                ]
+            }
+        ],
+        "image_gallery":{
+            "title":"#1 Hip-Hop Platform!!!!",
+            "images":[
+                {
+                    "imageTitle": "Quality Films",
+                    "imageDescription": "Every content created is filmed using professional recorders and cameras for high quality content.",
+                    "url": "about/Coco.jpg",
+                    "altImage":"Coco posing with grace"
+                },
+                {
+                    "imageTitle": "Professional Staff",
+                    "imageDescription": "Everybody on staff is trained in the area of film production to give that movie feel.",
+                    "url": "about/group.jpeg",
+                    "altImage":"Greg and Trey showing that hip-hop isnt dead"
+                },
+                {
+                    "imageTitle": "Daily Content",
+                    "imageDescription": "We will produce content on the daily basis to keep you update and engage with whats going on in hip-hop in the area.",
+                    "url": "about/victor.jpg",
+                    "altImage":"Victor Alan show Davidson College how to really turn up"
+                }
+            ]
+        }
+    }
+}

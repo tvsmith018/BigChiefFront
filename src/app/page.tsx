@@ -1,95 +1,71 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import dynamic from "next/dynamic";
+import { unstable_cache } from 'next/cache';
+import type { Metadata } from "next";
+import { requestBody } from '../../_utilities/network/requestBody';
 
-export default function Home() {
+const DynamicCarousel = dynamic(async ()=>import('@/_views/Carousel/carouselview'));
+const DynamicHeader = dynamic(async ()=>import('@/_views/HeaderHome/headerview'));
+const DynamicList = dynamic(async ()=>import('@/_views/CardList/cardlistview'));
+
+async function multipleFetches(): Promise<any[]> {
+  const promises = [
+    fetch(process.env.NEXT_PUBLIC_ARTICLEURL ?? "",{
+      method: "POST",
+      headers:{
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        query:requestBody([{orderBy:`"-created"`},{exempt:`["none","old"]`}, {typefield:"$field"}], ["image1x1Url", "image4x3Url", "image16x9Url", "title", "id", "featuredType", {author:["firstname","lastname","avatarUrl"]},"created", "altImage","briefsummary","category", "badgeColor"], [{"$field":"String"}]),
+        variables:{
+          "field": "featuredType__in"
+        }
+      })
+    }),
+    fetch(process.env.NEXT_PUBLIC_ARTICLEURL ?? "",{
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        query: requestBody([{orderBy:`"-created"`}, {offset:0},{first:12}],["id","title","image4x3Url","category","badgeColor", "altImage", "created",{author:["firstname","lastname","avatarUrl"]}])
+      })
+    })
+  ];
+  const results = await Promise.all(promises);
+  return results
+}
+
+const getHomeData = unstable_cache(
+  async ()=>{
+    const data = await multipleFetches();
+    const featuredData = await data[0].json();
+    const articleListData = await data[1].json();
+    return [featuredData.data,articleListData.data]
+  },
+  ['featuredData', 'articleListData'],
+  {revalidate: 1, tags: ['featuredData', 'articleListData']}
+)
+
+export const metadata: Metadata = {
+  title: "Welcome to Big Chief Ent",
+  description:"This is the Home page to Big Chief Ent.  Big Chief Ent is a hip-hop blog site based out of Raleigh NC. We have content from people all over so feel free to check us out.  Thank you and welcome.",
+}
+
+export default async function Home() {
+  const articlesData = await getHomeData();
+  const featured = articlesData[0];
+  const listraw = articlesData[1];
+
+  const slides = featured.allArticles.edges.filter((article:any)=>article.node.featuredType == "slide");
+  const main = featured.allArticles.edges.filter((article:any)=>article.node.featuredType == "main")[0];
+  const sides = featured.allArticles.edges.filter((article:any)=>article.node.featuredType == "side");
+  const list = listraw.allArticles.edges;
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    <main style={{overflowX: "hidden"}}>
+      <DynamicCarousel articles={slides} />
+      <DynamicHeader main={main} sides={sides} />
+      <DynamicList list={list} title={"All Articles"} category="all"/>
+    </main>
   );
 }

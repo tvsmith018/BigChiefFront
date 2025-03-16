@@ -1,0 +1,9 @@
+.player{
+    height:300px;
+}
+
+@media (min-width: 700px){
+    .player{
+        height:500px;
+    }
+}

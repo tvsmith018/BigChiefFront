@@ -1,0 +1,58 @@
+{
+    "title": "Sponsers",
+    "content":{
+        "info":[
+            {
+                "title": "",
+                "paragraph": ["Our website does not request any money from our users nor do we ask for anything that goes against our values or the law. We believe in operating ethically and following all regulations to ensure a safe and trustworthy experience for our visitors. If you have any concerns or questions about our practices please feel free to reach out to us for clarification. We are committed to providing a transparent and honest platform for all individuals who visit our site."]
+            },
+            {
+                "title":"How Are We Supported",
+                "paragraph": [
+                    "When you visit our sponsor sites it helps us to continue providing valuable content to our readers. These sites are made possible through partnerships with companies like AdSense Amazon Ads Media. net and Adcash. By clicking on these ads to search making purchases through our links you are directly supporting our website and allowing us to keep creating helpful information for you.",
+                    "Your support through visiting our sponsor sites is essential for us to maintain and grow our platform. The partnerships we have with companies like AdSense, Amazon Ads, Media.net, and Adcash help us to generate the revenue needed to cover our expenses and invest in improving our content. So next time you see an ad on our site know that your click can make a big difference in helping us continue to provide quality information to our audience."
+                ]
+            },
+            {
+                "title": "Sending Content",
+                "paragraph": [
+                    "As a new and young website Big Chief Ent is in the early stages of development. In order to grow and expand we are looking to the community for content. We want to be transparent with our audience and let you know that we are willing to pay between 5 to 100 dollars for quality submissions.",
+                    "Your contributions are valuable to us as we strive to build a strong and engaging platform. By sharing your content with us you not only have the opportunity to showcase your work but also to be compensated for your efforts. We believe that by working together with the community we can create a vibrant and diverse website that offers something for everyone."
+                ]
+            },
+            {
+                "title": "Content WE WANT!!!",
+                "paragraph":[
+                    {
+                        "type": "list",
+                        "data": [
+                            "Funny Content",
+                            "Content Showcasing a Brand's Products/Services",
+                            "Relatable Content",
+                            "Content That Reflects Brand Values",
+                            "Educational/Informational Content",
+                            "Trendy Content",
+                            "Behind-the-Scenes Content",
+                            "Community Politics and Drama"
+                        ]
+                    }
+                ]
+            },
+            {
+                "title": "Coming soon",
+                "paragraph": [
+                    {
+                        "type": "list",
+                        "data": [
+                            "Private Sponsership Program",
+                            "User Profile to generate revenue with online payment service",
+                            "Appreciation Tip System",
+                            "Much more"
+                        ]
+                    },
+                    "We are introducing a new feature that enables users to become content creators on our platform. This initiative will provide guidance on effective strategies for building an audience and generating income.  Users will receive instruction on various techniques to enhance their following while monetizing their content. This addition aims to empower individuals to thrive as creators within our community."
+                ]
+            }
+        ]
+    }
+}
