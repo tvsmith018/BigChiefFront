@@ -18,6 +18,7 @@ export interface ArticleType {
     featuredType?:string,
     videoLink?:string,
     body?:string,
-    created?:string
+    created?:string,
+    briefsummary?:string
 }
 }

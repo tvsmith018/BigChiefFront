@@ -8,8 +8,9 @@ import Link from "next/link";
 import Nav from "react-bootstrap/Nav";
 import Image from "next/image";
 import { DateFormatter } from "../../../_utilities/dateformatter/dateformatter";
+import { ArticleType } from "../../../_utilities/datatype/types";
 
-const Main = ({main}:{main:any}) => {
+const Main = ({main}:{main:ArticleType}) => {
     return <Card className='card-overlay-bottom  h-400 h-lg-560 rounded-3' style={{backgroundImage:`url(${main.node.image16x9Url})`, backgroundPosition:"center left", backgroundSize:"cover"}}>
         <div className="card-img-overlay d-flex flex-column p-3 p-sm-5">
             <div className="w-100 mt-auto">
@@ -18,15 +19,15 @@ const Main = ({main}:{main:any}) => {
                     <h2 className="text-white display-5">
                         <Link href={`/articles/details/${main.node.id}`} className="btn-link text-reset stretched-link fw-normal">{main.node.title}</Link>
                     </h2>
-                    <p className="text-white">{main.node.briefsummary}</p>  
+                    <p className="text-white">{main.node.briefsummary ?? ""}</p>  
                     <Nav as={"ul"} className="nav-divider align-items-center d-none d-sm-inline-block small text-white">
                         <Nav.Item as={"li"}>
                             <Nav.Link as="div">
                                 <div className={`d-flex align-items-center position-relative text-white`}>
                                     <div className="avatar avatar-sm">
                                         <Image 
-                                            src={main.node.author.avatarUrl}
-                                            alt={`Picture of Author ${main.node.author.firstname} ${main.node.author.lastname}`}
+                                            src={main.node.author?.avatarUrl ?? ""}
+                                            alt={`Picture of Author ${main.node.author?.firstname} ${main.node.author?.lastname}`}
                                             className="avatar-img rounded-circle"
                                             loading="eager"
                                             width={100}
@@ -35,12 +36,12 @@ const Main = ({main}:{main:any}) => {
                                             blurDataURL="/images/1x1placeholder.png"
                                         />
                                     </div>
-                                    <span className="ms-2">by <a className={`stretched-link text-white btn-link`}>{main.node.author.firstname} {main.node.author.lastname}</a></span>
+                                    <span className="ms-2">by <a className={`stretched-link text-white btn-link`}>{main.node.author?.firstname} {main.node.author?.lastname}</a></span>
                                 </div>
                             </Nav.Link>
                         </Nav.Item>
                         <Nav.Item as={"li"}>
-                            <DateFormatter created={main.node.created}/>
+                            <DateFormatter created={main.node.created ?? ""}/>
                         </Nav.Item>
                     </Nav>
                 </Col>
@@ -48,17 +49,17 @@ const Main = ({main}:{main:any}) => {
         </div>
     </Card>
 }
-const Side = ({sides}:{sides:any}) => {
+const Side = ({sides}:{sides:ArticleType[]}) => {
     return <>
         {
-            sides.map((node:any, index:number)=>{
+            sides.map((node:ArticleType, index:number)=>{
                 const article = node.node;
                 return <Card className="mb-3" key={index}> 
                     <Row className="g-3 mb-3">
                         <Col xs={4}>
                             <Image 
-                                src={article.image4x3Url}
-                                alt={article.altImage}
+                                src={article.image4x3Url ?? ""}
+                                alt={article.altImage ?? ""}
                                 className="rounded-3"
                                 loading="eager"
                                 width={1000}
@@ -83,8 +84,8 @@ const Side = ({sides}:{sides:any}) => {
                                         <div className="d-flex align-items-center position-relative">
                                             <div className="avatar avatar-sm">
                                                 <Image 
-                                                    src={article.author.avatarUrl}
-                                                    alt={`Picture of Author ${article.author.firstname} ${article.author.lastname}`}
+                                                    src={article.author?.avatarUrl ?? ""}
+                                                    alt={`Picture of Author ${article.author?.firstname} ${article.author?.lastname}`}
                                                     className="avatar-img rounded-circle"
                                                     loading="eager"
                                                     width={100}
@@ -93,12 +94,12 @@ const Side = ({sides}:{sides:any}) => {
                                                     blurDataURL="/images/1x1placeholder.png"
                                                 />
                                             </div>
-                                            <span className="ms-2">by <a className="stretched-linkbtn-link">{article.author.firstname} {article.author.lastname}</a></span>
+                                            <span className="ms-2">by <a className="stretched-linkbtn-link">{article.author?.firstname} {article.author?.lastname}</a></span>
                                         </div>
                                     </Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item as={"li"}>
-                                    <DateFormatter created={article.created}/>
+                                    <DateFormatter created={article.created ?? ""}/>
                                 </Nav.Item>
                             </Nav>
                         </Col>
@@ -109,7 +110,7 @@ const Side = ({sides}:{sides:any}) => {
     </>
 }
 
-const HeaderView = ({main, sides}:{main:any, sides:any}) => { 
+const HeaderView = ({main, sides}:{main:ArticleType, sides:ArticleType[]}) => { 
     const [isClient, setIsClient] = useState(false);
 
     useEffect(()=>{
