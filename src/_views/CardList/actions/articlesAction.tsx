@@ -3,14 +3,15 @@ import { requestBody } from "../../../../_utilities/network/requestBody"
 
 export async function articlesRetrieve(offset:number, category:string) {
 
-    let params:object[] = [{orderBy:`"-created"`},{offset:offset},{first:12}]
-    let legs = ["id","title","image4x3Url","category","badgeColor", "altImage", "created", {author:["firstname","lastname","avatarUrl"]}]
-    const vari = [{"$field":"String"}]
+    const params:object[] = [{orderBy:`"-created"`},{offset:offset},{first:12}];
+    const legs = ["id","title","image4x3Url","category","badgeColor", "altImage", "created", {author:["firstname","lastname","avatarUrl"]}];
+    const vari = [{"$field":"String"}];
     let body;
+
     if (category == "all") {
         body = {
             query: requestBody(params, legs)
-        }
+        };
     }
     else {
         if (category == "featured"){
@@ -22,13 +23,13 @@ export async function articlesRetrieve(offset:number, category:string) {
                 variables:{
                     "field": "featuredType__in"
                 }
-            }
+            };
         }
         else{
             params.push({category:`"${category}"`});
             body = {
                 query: requestBody(params,legs)
-            }
+            };
         }
     }
 
@@ -38,8 +39,8 @@ export async function articlesRetrieve(offset:number, category:string) {
             "Content-Type": "application/json"
         },
         body:JSON.stringify(body)
-    })
+    });
 
     const data = await res.json();
-    return data.data
+    return data.data.allArticles.edges
 }

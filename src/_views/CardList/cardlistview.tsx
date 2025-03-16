@@ -9,24 +9,26 @@ import Link from "next/link"
 import { useState, useEffect, useCallback } from "react"
 import { DateFormatter } from "../../../_utilities/dateformatter/dateformatter"
 import { articlesRetrieve } from "./actions/articlesAction"
+import { ArticleType } from "../../../_utilities/datatype/types"
 
-export default function CardListView({list, title, category}:{list:any, title:string, category:string}) {
+
+
+export default function CardListView({list, title, category}:{list:ArticleType[], title:string, category:string}) {
     const [isClient, setIsClient] = useState(false);
     const [articleList, setArticleList] = useState(list);
     const [loading, setLoading] = useState(false);
     const [offset, setOffset] = useState(12);
     const [hasMore, setHasMore] = useState(list.length < 12 ? false:true);
 
-    const ref = useCallback((node:any) => {
+    const ref = useCallback((node:HTMLDivElement) => {
         const observer = new IntersectionObserver((entries)=>{
             const target = entries[0];
             if (target.isIntersecting && hasMore) {
                 const list = articlesRetrieve(offset, category)
-                list.then(async (raw:any)=>{
+                list.then(async (newArticles:ArticleType[])=>{
                     setLoading(true)
-                    const newArticles = raw.allArticles.edges;
                     setArticleList(
-                        (prevArticles:any) => [...prevArticles,...newArticles]
+                        (prevArticles:ArticleType[]) => [...prevArticles,...newArticles]
                     );
                     setOffset(prev=>prev+12);
                     if (newArticles.length < 12) {
@@ -39,7 +41,7 @@ export default function CardListView({list, title, category}:{list:any, title:st
         observer.observe(node);
 
         return () => observer.disconnect()
-    },[offset, hasMore]) 
+    },[offset, hasMore, category]) 
 
     useEffect(()=>{
         setIsClient(true);
@@ -51,8 +53,7 @@ export default function CardListView({list, title, category}:{list:any, title:st
             <Row className='g-4 mb-2'>
                 {
                     articleList.map((node:any, index:number)=>{
-
-                        let article = node["node"];
+                        const article = node["node"];
 
                         return <Col sm={6} lg={4} key={index}>
                             <Card key={index}>
