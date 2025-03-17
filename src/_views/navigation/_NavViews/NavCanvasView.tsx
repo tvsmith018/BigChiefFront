@@ -11,10 +11,16 @@ import Dropdown from "react-bootstrap/Dropdown";
 import localizationData from '../../../../_utilities/localization/en.json';
 import Logo from '../../../../public/images/logo.png';
 import Form from 'react-bootstrap/Form';
-
 import { searchResults } from "./searchaction/searchResults";
 
-export default function NavCanvasView(props:{sidelinks:any}){
+interface sidelink {
+    link: string | {link:string, category:string},
+    dropdown: boolean,
+    Dropdown?:[{link:string, category:string,}]
+    id?:string
+}
+
+export default function NavCanvasView(props:{sidelinks:sidelink[]}){
     const [showSide, setShowSide] = useState(false);
     const [showSearch, setShowSearch] = useState(false)
     const [timer, setTimer] = useState<number>();

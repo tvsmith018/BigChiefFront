@@ -67,7 +67,7 @@ const Side = ({sides}:{sides:ArticleType[]}) => {
                                 sizes="100vw"
                                 placeholder="blur"
                                 blurDataURL="/images/4x3placeholder.png"
-                                onError={async (e:any) => { return <Image src="/images/1x1placeholder.png" alt={`${e}`} width={100} height={100} sizes='100vw' />}}
+                                onError={async (e) => { return <Image src="/images/1x1placeholder.png" alt={`${e}`} width={100} height={100} sizes='100vw' />}}
                                 quality={75}
                             />
                         </Col>
