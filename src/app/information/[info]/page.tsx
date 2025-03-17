@@ -3,6 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { notFound } from 'next/navigation';
 
+
 interface InfoImgProps {
     altImage:string, 
     imageTitle:string, 
@@ -28,11 +29,11 @@ function ImageGallery(props:GalleryProps){
         <div className="row mt-0">
             <h4>{data.title}</h4>
             {
-                data.images.map((img:InfoImgProps, index:number) => {
-                    const pic = JSON.parse(JSON.stringify(require(`../../../../public/images/${img.url}`)))
+                data.images.map(async (img:InfoImgProps, index:number) => {
+
                     return(
                         <div className="col-md-6 col-lg-4 mt-2" key={index}>
-                            <Image className="rounded" src={pic} alt={`${img["altImage"]}`}/>
+                            <Image className="rounded" src={`/images/${img.url}`} alt={`${img["altImage"]}`} width={1000} height={667} style={{width:"auto", height:"auto"}}/>
                             <h4 className="mt-3">{img["imageTitle"]}</h4>
                             <p>{img["imageDescription"]}</p>
                         </div>
@@ -65,7 +66,7 @@ export default async function Page({params}:{params:Promise<{info:string}>}){
                                         <div key={index}>
                                             <h4>{dataInfo.title}</h4>
                                             {dataInfo.paragraph.map((para:string|{data:[]}, index:number)=>{
-                                                let content:any;
+                                                let content;
                                                 if (typeof(para) == "string"){
                                                     content=<p key={index}>{para}</p>
                                                 }
