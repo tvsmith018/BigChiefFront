@@ -12,26 +12,27 @@ import localizationData from '../../../../_utilities/localization/en.json';
 import Logo from '../../../../public/images/logo.png';
 import Form from 'react-bootstrap/Form';
 import { searchResults } from "./searchaction/searchResults";
+import { ArticleType } from "../../../../_utilities/datatype/types";
 
 interface sidelink {
     link: string | {link:string, category:string},
     dropdown: boolean,
-    Dropdown?:[{link:string, category:string,}]
+    DropdownContent?:[{link:string, category:string,}]
     id?:string
 }
 
 export default function NavCanvasView(props:{sidelinks:sidelink[]}){
     const [showSide, setShowSide] = useState(false);
     const [showSearch, setShowSearch] = useState(false)
-    const [timer, setTimer] = useState<number>();
+    const [timer, setTimer] = useState<NodeJS.Timeout>();
     const [searchValue, setSearchValue] = useState("");
     const [searchLoad, setSearchLoad] = useState(false)
     const [searchData, setSearchData] = useState([])
     
 
-    const handleSearch = (e:any) => {
+    const handleSearch = (e:React.ChangeEvent<HTMLInputElement>) => {
         clearTimeout(timer);
-        const newTimer:any = setTimeout(async () => {
+        const newTimer:NodeJS.Timeout = setTimeout(async () => {
             setSearchLoad(true)
             setSearchValue(e.target.value)
             setTimer(newTimer);
@@ -93,13 +94,13 @@ export default function NavCanvasView(props:{sidelinks:sidelink[]}){
                     searchValue != "" && !searchLoad && searchData.length == 0 && <p className="mt-3">No Articles found </p>
                 }
                 {
-                    searchValue != "" && !searchLoad && searchData.length > 0 && searchData.map((node:any, index:number)=>{
+                    searchValue != "" && !searchLoad && searchData.length > 0 && searchData.map((node:ArticleType, index:number)=>{
                         const article = node.node;
                         return <Row className="g-3 mt-1" key={index}>
                             <Col xs={3}>
                                 <Image 
-                                    src={article.image1x1Url} 
-                                    alt={article.altImage} 
+                                    src={article.image1x1Url ?? ""} 
+                                    alt={article.altImage ?? ""} 
                                     className="img-fluid rounded-3" 
                                     loading="eager" 
                                     width={100} 
@@ -107,7 +108,7 @@ export default function NavCanvasView(props:{sidelinks:sidelink[]}){
                                     sizes='100vw'
                                     placeholder='blur'
                                     blurDataURL='/images/1x1placeholder.png'
-                                    onError={(e) => {
+                                    onError={() => {
                                         return <Image src="/images/1x1placeholder.png" alt="image did not load" width={100} height={100} sizes='100vw' />
                                     }}
                                 />

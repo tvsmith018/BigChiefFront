@@ -6,7 +6,6 @@ import Image from 'next/image';
 import NavbarBrand  from 'react-bootstrap/NavbarBrand';
 import logo from '../../../public/images/logo.png'
 import NavCanvasView from './_NavViews/NavCanvasView';
-import Dropdown from 'react-bootstrap/Dropdown';
 
 const navbarTopLinks = [
     localizationData.navbar_toplink1,
