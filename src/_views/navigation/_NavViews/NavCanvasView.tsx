@@ -145,7 +145,7 @@ export default function NavCanvasView(props:{sidelinks:sidelink[]}){
                                     <Dropdown as={Nav.Item} key={index} className="mb-2">
                                         <Dropdown.Toggle as={Nav.Link} id={value.id!}><span className="h5">{value.link}</span></Dropdown.Toggle>
                                         <Dropdown.Menu as="ul" className="position-absolute">
-                                            {value.dropdownContent!.map((value1:any, index2:any)=>{
+                                            {value.dropdownContent!.map((value1:{category:string,link:string}, index2:number)=>{
                                                 return(
                                                     <li key={index2}>
                                                         <Dropdown.Item as="a" href={`/articles/${value1.category}`}>{value1.link}</Dropdown.Item>

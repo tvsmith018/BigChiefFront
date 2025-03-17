@@ -6,18 +6,19 @@ import Col from "react-bootstrap/Col"
 import videostyle from "./videocss.module.css"
 import Image from 'next/image';
 import Link from 'next/link';
+import { ArticleType } from '../../../../../_utilities/datatype/types';
 
 function pubDate(pubDate:string){
     
     const obj = new Date(pubDate)
-    let day = obj.getUTCDate();
-    let month = obj.toLocaleString('default', { month: 'long' });
-    let year = obj.getUTCFullYear();
+    const day = obj.getUTCDate();
+    const month = obj.toLocaleString('default', { month: 'long' });
+    const year = obj.getUTCFullYear();
 
     return `${month} ${day}, ${year}`
 }
 
-export async function generateMetadata({params}:{params:any}) {
+export async function generateMetadata({params}:{params:{id:string}}) {
     const { id } = await params;
     const decodeId = decodeURIComponent(id);
     const data = await fetch(process.env.NEXT_PUBLIC_ARTICLEURL ?? "", {
@@ -107,7 +108,7 @@ export default async function Detail({params}:{params:{id:string}}) {
                                     </a>
                                     <div className="flex-grow-1 ms-3">
                                         <p className="mb-2 fs-5">Author: {article.author.firstname} {article.author.lastname}</p>
-                                        <p >I'm one of the authors at Big Chief Ent...</p>
+                                        <p >I&apos;m one of the authors at Big Chief Ent...</p>
                                     </div>
                                 </div>
                                 <p>{article.author.bio}</p>
@@ -115,12 +116,12 @@ export default async function Detail({params}:{params:{id:string}}) {
                             <div>
                                 <h5 className="mt-5 mb-3">Related Articles</h5>
                                 {
-                                    related.map((node:any, index:number)=>{
+                                    related.map((node:ArticleType, index:number)=>{
                                         const articleR = node.node
                                         return <div className="d-flex position-relative mb-3" key={index}>
                                                 <Image 
-                                                    src={articleR.image1x1Url}
-                                                    alt={articleR.altImage}
+                                                    src={articleR.image1x1Url ?? ""}
+                                                    alt={articleR.altImage ?? ""}
                                                     className={"img-fluid rounded-3 me-3"}
                                                     loading={"eager"}
                                                     width={50}
