@@ -2,12 +2,13 @@ import dynamic from "next/dynamic";
 import { unstable_cache } from 'next/cache';
 import type { Metadata } from "next";
 import { requestBody } from '../../_utilities/network/requestBody';
+import { ArticleType } from "../../_utilities/datatype/types";
 
 const DynamicCarousel = dynamic(async ()=>import('@/_views/Carousel/carouselview'));
 const DynamicHeader = dynamic(async ()=>import('@/_views/HeaderHome/headerview'));
 const DynamicList = dynamic(async ()=>import('@/_views/CardList/cardlistview'));
 
-async function multipleFetches(): Promise<any[]> {
+async function multipleFetches(): Promise<Response[]> {
   const promises = [
     fetch(process.env.NEXT_PUBLIC_ARTICLEURL ?? "",{
       method: "POST",
@@ -56,9 +57,9 @@ export default async function Home() {
   const featured = articlesData[0];
   const listraw = articlesData[1];
 
-  const slides = featured.allArticles.edges.filter((article:any)=>article.node.featuredType == "slide");
-  const main = featured.allArticles.edges.filter((article:any)=>article.node.featuredType == "main")[0];
-  const sides = featured.allArticles.edges.filter((article:any)=>article.node.featuredType == "side");
+  const slides = featured.allArticles.edges.filter((article:ArticleType)=>article.node.featuredType == "slide");
+  const main = featured.allArticles.edges.filter((article:ArticleType)=>article.node.featuredType == "main")[0];
+  const sides = featured.allArticles.edges.filter((article:ArticleType)=>article.node.featuredType == "side");
   const list = listraw.allArticles.edges;
 
   return (
