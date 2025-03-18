@@ -2,7 +2,9 @@ import dynamic from 'next/dynamic';
 import { unstable_cache } from 'next/cache';
 import { requestBody } from '../../../../_utilities/network/requestBody';
 
-const DynamicList = dynamic(async ()=>import('@/_views/CardList/cardlistview'))
+const DynamicList = dynamic(async ()=>import('@/_views/CardList/cardlistview'));
+
+type tParams = Promise<{ category:string }>;
 
 const getList = unstable_cache(
     async (category:string) =>{
@@ -46,7 +48,7 @@ const getList = unstable_cache(
 )
 
 
-export default async function Category({params}:{params:{category:string}}){
+export default async function Category({params}:{params:tParams}){
     const { category} = await params;
     const rawData = await getList(category);
     const articles = rawData.allArticles.edges

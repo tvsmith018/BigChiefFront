@@ -3,6 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { notFound } from 'next/navigation';
 
+type aParams = Promise<{ info:string }>;
 
 interface InfoImgProps {
     altImage:string, 
@@ -45,7 +46,7 @@ function ImageGallery(props:GalleryProps){
 
 }
 
-export default async function Page({params}:{params:Promise<{info:string}>}){
+export default async function Page({params}:{params:aParams}){
     const {info} = await params
 
     try {
