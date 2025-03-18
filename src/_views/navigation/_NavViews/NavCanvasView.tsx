@@ -14,11 +14,12 @@ import Form from 'react-bootstrap/Form';
 import { searchResults } from "./searchaction/searchResults";
 import { ArticleType } from "../../../../_utilities/datatype/types";
 
-interface sidelink {
-    link: string | {link:string, category:string},
-    dropdown: boolean,
-    DropdownContent?:[{link:string, category:string,}]
-    id?:string
+export interface sidelink {
+    link?: string,
+    dropdown?: boolean,
+    linksingle?: {link:string, category:string,},
+    dropdownContent?:{link:string, category:string,}[],
+    id?:string,
 }
 
 export default function NavCanvasView(props:{sidelinks:sidelink[]}){
@@ -139,7 +140,7 @@ export default function NavCanvasView(props:{sidelinks:sidelink[]}){
                 <p>{localizationData.sidebar_header_1} <strong>{localizationData.sidebar_header_2}</strong> {localizationData.sidebar_header_3} <strong>{localizationData.sidebar_header_4}</strong> {localizationData.sidebar_header_5}</p>
                 <Nav as="ul" className="d-block flex-column mt-3 mb-0">
                     {
-                        props.sidelinks.map((value:any, index:number)=>{
+                        props.sidelinks.map((value:sidelink, index:number)=>{
                             if (value.dropdown == true){
                                 return(
                                     <Dropdown as={Nav.Item} key={index} className="mb-2">
@@ -159,7 +160,7 @@ export default function NavCanvasView(props:{sidelinks:sidelink[]}){
                             else {
                                 return(
                                     <Nav.Item as="li" key={index} className="mb-2">
-                                        <Nav.Link as="a" href={`/articles/${value.link.category}`}><span className="h5">{value.link.link}</span></Nav.Link>
+                                        <Nav.Link as="a" href={`/articles/${value.linksingle?.category}`}><span className="h5">{value.linksingle?.link}</span></Nav.Link>
                                     </Nav.Item>
                                 )
                             }

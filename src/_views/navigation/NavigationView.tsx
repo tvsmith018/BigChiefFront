@@ -6,6 +6,7 @@ import Image from 'next/image';
 import NavbarBrand  from 'react-bootstrap/NavbarBrand';
 import logo from '../../../public/images/logo.png'
 import NavCanvasView from './_NavViews/NavCanvasView';
+import { sidelink } from './_NavViews/NavCanvasView';
 
 const navbarTopLinks = [
     localizationData.navbar_toplink1,
@@ -14,7 +15,7 @@ const navbarTopLinks = [
 ];
 
 
-const sidebarLinks = [
+const sidebarLinks: sidelink[] = [
     {
         link: localizationData.sidebar_link1,
         dropdown: true,
@@ -28,15 +29,15 @@ const sidebarLinks = [
         id: "newsMenu",
     },
     {
-        link: { link:localizationData.sidebar_link2, category:"interview" },
+        linksingle: { link:localizationData.sidebar_link2, category:"interview" },
         dropdown: false,
     },
     {
-        link: { link: localizationData.sidebar_link3, category:"music" },
+        linksingle: { link: localizationData.sidebar_link3, category:"music" },
         dropdown: false,
     },
     {
-        link: { link: localizationData.sidebar_link4, category:"podcast" },
+        linksingle: { link: localizationData.sidebar_link4, category:"podcast" },
         dropdown: false,
     },
 ]
