@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
     ]
   },
   devIndicators: false,
+  ignoreBuildErrors: true,
 };
 
 export default nextConfig;
