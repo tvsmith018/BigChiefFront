@@ -8,7 +8,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArticleType } from '../../../../../_utilities/datatype/types';
 
-export type dParams = Promise<{ id:string }>;
+export type PageProps = Promise<{ id:string }>;
 
 function pubDate(pubDate:string){
     
@@ -79,7 +79,7 @@ const detailedContent =  unstable_cache(
     {revalidate: 3600, tags: ["article", "relatedList"]}
 )
 
-export default async function Detail({params}:{params:dParams}) {
+export default async function Detail({params}:{params:PageProps}) {
     const { id } = await params;
     const decodeId = decodeURIComponent(id);
     const data = await detailedContent(decodeId);
