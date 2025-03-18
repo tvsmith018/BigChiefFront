@@ -8,7 +8,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArticleType } from '../../../../../_utilities/datatype/types';
 
-export type PageProps = Promise<{ id:string }>;
+type Params = Promise<{ id:string }>;
+
 
 function pubDate(pubDate:string){
     
@@ -20,7 +21,7 @@ function pubDate(pubDate:string){
     return `${month} ${day}, ${year}`
 }
 
-export async function generateMetadata({params}:{params:{id:string}}) {
+export async function generateMetadata({params}:{params:Params}) {
     const { id } = await params;
     const decodeId = decodeURIComponent(id);
     const data = await fetch(process.env.NEXT_PUBLIC_ARTICLEURL ?? "", {
@@ -79,7 +80,7 @@ const detailedContent =  unstable_cache(
     {revalidate: 3600, tags: ["article", "relatedList"]}
 )
 
-export default async function Detail({params}:{params:PageProps}) {
+export default async function Detail({params}:{params:Params}) {
     const { id } = await params;
     const decodeId = decodeURIComponent(id);
     const data = await detailedContent(decodeId);
