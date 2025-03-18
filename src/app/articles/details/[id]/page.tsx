@@ -8,7 +8,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArticleType } from '../../../../../_utilities/datatype/types';
 
-type dParams = Promise<{ id:string }>;
+export type dParams = Promise<{ id:string }>;
 
 function pubDate(pubDate:string){
     
