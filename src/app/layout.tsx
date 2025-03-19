@@ -1,5 +1,5 @@
 import dynamic from 'next/dynamic'
-import { Inter } from "next/font/google";
+// import { Inter } from "next/font/google";
 import type { Viewport } from 'next'
 import Script from "next/script";
 import type { Metadata } from "next";
@@ -10,7 +10,7 @@ import 'swiper/css';
 import "./globals.css"
 
 const DynamicNav = dynamic(async ()=> import('../_views/navigation/NavigationView'))
-const inter = Inter({ subsets: ["latin"] });
+// const inter = Inter({ subsets: ["latin"] });
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -52,7 +52,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${inter.className} hidescroll`}>
+      <body className={`hidescroll`}>
         <DynamicNav />
         {children}
         <Script src="/assets/vendor/sticky-js/sticky.min.js" strategy="lazyOnload"/>
