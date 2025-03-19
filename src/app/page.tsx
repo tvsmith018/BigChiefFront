@@ -20,7 +20,8 @@ async function multipleFetches(): Promise<Response[]> {
         variables:{
           "field": "featuredType__in"
         }
-      })
+      }),
+      cache: 'no-store'
     }),
     fetch(process.env.NEXT_PUBLIC_ARTICLEURL ?? "",{
       method: "POST",
@@ -29,7 +30,8 @@ async function multipleFetches(): Promise<Response[]> {
       },
       body: JSON.stringify({
         query: requestBody([{orderBy:`"-created"`}, {offset:0},{first:12}],["id","title","image4x3Url","category","badgeColor", "altImage", "created",{author:["firstname","lastname","avatarUrl"]}])
-      })
+      }),
+      cache: 'no-store'
     })
   ];
   const results = await Promise.all(promises);
