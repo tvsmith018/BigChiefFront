@@ -78,20 +78,12 @@ function dateMessage(intervals: TimeInterval):string {
 }
 
 export const DateFormatter = ({created}:{created: string}) => {
-    const [message, setMessage] = useState<string>("mounting...")
     const hasMounted = useRef(false)
 
-    useEffect(()=>{
-        if (hasMounted.current) {
-            const date = new Date(created);
-            const now = new Date();
-            const interval = calculateIntervals(now, date);
-            setMessage(dateMessage(interval));
-        }
-        else{
-            hasMounted.current = true;
-        }
-    },[message]);
+    const date = new Date(created);
+    const now = new Date();
+    const interval = calculateIntervals(now, date);
+    const mess = dateMessage(interval);
     
-    return <span>{message}</span>
+    return <span>{mess}</span>
 }
