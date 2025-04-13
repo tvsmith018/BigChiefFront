@@ -22,9 +22,6 @@ interface VideoType {
         referrerPolicy?:HTMLAttributeReferrerPolicy,
         allowFullScreen:boolean
     }
-    cloudinary: {
-
-    }
 }
 const videoType:VideoType = {
     youtube:{
@@ -38,9 +35,6 @@ const videoType:VideoType = {
         allow:"autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share", 
         referrerPolicy:undefined,
         allowFullScreen:true
-    },
-    cloudinary:{
-
     }
 }
 
