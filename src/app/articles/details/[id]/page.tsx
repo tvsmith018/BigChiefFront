@@ -109,7 +109,6 @@ const detailedContent =  unstable_cache(
 
         const relatedRaw = await relatedData.json();
         const relatedList = relatedRaw.data.allArticles.edges;
-        console.log(article)
 
         return [article, relatedList]
     },
