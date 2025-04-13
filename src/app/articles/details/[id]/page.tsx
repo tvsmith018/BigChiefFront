@@ -7,6 +7,42 @@ import videostyle from "./videocss.module.css"
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArticleType } from '../../../../../_utilities/datatype/types';
+import { HTMLAttributeReferrerPolicy } from 'react';
+
+interface VideoType {
+    youtube:{
+        src:string,
+        allow:string,
+        referrerPolicy?:HTMLAttributeReferrerPolicy,
+        allowFullScreen:boolean
+    }
+    facebook:{
+        src:string,
+        allow:string,
+        referrerPolicy?:HTMLAttributeReferrerPolicy,
+        allowFullScreen:boolean
+    }
+    cloudinary: {
+
+    }
+}
+const videoType:VideoType = {
+    youtube:{
+        src:"https://www.youtube.com/embed/",
+        allow:"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share", 
+        referrerPolicy:"strict-origin-when-cross-origin",
+        allowFullScreen:true
+    },
+    facebook:{
+        src:"https://www.facebook.com/plugins/",
+        allow:"autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share", 
+        referrerPolicy:undefined,
+        allowFullScreen:true
+    },
+    cloudinary:{
+
+    }
+}
 
 type Params = Promise<{ id:string }>;
 
@@ -51,7 +87,7 @@ const detailedContent =  unstable_cache(
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                query:requestBody([{id:`"${id}"`}],["briefsummary","category","created","badgeColor","title","videoLink","body",{author:["firstname","lastname","avatarUrl", "bio", "dob"]}])
+                query:requestBody([{id:`"${id}"`}],["briefsummary","category","created","badgeColor","title","videoLink", "videoType","body",{author:["firstname","lastname","avatarUrl", "bio", "dob"]}])
             })
         })
 
@@ -73,11 +109,12 @@ const detailedContent =  unstable_cache(
 
         const relatedRaw = await relatedData.json();
         const relatedList = relatedRaw.data.allArticles.edges;
+        console.log(article)
 
         return [article, relatedList]
     },
     ["article", "relatedList"],
-    {revalidate: 3600, tags: ["article", "relatedList"]}
+    {revalidate: 1, tags: ["article", "relatedList"]}
 )
 
 export default async function Detail({params}:{params:Params}) {
@@ -95,7 +132,13 @@ export default async function Detail({params}:{params:Params}) {
                         <span className="ms-2 small">Written: {pubDate(article.created)}</span>
                         <h1>{article.title}</h1>
                         <div className={`ratio ratio-16x9 overflow-hidden rounded ${videostyle.player}`}>
-                            <iframe loading="eager" className="" src={`https://www.youtube.com/embed/${article.videoLink}`} title={`${article.title}`} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>   
+                            {
+                                article.videoType == "youtube" && <iframe loading="eager" className="" src={`${videoType.youtube.src}${article.videoLink}`} title={`${article.title}`} allow={videoType.youtube.allow} referrerPolicy={videoType.youtube.referrerPolicy} allowFullScreen={videoType.youtube.allowFullScreen}></iframe>   
+                            }
+                            {
+                                article.videoType == "facebook" && <iframe loading="eager" className="" src={`${videoType.facebook.src}${article.videoLink}`} title={`${article.title}`} allow={videoType.facebook.allow} allowFullScreen={videoType.facebook.allowFullScreen}></iframe>   
+
+                            }
                         </div>
                         <h4 className='mt-4'>{article.briefsummary}</h4>
                         <p className='mt-4'>{article.body}</p>
