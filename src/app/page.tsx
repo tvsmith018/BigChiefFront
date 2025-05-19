@@ -7,7 +7,7 @@ import { ArticleType } from "../../_utilities/datatype/types";
 const DynamicCarousel = dynamic(async ()=>import('@/_views/Carousel/carouselview'));
 const DynamicHeader = dynamic(async ()=>import('@/_views/HeaderHome/headerview'));
 const DynamicList = dynamic(async ()=>import('@/_views/CardList/cardlistview'));
-const DynamicAdsterraNative = dynamic(async ()=>import('@/_views/ads/adsterranative'));
+// const DynamicAdsterraNative = dynamic(async ()=>import('@/_views/ads/adsterranative'));
 
 async function multipleFetches(): Promise<Response[]> {
   const promises = [
