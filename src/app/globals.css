@@ -17523,5 +17523,13 @@ a.text-primary-hover:hover, button.text-primary-hover:hover {
   display: none !important;
 }
 
+body iframe {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 20px;
+  margin-top: 0;
+}
+
 /*User CSS*/
 /*# sourceMappingURL=style.css.map */

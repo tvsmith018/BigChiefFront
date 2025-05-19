@@ -64,7 +64,7 @@ export async function generateMetadata({params}:{params:Params}) {
         })
     })
     const articleRaw = await data.json();
-    const articleData = articleRaw.data.allArticles.edges[0].node;
+    const articleData = articleRaw.data.allArticles.edges[0].node; 
     
     return {
         title: articleData.title,

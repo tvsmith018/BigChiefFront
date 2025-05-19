@@ -10,6 +10,7 @@ import { useState, useEffect, useCallback } from "react"
 import { DateFormatter } from "../../../_utilities/dateformatter/dateformatter"
 import { articlesRetrieve } from "./actions/articlesAction"
 import { ArticleType } from "../../../_utilities/datatype/types"
+import Script from "next/script";
 
 
 
@@ -55,7 +56,6 @@ export default function CardListView({list, title, category}:{list:ArticleType[]
                     articleList.map((node:ArticleType, index:number)=>{
                         
                         const article = node["node"];
-
                         return <Col sm={6} lg={4} key={index}>
                             <Card key={index}>
                                 <Row className="g-0">
