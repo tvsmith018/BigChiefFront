@@ -10,7 +10,7 @@ import 'swiper/css';
 import "./globals.css"
 
 const DynamicNav = dynamic(async ()=> import('../_views/navigation/NavigationView'))
-const DynmaicBanner = dynamic(async () => import('@/_views/ads/adsterrabanner'))
+// const DynmaicBanner = dynamic(async () => import('@/_views/ads/adsterrabanner'))
 // const inter = Inter({ subsets: ["latin"] });
 
 export const viewport: Viewport = {
