@@ -10,7 +10,7 @@ import 'swiper/css';
 import "./globals.css"
 
 const DynamicNav = dynamic(async ()=> import('../_views/navigation/NavigationView'))
-// const DynmaicBanner = dynamic(async () => import('@/_views/ads/adsterrabanner'))
+const DynmaicBanner = dynamic(async () => import('@/_views/ads/adsterrabanner'))
 // const inter = Inter({ subsets: ["latin"] });
 
 export const viewport: Viewport = {
@@ -59,7 +59,7 @@ export default async function RootLayout({
         {children}
         <Script src="/assets/vendor/sticky-js/sticky.min.js" strategy="afterInteractive"/>
         <Script src="/assets/js/functions.js" strategy="afterInteractive"/>
-        {/* <DynmaicBanner/> */}
+        <DynmaicBanner/>
         {/* <Script type='text/javascript' src='//spaniardinformationbookworm.com/f8/95/72/f89572cab58322857c9e20409f4c9433.js' strategy="afterInteractive" /> */}
       </body>
     </html>
