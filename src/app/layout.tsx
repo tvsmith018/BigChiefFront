@@ -60,7 +60,6 @@ export default async function RootLayout({
         <Script src="/assets/vendor/sticky-js/sticky.min.js" strategy="afterInteractive"/>
         <Script src="/assets/js/functions.js" strategy="afterInteractive"/>
         <DynmaicBanner/>
-        
       </body>
     </html>
   );
