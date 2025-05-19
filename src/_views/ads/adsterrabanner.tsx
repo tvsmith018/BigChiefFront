@@ -46,8 +46,7 @@ function AdsterraBanner() {
 	      };
       `}
     </Script>
-        
-    <Script type="text/javascript" src={`//spaniardinformationbookworm.com/${banner.key}/invoke.js`} strategy="afterInteractive"/>
+    {/* <Script type="text/javascript" src={`//spaniardinformationbookworm.com/${banner.key}/invoke.js`} strategy="afterInteractive"/> */}
   </>
 }
 
