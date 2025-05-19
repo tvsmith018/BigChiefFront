@@ -1,5 +1,4 @@
 "use client"
-import { useEffect, useRef } from 'react';
 import Script from 'next/script';
 import Container from 'react-bootstrap/Container';
     
