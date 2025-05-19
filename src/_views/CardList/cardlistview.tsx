@@ -10,9 +10,6 @@ import { useState, useEffect, useCallback } from "react"
 import { DateFormatter } from "../../../_utilities/dateformatter/dateformatter"
 import { articlesRetrieve } from "./actions/articlesAction"
 import { ArticleType } from "../../../_utilities/datatype/types"
-import Script from "next/script";
-
-
 
 export default function CardListView({list, title, category}:{list:ArticleType[], title:string, category:string}) {
     const [isClient, setIsClient] = useState(false);
