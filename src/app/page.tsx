@@ -69,7 +69,7 @@ export default async function Home() {
     <main style={{overflowX: "hidden"}}>
       <DynamicCarousel articles={slides} />
       <DynamicHeader main={main} sides={sides} />
-      <DynamicAdsterraNative />
+      {/* <DynamicAdsterraNative /> */}
       <DynamicList list={list} title={"All Articles"} category="all"/>
       
     </main>
