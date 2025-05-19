@@ -35,7 +35,7 @@ function AdsterraBanner() {
   },[]);
 
   return isClient && <>
-    <Script type="text/javascript" strategy="afterInteractive" id="banner">
+    <Script type="text/javascript" strategy="afterInteractive">
       {`
         atOptions = {
 		      'key' : '${banner.key}',
@@ -46,7 +46,8 @@ function AdsterraBanner() {
 	      };
       `}
     </Script>
-    {/* <Script type="text/javascript" src={`//spaniardinformationbookworm.com/${banner.key}/invoke.js`} strategy="afterInteractive"/> */}
+        
+    <Script type="text/javascript" src={`//spaniardinformationbookworm.com/${banner.key}/invoke.js`} strategy="afterInteractive"/>
   </>
 }
 
