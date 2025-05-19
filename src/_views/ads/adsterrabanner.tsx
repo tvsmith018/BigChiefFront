@@ -35,7 +35,7 @@ function AdsterraBanner() {
   },[]);
 
   return isClient && <>
-    <Script type="text/javascript" strategy="afterInteractive">
+    <Script type="text/javascript" strategy="afterInteractive" id="banner">
       {`
         atOptions = {
 		      'key' : '${banner.key}',
