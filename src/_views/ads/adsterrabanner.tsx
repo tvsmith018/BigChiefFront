@@ -6,7 +6,7 @@ function AdsterraBanner() {
   
   useEffect(()=>{
     if (ref.current && !ref.current.firstChild) {
-      let atOptions:{key:string,format:string, height:number, width:number, params:{}};
+      let atOptions:{key:string,format:string, height:number, width:number, params:object};
       if (window.innerWidth < 576) {
         atOptions = {
           'key' : '86f941ff71e4308cfcb0d0802ce85da8',
