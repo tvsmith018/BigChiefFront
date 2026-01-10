@@ -11,12 +11,6 @@ import NewPasswordnputView from "@/_views/screens/passwordview/passwordview";
 import ConfirmPasswordnputView from "@/_views/screens/passwordview/confirmpasswordview";
 import SuccessView from "@/_views/screens/successView/successView";
 
-interface RESETSTATE {
-  screen:ScreenNames,
-  code?:string, 
-  payload?:FormData
-}
-
 export default function ResetView() {
 
   const [show, setShow] = useState(false);
