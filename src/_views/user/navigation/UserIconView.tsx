@@ -8,7 +8,6 @@ import { useDispatch } from 'react-redux';
 import { removeUser } from '@/_store/reducers/userReducer/userSlice';
 
 export default function UserIconView({isAuthenticated, data}:{isAuthenticated:boolean, data?:{firstname:string, lastname:string, avatarURL?:string}}){
-    let initialState: {isAuthenticated:boolean, data?:{firstname:string, lastname:string, avatarURL?:string}}
     const dispatch = useDispatch();
 
     const action = useActionState(logoutAction, undefined)

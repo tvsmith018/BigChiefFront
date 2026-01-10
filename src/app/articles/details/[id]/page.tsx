@@ -5,7 +5,6 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { HTMLAttributeReferrerPolicy } from 'react';
-import { de } from 'zod/v4/locales';
 
 const DynamicDetailsView = dynamic(async ()=>import("@/_views/details/detailsview"));
 const DynamicStarsView = dynamic(async ()=>import("@/_views/details/ratings/starratingview"))
