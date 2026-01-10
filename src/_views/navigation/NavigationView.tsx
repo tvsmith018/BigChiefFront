@@ -1,3 +1,4 @@
+"use client"
 import localizationData from '../../../_utilities/localization/en.json'
 import Link from 'next/link';
 import Container from 'react-bootstrap/Container';
@@ -7,6 +8,8 @@ import NavbarBrand  from 'react-bootstrap/NavbarBrand';
 import logo from '../../../public/images/logo.png'
 import NavCanvasView from './_NavViews/NavCanvasView';
 import { sidelink } from './_NavViews/NavCanvasView';
+import UserIconView from '../user/navigation/UserIconView';
+import { useSelector } from 'react-redux';
 
 const navbarTopLinks = [
     localizationData.navbar_toplink1,
@@ -20,7 +23,7 @@ const sidebarLinks: sidelink[] = [
         link: localizationData.sidebar_link1,
         dropdown: true,
         dropdownContent: [
-          { link:localizationData.sidebar_link1_drop1, category:"featured" }, 
+        //   { link:localizationData.sidebar_link1_drop1, category:"featured" }, 
           { link:localizationData.sidebar_link1_drop2, category:"tea" }, 
           { link:localizationData.sidebar_link1_drop3, category:"sport" },
           { link:localizationData.sidebar_link1_drop4, category:"entertainment" },
@@ -43,6 +46,10 @@ const sidebarLinks: sidelink[] = [
 ]
 
 export default function NavigationView() {
+
+    const isAuthenticated = useSelector((state:any) => state['userReducer']['isAuthenticated']);
+    const data = useSelector((state:any) => state['userReducer']['data']);
+
     return(
         <header className="navbar-light navbar-sticky header-static">
             <div className="navbar-top d-block small">
@@ -57,6 +64,7 @@ export default function NavigationView() {
                           })
                         }
                       </ul>
+                      <UserIconView isAuthenticated={isAuthenticated} data={data}/>
                     </div>
                     <div className="border-bottom border-2 border-primary opacity-1"></div>
                 </Container>
@@ -73,7 +81,7 @@ export default function NavigationView() {
                             placeholder='blur'
                         />
                     </NavbarBrand>
-                    <NavCanvasView sidelinks={sidebarLinks}/>
+                    <NavCanvasView sidelinks={sidebarLinks} isAuthenticated={isAuthenticated} data={data}/>
                 </Container>
             </Navbar>
         </header>

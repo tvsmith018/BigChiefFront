@@ -1,4 +1,3 @@
-"use client"
 import { useState } from "react"
 import Image from "next/image";
 import Link from "next/link";
@@ -22,7 +21,8 @@ export interface sidelink {
     id?:string,
 }
 
-export default function NavCanvasView(props:{sidelinks:sidelink[]}){
+export default function NavCanvasView({isAuthenticated, data,sidelinks}:{isAuthenticated:boolean, data?: {firstname:string, lastname:string, avatarURL:string},sidelinks:sidelink[]}){
+
     const [showSide, setShowSide] = useState(false);
     const [showSearch, setShowSearch] = useState(false)
     const [timer, setTimer] = useState<NodeJS.Timeout>();
@@ -129,18 +129,26 @@ export default function NavCanvasView(props:{sidelinks:sidelink[]}){
        <Offcanvas show={showSide} onHide={handleCloseSide} placement={"start"}>
               <Offcanvas.Header closeButton></Offcanvas.Header>
               <Offcanvas.Body>
+                <div className="text-center">
                 <Image 
-                    src={Logo} 
+                    src={ isAuthenticated && data?.avatarURL ? data.avatarURL:Logo} 
                     alt="Big Chief Ent Logo Again" 
-                    className="mt-2 mb-3" 
+                    className={isAuthenticated && data?.avatarURL ? "mt-2 mb-3 rounded-circle":"mt-2 mb-3"}
+                    width={200}
                     height={200}
                     priority
-                    placeholder='blur'
+                    // placeholder='blur'
                 />
-                <p>{localizationData.sidebar_header_1} <strong>{localizationData.sidebar_header_2}</strong> {localizationData.sidebar_header_3} <strong>{localizationData.sidebar_header_4}</strong> {localizationData.sidebar_header_5}</p>
+                </div>
+                { !isAuthenticated && <p className="mt-2">{localizationData.sidebar_header_1} <strong>{localizationData.sidebar_header_2}</strong> {localizationData.sidebar_header_3} <strong>{localizationData.sidebar_header_4}</strong> {localizationData.sidebar_header_5}</p>}
+                { isAuthenticated && <div className="mt-2 px-1 d-none">
+                    <span style={{fontSize:"20px", fontWeight:"600"}}>{data!.firstname} Stats:</span>
+                    <br/><span>---------------------------------------</span>
+                    <br /><span style={{fontSize: "14px", fontWeight:"bold"}}>Videos: 10.4K&nbsp;|&nbsp;Comments: 100k&nbsp;|&nbsp;Likes: 10.4k</span>
+                </div>}
                 <Nav as="ul" className="d-block flex-column mt-3 mb-0">
                     {
-                        props.sidelinks.map((value:sidelink, index:number)=>{
+                        sidelinks.map((value:sidelink, index:number)=>{
                             if (value.dropdown == true){
                                 return(
                                     <Dropdown as={Nav.Item} key={index} className="mb-2">
@@ -168,13 +176,20 @@ export default function NavCanvasView(props:{sidelinks:sidelink[]}){
                         })
                     }
                 </Nav>
-                <div className="bg-warning bg-opacity-10 p-4 mt-4 text-center w-100 rounded">
-                    <span>{localizationData.sidebar_alert_title}</span>
-                    <h3>{localizationData.sidebar_alert_header}</h3>
-                    <p>{localizationData.sidebar_alert_para}</p>
-                    <Link href="#" className="btn btn-warning disabled">{localizationData.sidebar_alert_button}</Link>
+                <div className="p-4 mt-4 text-center w-100 rounded" style={{backgroundColor:"rgba(156, 114, 72,0.4)",}}>
+                    {!isAuthenticated && <div>
+                        <span>{localizationData.sidebar_alert_title}</span>
+                        <h3>{localizationData.sidebar_alert_header}</h3>
+                        <p>{localizationData.sidebar_alert_para}</p>
+                        <Link href="#" className="btn" style={{backgroundColor:"#9c7248", color:"white", borderColor:"#9c7248"}}>{localizationData.sidebar_alert_button}</Link>
+                    </div>}
+                    {isAuthenticated && <div>
+                        <h5>Hello {data!.firstname} {data!.lastname}</h5>
+                        <h3>Thank you for coming back we needed you!!!!</h3>
+                        <p>You already know we got what you need check out what we got featured for you frfr.  We got everything you need.</p>
+                        <a className="btn disable" style={{backgroundColor:"#9c7248", color:"white", borderColor:"#9c7248"}}>See Wassup!!!</a>
+                    </div>}
                 </div>
-
               </Offcanvas.Body>
        </Offcanvas>
     </>

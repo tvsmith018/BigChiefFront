@@ -1,5 +1,3 @@
-import { useState, useEffect, useRef } from 'react';
-
 type TimeInterval = {
     seconds: number,
     minutes: number, 
@@ -78,7 +76,6 @@ function dateMessage(intervals: TimeInterval):string {
 }
 
 export const DateFormatter = ({created}:{created: string}) => {
-    const hasMounted = useRef(false)
 
     const date = new Date(created);
     const now = new Date();

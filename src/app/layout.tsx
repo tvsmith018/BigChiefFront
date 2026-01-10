@@ -1,16 +1,15 @@
 import dynamic from 'next/dynamic'
-// import { Inter } from "next/font/google";
-import type { Viewport } from 'next'
+import type { Viewport, Metadata } from 'next'
 import Script from "next/script";
-import type { Metadata } from "next";
+import { Providers } from '../_store/provider/provider';
 
 import "bootstrap-icons/font/bootstrap-icons.css"
 import  "bootstrap/dist/css/bootstrap.min.css"
 import 'swiper/css';
 import "./globals.css"
+import ErudaScript from '../../_utilities/eruda/eruda';
 
 const DynamicNav = dynamic(async ()=> import('../_views/navigation/NavigationView'))
-// const inter = Inter({ subsets: ["latin"] });
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -40,25 +39,29 @@ export const metadata: Metadata = {
   applicationName: "Big Chief Entertainment",
   generator: "Big Chief Entertainment",
   keywords: ["hip-hop", "big chief", "big chief ent", "bce", "hip-hop blog", "big chief entertainment", "chief", "black blog", "raleigh blog", "blog", "chief", "interview", "podcast","content"],
-  appLinks: {web: {url:"www.bigchiefmedia.com"}}
-}
+  appLinks: {web: {url:"www.bigchiefmedia.com"}},
 
+}
 
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html lang="en">
       <head>
+        <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests"></meta>
        </head>
       <body className={`hidescroll`}>
-        <DynamicNav />
-        {children}
+        
+        <Providers>
+          <DynamicNav/>
+          {children}
+        </Providers>
         <Script src="/assets/vendor/sticky-js/sticky.min.js" strategy="afterInteractive"/>
         <Script src="/assets/js/functions.js" strategy="afterInteractive"/>
+        <ErudaScript />
       </body>
     </html>
   );

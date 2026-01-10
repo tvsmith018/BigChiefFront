@@ -38,3 +38,21 @@ export function requestBody(params:object[], body:any[], variables?:object[]):st
     }
     return variables ? withVars:allArticlesString
 }
+
+export function requestComment(articleID:string){
+    return `{
+        allComments(orderBy:"-created", article:"${articleID}"){
+            edges{
+                node{
+                    body
+                    created
+                    user{
+                        firstname
+                        lastname
+                        avatarUrl
+                    }
+                }
+            }
+        }
+    }`
+}

@@ -1,9 +1,9 @@
 'use server'
 import { requestBody } from "../../../../_utilities/network/requestBody"
 
-export async function articlesRetrieve(offset:number, category:string) {
+export async function articlesRetrieve(offset:number, category:string, first:number) {
 
-    const params:object[] = [{orderBy:`"-created"`},{offset:offset},{first:12}];
+    const params:object[] = [{orderBy:`"-created"`},{offset:offset},{first:first}];
     const legs = ["id","title","image4x3Url","category","badgeColor", "altImage", "created", {author:["firstname","lastname","avatarUrl"]}];
     const vari = [{"$field":"String"}];
     let body;

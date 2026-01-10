@@ -22,7 +22,7 @@ export default function CardListView({list, title, category}:{list:ArticleType[]
         const observer = new IntersectionObserver((entries)=>{
             const target = entries[0];
             if (target.isIntersecting && hasMore) {
-                const list = articlesRetrieve(offset, category)
+                const list = articlesRetrieve(offset, category, 12)
                 list.then(async (newArticles:ArticleType[])=>{
                     setLoading(true)
                     setArticleList(

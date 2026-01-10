@@ -1,3 +1,26 @@
+
+@font-face {
+  font-family: 'teleMarines';
+  src: url('../../public/fonts/teleMarines/Tele-Marines.woff2') format('woff2'),
+       url('../../public//fonts/teleMarines/Tele-Marines.woff') format('woff');
+  font-style: medium;
+  font-weight: normal;
+  font-display: swap;
+}
+
+@font-face{
+  font-family: 'exlibris';
+  src: url('../../public/fonts/ex-libris/exlibris-bold.woff2') format('woff2'),
+       url('../../public/fonts/ex-libris/exlibris-bold.woff') format('woff');
+  font-style: medium;
+  font-weight: bold;
+  font-display: swap;
+}
+
+html {
+  scroll-behavior: smooth;
+}p0
+
 :root,
 [data-bs-theme=light] {
   --bs-blue: #007bff;
@@ -17529,6 +17552,94 @@ body iframe {
   margin-right: auto;
   margin-bottom: 20px;
   margin-top: 0;
+}
+
+#dropdown-basic::after{
+  display: none; 
+}
+
+.dropdown-toggle::after {
+  display: none;
+}
+
+/*going in own auth style file when completed */
+
+div.nav.nav-pills div.nav-item a.nav-link.active{
+  background-color: #9c7248;
+}
+
+.row .col a.nav-link:hover{
+  color:white;
+}
+
+.form-check-input[type="radio"] {
+  display: none;
+}
+
+.comment-box {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    transition: transform 0.2s;
+    border: 1px solid #e9ecef;
+}
+
+.comment-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.comment-actions {
+    font-size: 0.9rem;
+}
+
+.comment-actions button {
+    color: #6c757d;
+    text-decoration: none;
+    margin-right: 15px;
+    transition: color 0.2s;
+}
+
+.comment-actions button:hover {
+    color: #0d6efd;
+}
+
+.comment-time {
+    color: #adb5bd;
+    font-size: 0.85rem;
+}
+
+
+
+@media screen and (min-width: 992px) {
+  .containerDesktop {
+    height:800px; 
+    overflow:hidden; 
+    overflow-y:scroll;
+    margin-top: 0;
+  }
+}
+
+@media screen and (max-width: 991px) {
+
+  .my-custom-tabs .nav-link {
+    color: black;
+    padding: 5px 10px;
+  }
+
+  .my-custom-tabs .nav-link.active {
+    color: white !important;
+    background-color: rgba(255, 193, 7, 1) !important;
+    border-radius: 10px;
+  }
+
+  .my-custom-tabs .nav-link:hover {
+    background-color: #e0e0e0;  
+  }
+
+  .brief-bubble {
+    background-color: (255, 193, 7, 0.2) ;
+  }
 }
 
 /*User CSS*/

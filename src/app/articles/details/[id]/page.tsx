@@ -1,13 +1,14 @@
+import dynamic from 'next/dynamic';
 import { unstable_cache } from 'next/cache';
-import { requestBody } from "../../../../../_utilities/network/requestBody";
-import Container from "react-bootstrap/Container"
-import Row from "react-bootstrap/Row"
-import Col from "react-bootstrap/Col"
-import videostyle from "./videocss.module.css"
-import Image from 'next/image';
-import Link from 'next/link';
-import { ArticleType } from '../../../../../_utilities/datatype/types';
+import { requestBody, requestComment } from "../../../../../_utilities/network/requestBody";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 import { HTMLAttributeReferrerPolicy } from 'react';
+import { de } from 'zod/v4/locales';
+
+const DynamicDetailsView = dynamic(async ()=>import("@/_views/details/detailsview"));
+const DynamicStarsView = dynamic(async ()=>import("@/_views/details/ratings/starratingview"))
 
 interface VideoType {
     youtube:{
@@ -88,13 +89,26 @@ const detailedContent =  unstable_cache(
         const articleRaw = await data.json();
         const article = articleRaw.data.allArticles.edges[0].node;
 
+        const commentData = await fetch("https://bigchiefnewz-a2e8434d1e6d.herokuapp.com/graphql/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                query: requestComment(id)
+            })
+        })
+
+        const commentRaw = await commentData.json()
+        const comments = commentRaw.data.allComments.edges
+
         const relatedData = await fetch(process.env.NEXT_PUBLIC_ARTICLEURL ?? "", {
             method: "POST",
             headers:{
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                query:requestBody([{orderBy:`"-created"`},{category:`"${article.category}"`}, {exempt:`["${article.title}"]`}, {typefield:"$field"},{first:5}], ["image1x1Url","title","id", "altImage"], [{"$field":"String"}]),
+                query:requestBody([{orderBy:`"-created"`},{category:`"${article.category}"`}, {exempt:`["${article.title}"]`}, {typefield:"$field"},{first:12}], ["image4x3Url","title","id", "altImage","created","category","badgeColor",{author:["firstname","lastname","avatarUrl"]}], [{"$field":"String"}]),
                 variables:{
                     "field": "title__in"
                 }
@@ -104,79 +118,47 @@ const detailedContent =  unstable_cache(
         const relatedRaw = await relatedData.json();
         const relatedList = relatedRaw.data.allArticles.edges;
 
-        return [article, relatedList]
+        return [article, relatedList, comments]
     },
     ["article", "relatedList"],
     {revalidate: 1, tags: ["article", "relatedList"]}
 )
 
-export default async function Detail({params}:{params:Params}) {
+export default async function DetailPage({params}:{params:Params}) {
     const { id } = await params;
     const decodeId = decodeURIComponent(id);
     const data = await detailedContent(decodeId);
     const article = data[0];
     const related = data[1];
+    const comments = data[2];
     return <main>
-        <section>
-            <Container className="position-relative" data-sticky-container>
-                <Row style={{marginTop: "-40px"}}>
+        <section className='p-0'>
+            <Container className='p-1'>
+                <Row className='px-1'>
                     <Col lg={8}>
-                        <a className={`badge ${article.badgeColor} mb-2`}><i className="bi bi-record-fill me-1"></i>{article.category}</a>
-                        <span className="ms-2 small">Written: {pubDate(article.created)}</span>
-                        <h1>{article.title}</h1>
-                        <div className={`ratio ratio-16x9 overflow-hidden rounded ${videostyle.player}`}>
-                            {
-                                article.videoType == "youtube" && <iframe loading="eager" className="" src={`${videoType.youtube.src}${article.videoLink}`} title={`${article.title}`} allow={videoType.youtube.allow} referrerPolicy={videoType.youtube.referrerPolicy} allowFullScreen={videoType.youtube.allowFullScreen}></iframe>   
-                            }
-                            {
-                                article.videoType == "facebook" && <iframe loading="eager" className="" src={`${videoType.facebook.src}${article.videoLink}`} title={`${article.title}`} allow={videoType.facebook.allow} allowFullScreen={videoType.facebook.allowFullScreen}></iframe>   
-
-                            }
+                        <div className={`ratio ratio-16x9`}>
+                        {
+                            article.videoType == "youtube" && <iframe loading="eager" className="p-0 m-0" src={`${videoType.youtube.src}${article.videoLink}`} title={`${article.title}`} allow={videoType.youtube.allow} referrerPolicy={videoType.youtube.referrerPolicy} allowFullScreen={videoType.youtube.allowFullScreen}></iframe>   
+                        }
+                        {
+                            article.videoType == "facebook" && <iframe loading="eager" className="p-0 m-0" src={`${videoType.facebook.src}${article.videoLink}`} title={`${article.title}`} allow={videoType.facebook.allow} allowFullScreen={videoType.facebook.allowFullScreen}></iframe>   
+                        }
                         </div>
-                        <h4 className='mt-4'>{article.briefsummary}</h4>
-                        <p className='mt-4'>{article.body}</p>
-                    </Col>
-                    <Col lg={4}>
-                        <div data-sticky data-margin-top="80" data-sticky-for="991">
-                            <div className="bg-light rounded p-3 p-md-4">
-                                <div className="d-flex mb-3">
-                                    <a className="flex-shrink-0" href="#">
-                                        <div className="avatar avatar-xl border border-4 border-warning rounded-circle">
-                                            <Image className="avatar-img rounded-circle" src={article.author.avatarUrl} width={300} height={300} alt="avatar" />
-                                        </div>
-                                    </a>
-                                    <div className="flex-grow-1 ms-3">
-                                        <p className="mb-2 fs-5">Author: {article.author.firstname} {article.author.lastname}</p>
-                                        <p >I&apos;m one of the authors at Big Chief Ent...</p>
-                                    </div>
-                                </div>
-                                <p>{article.author.bio}</p>
-                            </div>
-                            <div>
-                                <h5 className="mt-5 mb-3">Related Articles</h5>
-                                {
-                                    related.map((node:ArticleType, index:number)=>{
-                                        const articleR = node.node
-                                        return <div className="d-flex position-relative mb-3" key={index}>
-                                                <Image 
-                                                    src={articleR.image1x1Url ?? ""}
-                                                    alt={articleR.altImage ?? ""}
-                                                    className={"img-fluid rounded-3 me-3"}
-                                                    loading={"eager"}
-                                                    width={50}
-                                                    height={50}
-                                                    placeholder={"blur"}
-                                                    blurDataURL={'/images/1x1placeholder.png'}
-                                                    quality={75}
-                                                />
-                                                <h6><Link href={`/articles/details/${articleR.id}`} className="stretched-link">{articleR.title}</Link></h6>
-                                        </div>
-                                    })
-                                }
-
+                        <a className={`badge ${article.badgeColor} mt-3`}><i className="bi bi-record-fill me-1"></i>{article.category}</a>
+                        <h1 className='mt-2 mb-0'>{article.title}</h1>
+                        <div className='d-flex align-items-center'>
+                            <p className='m-0 fs-3'>{pubDate(article.created)}</p>
+                            <p className='m-0 fs-3 ms-4 d-none d-lg-block'>0 views</p>
+                            <p className='m-0 fs-3 ms-4 d-none d-lg-block'><i className="bi bi-arrow-right"></i> neutrel</p>
+                            <div className='ms-auto'>
+                                <DynamicStarsView article_id={decodeId}/>
                             </div>
                         </div>
+                        <div className='mt-3 border rounded px-3 py-2 d-none d-lg-block' style={{backgroundColor:"rgba(255, 193, 7, 0.2)"}}>
+                            <p className='m-0 fs-2' style={{margin:0, padding:0, lineHeight:1}}>{article.briefsummary}</p>
+                        </div>
                     </Col>
+                    <DynamicDetailsView briefsummary={article.briefsummary} author={article.author} body={article.body} related={related} category={article.category} articleId={decodeId} comments={comments}/>
                 </Row>
             </Container>
         </section>
