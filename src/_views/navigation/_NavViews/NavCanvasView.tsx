@@ -21,7 +21,7 @@ export interface sidelink {
     id?:string,
 }
 
-export default function NavCanvasView({isAuthenticated, data,sidelinks}:{isAuthenticated:boolean, data?: {firstname:string, lastname:string, avatarURL:string},sidelinks:sidelink[]}){
+export default function NavCanvasView({isAuthenticated, data,sidelinks}:{isAuthenticated:boolean, data?: {firstname:string, lastname:string, avatarURL?:string},sidelinks:sidelink[]}){
 
     const [showSide, setShowSide] = useState(false);
     const [showSearch, setShowSearch] = useState(false)

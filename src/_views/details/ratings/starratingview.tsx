@@ -4,12 +4,11 @@ import FormLabel from "react-bootstrap/FormLabel";
 import FormCheck from "react-bootstrap/FormCheck";
 import { useSelector } from 'react-redux';
 import { getSession } from "../../../../_utilities/network/Authorization/sessions/session";
-import { json } from "zod";
 
 const StarsView = ({article_id}:{article_id:string}) => {
     const [rating, setRating] = useState(0);
     const [userHasVote, setUserHasVote] = useState<boolean|undefined>(undefined)
-    const isAuthenticated = useSelector((state:any) => state['userReducer']['isAuthenticated']);
+    const isAuthenticated = useSelector((state:{userReducer:{isAuthenticated:boolean}}) => state['userReducer']['isAuthenticated']);
     const [userToken, setUserToken] = useState<{access:string|undefined, session:string|undefined}>({access:undefined, session:undefined})
 
     const handle_click =async (rate:number) => {

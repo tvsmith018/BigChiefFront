@@ -47,8 +47,8 @@ const sidebarLinks: sidelink[] = [
 
 export default function NavigationView() {
 
-    const isAuthenticated = useSelector((state:any) => state['userReducer']['isAuthenticated']);
-    const data = useSelector((state:any) => state['userReducer']['data']);
+    const isAuthenticated = useSelector((state:{userReducer:{isAuthenticated:boolean}}) => state['userReducer']['isAuthenticated']);
+    const data = useSelector((state:{userReducer:{data:{firstname: string; lastname: string; avatarURL?: string;}}}) => state['userReducer']['data']);
 
     return(
         <header className="navbar-light navbar-sticky header-static">
