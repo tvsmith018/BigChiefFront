@@ -208,12 +208,12 @@ export default function SignupView(){
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                {screen != ScreenNames.email_screen && screen != ScreenNames.firstname_screen &&<Button style={{backgroundColor:"#9c7248", borderColor:"#9c7248", fontSize:"16px", width:"100px", height:"50px", marginRight: "auto"}} onClick={onMenuBackButtonClick}>
+                {screen != ScreenNames.email_screen && screen != ScreenNames.firstname_screen && screen != ScreenNames.success_screen && <Button style={{backgroundColor:"#9c7248", borderColor:"#9c7248", fontSize:"16px", width:"100px", height:"50px", marginRight: "auto"}} onClick={onMenuBackButtonClick}>
                     Back
                 </Button>}
-                <Button disabled={signuppending} form="signup" type="submit" style={{backgroundColor:"#9c7248", borderColor:"#9c7248", fontSize:"16px", width:"100px", height:"50px"}}>
+                {screen != ScreenNames.success_screen && <Button disabled={signuppending} form="signup" type="submit" style={{backgroundColor:"#9c7248", borderColor:"#9c7248", fontSize:"16px", width:"100px", height:"50px"}}>
                     {signuppending ? <Spinner animation="border" role="status" size="sm"/>:"Continue"}
-                </Button>
+                </Button>}
             </Modal.Footer>
         </Modal>
     </>
