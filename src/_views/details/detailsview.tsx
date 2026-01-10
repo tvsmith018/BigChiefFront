@@ -175,7 +175,7 @@ const DetailView = ({briefsummary, author, body, related,category, articleId, co
         ws.close();
       };
     }
-    }, [articleId])
+    },[])
 
     useEffect(() => {
         function handleResize() {

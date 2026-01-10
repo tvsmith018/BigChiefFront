@@ -57,7 +57,7 @@ const StarsView = ({article_id}:{article_id:string}) => {
                 )
             })
         }
-    })
+    }, [])
 
     return <>
         {isAuthenticated && userHasVote && [...Array(5)].map((star:undefined, index:number) => {

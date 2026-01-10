@@ -125,7 +125,7 @@ export default function ResetView() {
       setScreen(ScreenNames.success_screen)
     }
 
-  },[passwordState, screen])
+  },[passwordState])
 
   return <>
     <div className="mb-4 d-flex justify-content-center">
