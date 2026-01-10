@@ -166,7 +166,7 @@ const DetailView = ({briefsummary, author, body, related,category, articleId, co
         )
       };
       ws.onclose = () => console.log('WebSocket Disconnected');
-      ws.onerror = (error) => setSocketError("Error with comment communication, please try again")
+      ws.onerror = () => setSocketError("Error with comment communication, please try again")
 
       setSocket(ws);
 
@@ -372,19 +372,19 @@ const DetailView = ({briefsummary, author, body, related,category, articleId, co
                             commentState.length == 0 && <p>Be the first to write a comment.</p>
                         }
                         {
-                            commentState.length != 0 && commentState.map((comment:any, index)=>{
-                                comment = comment.node;
+                            commentState.length != 0 && commentState.map((comment:CommentInt, index)=>{
+                                const commentN = comment.node;
                                 return <div className={`comment-box ${index >0 && "mt-2"}`} key={index} >
                                     <Row className='g-0'>
                                         <Col xs={2}>
-                                            {comment.user.avatarUrl ? <Image className='rounded-circle' src={comment.user.avatarUrl} alt={`Image of ${comment.user.firstname} ${comment.user.lastname}`} width={40} height={40}/>:<i className="bi bi-person-circle" style={{fontSize:"20px"}}></i>}
+                                            {commentN.user.avatarUrl ? <Image className='rounded-circle' src={commentN.user.avatarUrl} alt={`Image of ${commentN.user.firstname} ${commentN.user.lastname}`} width={40} height={40}/>:<i className="bi bi-person-circle" style={{fontSize:"20px"}}></i>}
                                         </Col>
                                         <Col xs={10}>
                                             <div className="d-flex justify-content-between align-items-center mb-2">
-                                                <h6 className="mb-0">{comment.user.firstname} {comment.user.lastname}</h6>
-                                                <span className="comment-time"><DateFormatter created={comment.created ?? ""}/></span>
+                                                <h6 className="mb-0">{commentN.user.firstname} {commentN.user.lastname}</h6>
+                                                <span className="comment-time"><DateFormatter created={commentN.created ?? ""}/></span>
                                             </div>
-                                            <p className="mb-2">{comment.body}</p>
+                                            <p className="mb-2">{commentN.body}</p>
                                             <div className="comment-actions d-none">
                                                 <Button style={{backgroundColor: "white", borderColor:"white"}}><i className="bi bi-heart"></i> Like</Button>
                                                 <Button style={{backgroundColor: "white", borderColor:"white"}}><i className="bi bi-reply"></i> Reply</Button>
