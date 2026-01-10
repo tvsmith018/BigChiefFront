@@ -23,7 +23,7 @@ export default function LoginView() {
       redirect('/')
     }
 
-  },[loginState, dispatch])
+  },[loginState])
 
   return (
       <Form name="login" action={loginaction} noValidate>

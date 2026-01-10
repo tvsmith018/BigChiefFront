@@ -177,7 +177,7 @@ export default function SignupView(){
             setScreen(ScreenNames.success_screen)
         }
 
-    },[signupState, screen, error])
+    },[signupState])
 
     return <>
         <p className='mt-2' style={{padding: "0 5px", wordSpacing:"10px"}}>Welcome to Big Chief Ent, the #1 Black Entertainment site around. To check out our exclusive content for members only please start by clicking on the button.</p>
