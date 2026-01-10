@@ -15,6 +15,7 @@ import Button from 'react-bootstrap/Button'
 import { useSelector } from 'react-redux';
 import { getUserID } from '../../../_utilities/network/Authorization/sessions/session';
 import ReconnectingWebSocket from 'reconnecting-websocket';
+import { TooltipProps } from 'react-bootstrap/Tooltip';
 
 type DetailTabs = "comment" | "stat" | "author" | "related" | "article"
 
@@ -27,7 +28,36 @@ interface Author {
     dob:string
 }
 
-const DetailView = ({briefsummary, author, body, related,category, articleId, comments}:{briefsummary:string, author:Author, body:string, related:Array<object>, category:string, articleId:string, comments:Array<object>}) =>{
+interface RelatedInt{
+    node: {
+        image4x3Url?: string,
+        altImage?: string,
+        badgeColor: string,
+        category: string,
+        id: string,
+        title:string,
+        author: {
+            firstname: string,
+            lastname: string,
+            avatarUrl?: string
+        },
+        created: string
+    }
+}
+
+interface CommentInt{
+    node: {
+        user: {
+            firstname:string,
+            lastname:string,
+            avatarUrl?:string
+        },
+        body:string,
+        created:string
+    }
+}
+
+const DetailView = ({briefsummary, author, body, related,category, articleId, comments}:{briefsummary:string, author:Author, body:string, related:Array<RelatedInt>, category:string, articleId:string, comments:Array<CommentInt>}) =>{
     const [articleCollapse, setArticleCollapse] = useState("....Read More");
     const [tab, setTab] = useState<DetailTabs>("comment");
     const [relatedArticlesList, setrelatedArticlesList] = useState(related)
@@ -38,29 +68,29 @@ const DetailView = ({briefsummary, author, body, related,category, articleId, co
     const [socketError, setSocketError] = useState<string|undefined>(undefined)
     const [commentState, setCommentState] = useState(comments)
     const [tabButtonStyle, setTabButtonStyle] = useState(false)
-    const isAuthenticated = useSelector((state:any) => state['userReducer']['isAuthenticated']);
+    const isAuthenticated = useSelector((state:{userReducer:{isAuthenticated:boolean}}) => state['userReducer']['isAuthenticated']);
 
     const briefStyle = {backgroundColor:"rgba(255, 193, 7, 0.2)", border:"solid", borderWidth: 1, borderColor:"rgba(0, 0, 0, 0.2)", borderRadius:10}
 
-    const renderCommentTooltip = (props:any) => (
+    const renderCommentTooltip = (props:TooltipProps) => (
         <Tooltip id="button-tooltip" {...props}>
             Comments
         </Tooltip>
     );
 
-    const renderStatsTooltip = (props:any) => (
+    const renderStatsTooltip = (props:TooltipProps) => (
         <Tooltip id="button-tooltip" {...props}>
             More Details
         </Tooltip>
     );
 
-    const renderAuthorTooltip = (props:any) => (
+    const renderAuthorTooltip = (props:TooltipProps) => (
         <Tooltip id="button-tooltip" {...props}>
             Author
         </Tooltip>
     );
 
-    const renderRelatedTooltip = (props:any) => (
+    const renderRelatedTooltip = (props:TooltipProps) => (
         <Tooltip id="button-tooltip" {...props}>
             Related
         </Tooltip>
@@ -97,7 +127,7 @@ const DetailView = ({briefsummary, author, body, related,category, articleId, co
             observer.observe(node);
     
             return () => observer.disconnect()
-    },[offset, hasMore])
+    },[offset, hasMore, category])
 
     const onCommentSubmit = (e:ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -145,7 +175,7 @@ const DetailView = ({briefsummary, author, body, related,category, articleId, co
         ws.close();
       };
     }
-    }, [])
+    }, [articleId])
 
     useEffect(() => {
         function handleResize() {
@@ -262,7 +292,7 @@ const DetailView = ({briefsummary, author, body, related,category, articleId, co
                 <div className='mt-3'>
                     <Row className='g-4 mb-2'>
                         {relatedArticlesList.length == 0 && <div>Nothing here yet, we have more soon.</div>}
-                        {relatedArticlesList.map((articleNode:any, index)=>{
+                        {relatedArticlesList.map((articleNode: RelatedInt, index)=>{
                             const article = articleNode.node;
                             return <Col xs={12} key={index}>
                                 <Card>
