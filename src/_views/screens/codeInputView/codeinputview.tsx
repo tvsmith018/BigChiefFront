@@ -13,7 +13,7 @@ export default function CodeInputView({prompt, onComplete, onResendClick}:{promp
   const [timeRemaining, setTimeRemaining] = useState<number>(initialSeconds);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const handleChange = (e:any, index:number) => {
+  const handleChange = (e:React.ChangeEvent<HTMLInputElement>, index:number) => {
     const value = e.target.value;
     if (value.match(/^\d*$/) && value.length <= 1) { // Allow only single digit numbers
       const newOtp = [...otp];
@@ -27,7 +27,7 @@ export default function CodeInputView({prompt, onComplete, onResendClick}:{promp
     }
   };
 
-  const handleKeyDown = (e:any, index:number) => {
+  const handleKeyDown = (e:React.KeyboardEvent<HTMLInputElement>, index:number) => {
     // Handle backspace to clear and move to previous input
     if (e.key === 'Backspace' && !otp[index] && index > 0) {
       inputRefs.current[index - 1].focus();
@@ -75,8 +75,8 @@ export default function CodeInputView({prompt, onComplete, onResendClick}:{promp
           type="text" // Use 'text' to control input length and content
           maxLength={1}
           value={digit}
-          onChange={(e) => handleChange(e, index)}
-          onKeyDown={(e) => handleKeyDown(e, index)}
+          onChange={(e:React.ChangeEvent<HTMLInputElement>) => handleChange(e, index)}
+          onKeyDown={(e:React.KeyboardEvent<HTMLInputElement>) => handleKeyDown(e, index)}
           ref={(el:never) => (inputRefs.current[index] = el)}
           className="text-center"
           style={{ width: '40px', margin: "0 2px 0 1px" }} // Adjust width as needed

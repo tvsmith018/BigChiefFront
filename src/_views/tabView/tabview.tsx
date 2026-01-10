@@ -1,7 +1,7 @@
 "use client"
 import Tab from 'react-bootstrap/Tab';
 import react from 'react'
-import {Row, Col, Nav, Form} from 'react-bootstrap'
+import {Row, Col, Nav} from 'react-bootstrap'
 
 export default function TabsView({children, defaultKey, keys}:Readonly<{children:React.ReactNode, defaultKey?:string, keys?:Array<string|number>}>) {
     const childrenArray = react.Children.toArray(children)

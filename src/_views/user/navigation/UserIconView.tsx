@@ -1,7 +1,6 @@
 import Dropdown from 'react-bootstrap/Dropdown';
 import NavItem from 'react-bootstrap/NavItem';
 import NavLink from 'react-bootstrap/NavLink';
-import { useSelector } from 'react-redux';
 import Image from 'next/image';
 import { useActionState, startTransition } from 'react';
 import { logoutAction } from '../../../../_utilities/network/Authorization/actions/auth';
@@ -12,16 +11,11 @@ export default function UserIconView({isAuthenticated, data}:{isAuthenticated:bo
     let initialState: {isAuthenticated:boolean, data?:{firstname:string, lastname:string, avatarURL?:string}}
     const dispatch = useDispatch();
 
-    initialState = {
-        isAuthenticated: isAuthenticated,
-        data: data
-    };
-
-    const [state, action, pending] = useActionState(logoutAction, undefined)
+    const action = useActionState(logoutAction, undefined)
 
     const handleLogout = () => {
         startTransition(() => {
-            action()
+            action[1]()
         })
         dispatch(removeUser())
     }

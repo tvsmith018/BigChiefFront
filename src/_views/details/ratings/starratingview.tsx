@@ -57,7 +57,8 @@ const StarsView = ({article_id}:{article_id:string}) => {
                 )
             })
         }
-    },[])
+    },[article_id])
+    
     return <>
         {isAuthenticated && userHasVote && [...Array(5)].map((star:undefined, index:number) => {
             const currentRate = index + 1

@@ -1,8 +1,8 @@
 import Form from 'react-bootstrap/Form';
-import { useState } from 'react';
+import { Dispatch, SetStateAction } from "react";
 
-export default function NewPasswordnputView({error, removeError}:{error?:string[], removeError?:any}){
-    const handleChange = async (e:any)=>{
+export default function NewPasswordnputView({error, removeError}:{error?:string[], removeError:Dispatch<SetStateAction<string[] | undefined>>}){
+    const handleChange = async (e:React.ChangeEvent<HTMLInputElement>)=>{
         const value:string = e.target.value;
         
         if (error){
