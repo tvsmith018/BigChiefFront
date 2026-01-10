@@ -11,18 +11,11 @@ import NewPasswordnputView from "@/_views/screens/passwordview/passwordview";
 import ConfirmPasswordnputView from "@/_views/screens/passwordview/confirmpasswordview";
 import SuccessView from "@/_views/screens/successView/successView";
 
-interface Payload {
-  email?:string, 
-  password?:string
-}
-
 interface RESETSTATE {
   screen:ScreenNames,
   code?:string, 
   payload?:FormData
 }
-
-const resetState: RESETSTATE = {screen:ScreenNames.email_screen,code:undefined, payload:undefined}
 
 export default function ResetView() {
 
@@ -63,7 +56,7 @@ export default function ResetView() {
   }
 
   const handleErrorRemove = (e:React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name } = e.target;
     
     if (name != "newpassword") {
       if (error != undefined) {
@@ -138,7 +131,7 @@ export default function ResetView() {
       setScreen(ScreenNames.success_screen)
     }
 
-  },[passwordState])
+  },[passwordState, screen])
 
   return <>
     <div className="mb-4 d-flex justify-content-center">
