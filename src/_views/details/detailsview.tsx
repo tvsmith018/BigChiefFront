@@ -166,6 +166,7 @@ const DetailView = ({briefsummary, author, body, related,category, articleId, co
         )
       };
       ws.onclose = () => console.log('WebSocket Disconnected');
+      ws.onerror = () => 
       ws.onerror = () => setSocketError("Error with comment communication, please try again")
 
       setSocket(ws);
@@ -357,7 +358,7 @@ const DetailView = ({briefsummary, author, body, related,category, articleId, co
             {tab == "comment" && <div className='mt-3 '>
                 {isAuthenticated && <div className='px-3 pt-3 pb-2 rounded' style={{background:"#f8f9fa",boxShadow:"0 2px 2px rgba(0, 0, 0, 0.1)",}}>
                     <Form onSubmit={onCommentSubmit}>
-                        {socketError && <div className='mb-2' style={{color:"red"}}>{socketError}</div>}
+                        {socketError && <div className='mb-2 d-hide' style={{color:"red"}}>{socketError}</div>}
                         <Form.Control name={"comment"} as="textarea" rows={3} placeholder="Write a comment..."/>
                         <div className='d-flex justify-content-end'>
                             <Button type='submit' className="text-end p-0" style={{backgroundColor: "#f8f9fa", color:"black", borderColor:"#f8f9fa"}}>
