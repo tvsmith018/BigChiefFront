@@ -37,7 +37,7 @@ export default function LoginView() {
           <div>
             <p>Password must:</p>
             <div style={{lineHeight:"3px"}}>
-              {loginState.errors.password.map((error:any) => (
+              {loginState.errors.password.map((error:string) => (
                 <p key={error} style={{color:"#F2003C"}}>-&nbsp;&nbsp;{error}</p>
              ))}
             </div>
