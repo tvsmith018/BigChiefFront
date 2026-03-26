@@ -1,15 +1,10 @@
-import dynamic from 'next/dynamic'
 import type { Viewport, Metadata } from 'next'
-import Script from "next/script";
-import { Providers } from '../_store/provider/provider';
+import RootLayout  from "@/_core/layout/RootLayout";
 
 import "bootstrap-icons/font/bootstrap-icons.css"
 import  "bootstrap/dist/css/bootstrap.min.css"
 import 'swiper/css';
 import "./globals.css"
-import ErudaScript from '../../_utilities/eruda/eruda';
-
-const DynamicNav = dynamic(async ()=> import('../_views/navigation/NavigationView'))
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -19,50 +14,33 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title:"Big Chief Ent",
-  authors: {name: "Terrance V. Smith", url:"softwareinnovationsllc2.com"},
-  openGraph:{
-    title:"Big Chief Ent",
-    description:"This is the Home page to Big Chief Ent.  Big Chief Ent is a hip-hop blog site based out of Raleigh NC. We have content from people all over so feel free to check us out.  Thank you and welcome.",
-    authors: "Terrance V. Smith",
-    creators: "Terrance V. Smith",
-    publishedTime:"9/28/2024 at 9:08am",
-    siteName:"Big Chief Ent",
-    series:"Hip Hop Blog",
-    writers: "Terrance V. Smith",
-    locale: "Eastern (NC)",
-    emails: "admin@bigchiefmedia.com"
-  },
-  creator: "Terrance V. Smith",
-  publisher:"Software Innovation LLC",
-  category: "Hip-hop Blog",
+  title: "Big Chief Ent",
   applicationName: "Big Chief Entertainment",
-  generator: "Big Chief Entertainment",
-  keywords: ["hip-hop", "big chief", "big chief ent", "bce", "hip-hop blog", "big chief entertainment", "chief", "black blog", "raleigh blog", "blog", "chief", "interview", "podcast","content"],
-  appLinks: {web: {url:"www.bigchiefmedia.com"}},
+  creator: "Terrance V. Smith",
+  publisher: "Software Innovation LLC",
+  category: "Hip-hop Blog",
+  keywords: [
+    "hip-hop",
+    "big chief",
+    "big chief ent",
+    "bce",
+    "hip-hop blog",
+    "podcast",
+    "interview",
+    "content",
+  ],
+  openGraph: {
+    title: "Big Chief Ent",
+    description:
+      "Big Chief Ent is a hip-hop blog site based out of Raleigh NC.",
+    siteName: "Big Chief Ent",
+  },
+};
 
-}
-
-export default async function RootLayout({
+export default function Layout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en">
-      <head>
-        <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests"></meta>
-       </head>
-      <body className={`hidescroll`}>
-        
-        <Providers>
-          <DynamicNav/>
-          {children}
-        </Providers>
-        <Script src="/assets/vendor/sticky-js/sticky.min.js" strategy="afterInteractive"/>
-        <Script src="/assets/js/functions.js" strategy="afterInteractive"/>
-        <ErudaScript />
-      </body>
-    </html>
-  );
+}) {
+  return <RootLayout>{children}</RootLayout>;
 }

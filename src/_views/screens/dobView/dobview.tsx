@@ -1,6 +1,6 @@
 import { Dispatch } from 'react'
 import { SetStateAction } from 'react'
-import DateScrollPicker from '../../../../_utilities/datatype/datePicker/DateScrollPicker'
+import DateScrollPicker from '@/_utilities/datePicker/DateScrollPicker'
 
 export default function DOBInputView({prompt, setDate, removeError}:{prompt:string, setDate:Dispatch<SetStateAction<Date | undefined>>, removeError:(event: React.ChangeEvent<HTMLInputElement>) => void}){
     return<>

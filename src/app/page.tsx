@@ -1,74 +1,50 @@
 import dynamic from "next/dynamic";
-import { unstable_cache } from 'next/cache';
 import type { Metadata } from "next";
-import { requestBody } from '../../_utilities/network/requestBody';
-import { ArticleType } from "../../_utilities/datatype/types";
+import { ArticleService } from "@/_services/articles/articleservices";
+import { Suspense } from "react";
 
-const DynamicCarousel = dynamic(async ()=>import('@/_views/Carousel/carouselview'));
-const DynamicHeader = dynamic(async ()=>import('@/_views/HeaderHome/headerview'));
-const DynamicList = dynamic(async ()=>import('@/_views/CardList/cardlistview'));
-
-async function multipleFetches(): Promise<Response[]> {
-  const promises = [
-    fetch(process.env.NEXT_PUBLIC_ARTICLEURL ?? "",{
-      method: "POST",
-      headers:{
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        query:requestBody([{orderBy:`"-created"`},{exempt:`["none","old"]`}, {typefield:"$field"}], ["image1x1Url", "image4x3Url", "image16x9Url", "title", "id", "featuredType", {author:["firstname","lastname","avatarUrl"]},"created", "altImage","briefsummary","category", "badgeColor"], [{"$field":"String"}]),
-        variables:{
-          "field": "featuredType__in"
-        }
-      }),
-      cache: 'no-store'
-    }),
-    fetch(process.env.NEXT_PUBLIC_ARTICLEURL ?? "",{
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        query: requestBody([{orderBy:`"-created"`}, {offset:0},{first:12}],["id","title","image4x3Url","category","badgeColor", "altImage", "created",{author:["firstname","lastname","avatarUrl"]}])
-      }),
-      cache: 'no-store'
-    })
-  ];
-  const results = await Promise.all(promises);
-  return results
-}
-
-const getHomeData = unstable_cache(
-  async ()=>{
-    const data = await multipleFetches();
-    const featuredData = await data[0].json();
-    const articleListData = await data[1].json();
-    return [featuredData.data,articleListData.data]
-  },
-  ['featuredData', 'articleListData'],
-  {revalidate: 1, tags: ['featuredData', 'articleListData']}
-)
+const CarouselView = dynamic(async ()=>import('@/_views/Home/Carousel/ArticleSlidesView'));
+const HeaderView = dynamic(async ()=>import('@/_views/Home/Hero/HeaderSection'));
+const CardListView = dynamic(async ()=>import('@/_views/Home/CardList/cardlistview'));
 
 export const metadata: Metadata = {
   title: "Welcome to Big Chief Ent",
   description:"This is the Home page to Big Chief Ent.  Big Chief Ent is a hip-hop blog site based out of Raleigh NC. We have content from people all over so feel free to check us out.  Thank you and welcome.",
 }
 
-export default async function Home() {
-  const articlesData = await getHomeData();
-  const featured = articlesData[0];
-  const listraw = articlesData[1];
 
-  const slides = featured.allArticles.edges.filter((article:ArticleType)=>article.node.featuredType == "slide");
-  const main = featured.allArticles.edges.filter((article:ArticleType)=>article.node.featuredType == "main")[0];
-  const sides = featured.allArticles.edges.filter((article:ArticleType)=>article.node.featuredType == "side");
-  const list = listraw.allArticles.edges;
+async function HomeDataLoader() {
+  const data = await ArticleService.fetchHomePage();
+
+  const slides = data.slide!.edges;
+  const featured = data.main!.edges[0];
+  const secondary = data.side!.edges;
+  const list = data.list!.edges;
+  const list_page_info = data.list!.pageInfo;
 
   return (
-    <main style={{overflowX: "hidden"}}>
-      <DynamicCarousel articles={slides} />
-      <DynamicHeader main={main} sides={sides} />
-      <DynamicList list={list} title={"All Articles"} category="all"/>
-    </main>
+    <>
+      <Suspense fallback={<div className="skeleton-carousel" />}>
+        <CarouselView articles={slides} />
+      </Suspense>
+
+      <Suspense fallback={<div className="skeleton-hero" />}>
+        <HeaderView featured={featured} secondary={secondary} />
+      </Suspense>
+
+      <Suspense fallback={<div className="skeleton-list" />}>
+        <CardListView list={list} title="All Articles" pageInfo={list_page_info}/>
+      </Suspense>
+    </>
   );
+}
+
+export default async function Page() {
+
+  return <main style={{ overflowX: "hidden" }}>
+    
+      <Suspense fallback={<div className="page-skeleton" />}>
+        <HomeDataLoader />
+      </Suspense>
+    </main>
 }

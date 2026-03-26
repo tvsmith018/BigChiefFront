@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
     ]
   },
   devIndicators: false,
-  allowedDevOrigins: ["192.168.1.141", "ed00881fff46.ngrok.app"],
+  allowedDevOrigins: ["192.168.1.141", "bigchiefdev.ngrok.app"],
 };
 
 export default nextConfig;
