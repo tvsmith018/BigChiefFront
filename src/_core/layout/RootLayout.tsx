@@ -17,7 +17,7 @@ export default async function RootLayout({
     user: user.user == null || user.user.detail != null
       ? { isAuthenticated: false, data: undefined, accessRefresh:user.accessRefresh }:{ isAuthenticated: true, data: user, accessRefresh:user.accessRefresh },
   };
-
+  
     return (
     <html lang="en">
       <head>

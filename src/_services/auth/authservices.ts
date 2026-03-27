@@ -291,6 +291,34 @@ export class SignupService {
  * 🔁 Server Action: Signup wizard
  * email-screen -> code-screen -> firstname-screen -> lastname-screen -> dob-screen -> image-screen -> new-password-screen -> confirm-password-screen -> success-screen
  */
+
+type SignupFieldErrors = {
+  email?: string[];
+  firstname?: string[];
+  lastname?: string[];
+  dob?: string[];
+};
+
+type SignupStateTemp = {
+  errors?: SignupFieldErrors;
+  networkError?: string[];
+  codeError?: string[];
+  passwordError?: {
+    password?: string[];
+  };
+  confirmError?: string[];
+  screen?: string;
+  payload?: {
+    email?: string;
+    firstname?: string;
+    lastname?: string;
+    password?: string;
+  };
+  gen_code?: string;
+  success?: string;
+  flowVersion?:number
+};
+
 export async function signupAction(
   flowVersion: number,
   screen: string,
@@ -303,7 +331,7 @@ export async function signupAction(
   avatarInfo: File | undefined,
   _state: SignupState,
   formData: FormData
-) {
+):Promise<SignupStateTemp> {
   // 1) EMAIL SCREEN
   if (screen === "email-screen") {
     const validated = EmailSchema.safeParse({ email: formData.get("email") });
@@ -436,9 +464,10 @@ export async function signupAction(
     }
   }
 
-  return undefined;
+  return {};
 }
 
 export async function logoutAction() {
     await deleteSession();
 }
+

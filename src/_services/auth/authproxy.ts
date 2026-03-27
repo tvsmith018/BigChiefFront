@@ -51,7 +51,7 @@ async function fetchMe(access?: string): Promise<User | null> {
 /**
  * Server-only: refresh access token using refresh cookie.
  */
-async function refreshAccess(refresh: string): Promise<string | null> {
+async function refreshAccess(refresh: string): Promise<JWTToken| null> {
 
   const res_raw  = await httpClient.request<JWTToken>(
     "/authorized/token/refresh/",
@@ -63,9 +63,10 @@ async function refreshAccess(refresh: string): Promise<string | null> {
   )
   const res = res_raw as JWTToken
   
+  
   if (res.detail) return null
 
-  return res.access ?? null
+  return res ?? null
 }
 
 /**
@@ -82,38 +83,43 @@ export async function authProxy(): Promise<{ user: User | null; accessRefreshed:
   if (!refresh) return { user: null, accessRefreshed: refresh_bool };
 
   // in case of no access
-  if (!access) {
-    const new_access = await refreshAccess(refresh)
-    refresh_bool = true;
+  try{
+    if (!access) {
+      const new_token = await refreshAccess(refresh)
+      refresh_bool = true;
+      
+      if (!new_token) return { user: null, accessRefreshed: refresh_bool }
 
-    if (!new_access) return { user: null, accessRefreshed: refresh_bool }
-      cookieStore.set(COOKIE_ACCESS, new_access, {
+      cookieStore.set(COOKIE_ACCESS, new_token.access!, {
         httpOnly: true,
         secure: true,
         sameSite: "none",
         path: "/",
         maxAge: 60 * 60 * 24, // 1 day (match your accessExpiresAt)
-    })
-  }
+      })
+    }
 
-  const user = await fetchMe(access);
+    const user = await fetchMe(access);
 
   /** Access Expired*/ 
-  if (user?.detail){
-    const new_access = await refreshAccess(refresh);
-    refresh_bool = true;
-    if (!new_access) return { user: null, accessRefreshed: refresh_bool}
-    cookieStore.set(COOKIE_ACCESS, new_access, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      path: "/",
-      maxAge: 60 * 60 * 24, // 1 day (match your accessExpiresAt)
-    })
+    if (user?.detail){
+      const new_token = await refreshAccess(refresh);
+      refresh_bool = true;
+      if (!new_token) return { user: null, accessRefreshed: refresh_bool}
+
+      cookieStore.set(COOKIE_ACCESS, new_token.access!, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        path: "/",
+        maxAge: 60 * 60 * 24, // 1 day (match your accessExpiresAt)
+      })
+    }
+    return { user: user, accessRefreshed: refresh_bool}
+  } catch {
+    return { user: null, accessRefreshed: refresh_bool }
   }
-
-
-  return { user: user, accessRefreshed: refresh_bool}
+  
 }
 
 /**
