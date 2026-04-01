@@ -28,8 +28,6 @@ export const commentsPaginationAdapter: PaginationAdapter<
       cursor ?? undefined
     );
 
-    console.log(response)
-
     return {
       items: response?.comments?.edges ?? [],
       nextCursor: response?.comments?.pageInfo?.endCursor ?? null,
