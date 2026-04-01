@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -10,62 +9,52 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { RelativeTime } from "@/_core/date/RelativeTime";
-import { ArticleService } from "@/_services/articles/articleservices";
-import { Article } from "@/_types/articles/article.types";
+import {
+  ArticleEdge,
+  articlesPaginationAdapter,
+  useInfiniteObserver,
+  usePaginatedCollection,
+} from "@/_core/pagination";
+
 
 interface Props {
-  list: { node: Article }[];
+  list: ArticleEdge[];
   title: string;
   category?: string;
-  pageInfo: { hasNextPage:boolean, endCursor:string}
+  pageInfo: { 
+    hasNextPage:boolean, 
+    endCursor:string|null
+  }
 }
 
 export default function CardListView({ list, title, pageInfo ,category }: Props) {
-  const [articles, setArticles] = useState(list);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasMore, setHasMore] = useState<boolean>(pageInfo.hasNextPage);
-  const [endCursor, setEndCursor] = useState<string>(pageInfo.endCursor)
 
-  /** 🔒 refs to avoid stale closures */
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const hasMoreRef = useRef(hasMore);
-  const loadingRef = useRef(isLoading);
+  const {
+    items: articles,
+    isLoading,
+    hasMore,
+    error,
+    loadMore,
+    retry,
+  } = usePaginatedCollection<ArticleEdge, string, { category?: string }>({
+    initialItems: list,
+    initialCursor: pageInfo.endCursor,
+    initialHasMore: pageInfo.hasNextPage,
+    adapter: articlesPaginationAdapter,
+    params: { category },
+    resetKey: category ?? "all",
+    getItemId: (item) => item.node.id ?? "",
+    dedupe: true,
+  });
 
-  /** keep refs in sync */
-  useEffect(() => {
-    hasMoreRef.current = hasMore;
-  }, [hasMore]);
-
-  useEffect(() => {
-    loadingRef.current = isLoading;
-  }, [isLoading]);
-
-  const loadMore = async () => {
-
-    if (loadingRef.current || !hasMoreRef.current) return;
-    setIsLoading(true);
-    const newArticles = await ArticleService.getArticle(category,endCursor);
-    setArticles((prev) => [...prev, ...newArticles.articles.edges]);
-    if (newArticles.articles.pageInfo.hasNextPage) setEndCursor(newArticles.articles.pageInfo.endCursor)
-    setHasMore(newArticles.articles.pageInfo.hasNextPage)
-    observerRef.current?.disconnect();
-    setIsLoading(false);
-  };
-
-  const sentinelRef = useCallback((node: HTMLDivElement | null) => {
-    if (!node) return;
-
-    observerRef.current?.disconnect();
-
-    observerRef.current = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        loadMore();
-      }
-    });
-
-    observerRef.current.observe(node);
-  }, []);
-
+  const { sentinelRef } = useInfiniteObserver({
+    enabled: true,
+    hasMore,
+    isLoading,
+    onIntersect: loadMore,
+    rootMargin: "300px 0px",
+    threshold: 0,
+  });
   return (
     <section className="position-relative pt-0 pb-3">
       <Container>
@@ -87,6 +76,7 @@ export default function CardListView({ list, title, pageInfo ,category }: Props)
 
                 <Card.Body>
                   <span className={`badge ${node.badgeColor} mb-2`}>
+                    <i className="bi bi-record-fill" />
                     {node.category}
                   </span>
 
@@ -137,9 +127,7 @@ export default function CardListView({ list, title, pageInfo ,category }: Props)
         </Row>
 
         {isLoading && <p className="text-center">Loading…</p>}
-
-        {/* 👇 observer target */}
-        {hasMore && <div ref={sentinelRef} />}
+        {hasMore && <div ref={sentinelRef} style={{ height: 1 }} aria-hidden="true" />}
       </Container>
     </section>
   );

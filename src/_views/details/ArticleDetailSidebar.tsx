@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import Nav from "react-bootstrap/Nav";
@@ -13,10 +13,15 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { useAppSelector } from "@/_store/hooks/UseAppSelector";
 import { RelativeTime } from "@/_core/date/RelativeTime";
-import { ArticleService } from "@/_services/articles/articleservices";
 import { useArticleComments } from "@/_utilities/hooks/article/useArticleComments";
+import {
+  useInfiniteObserver,
+  usePaginatedCollection,
+  relatedPaginationAdapter
+} from "@/_core/pagination";
 
 type DetailTab = "comment" | "stat" | "author" | "related" | "article";
+
 interface Author {
     firstname:string,
     lastname:string,
@@ -90,44 +95,56 @@ export default function ArticleDetailSidebar({
 }: Props) {
     const [articleCollapse, setArticleCollapse] = useState("....Read More");
     const [tab, setTab] = useState<DetailTab>("comment");
-    const [relatedArticlesList, setRelatedArtilesList] = useState(related);
     const [tabButtonStyle, setTabButtonStyle] = useState(false);
-    const [hasMore, setHasMore] = useState(relatedPageInfo.hasNextPage);
-    const [afterID, setAfterID] = useState(relatedPageInfo.endCursor)
 
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
+  const commentsScrollRef = useRef<HTMLDivElement | null>(null);
 
-   const ref = useCallback((node:HTMLDivElement) => {
-            const observer = new IntersectionObserver((entries)=>{
-                const target = entries[0];
-                if (target.isIntersecting && hasMore) {
-                    ArticleService.fetchMore(category,articleId,5,afterID).then((data)=>{
-                        const list = data.categoryArticles.edges;
+  const {
+    items: relatedArticlesList,
+    isLoading: isLoadingRelated,
+    hasMore: hasMoreRelated,
+    error: relatedError,
+    loadMore: loadMoreRelated,
+    retry: retryRelated,
+  } = usePaginatedCollection<
+    RelatedArticle,
+    string,
+    { category: string; articleId: string }
+  >({
+    initialItems: related,
+    initialCursor: relatedPageInfo.endCursor,
+    initialHasMore: relatedPageInfo.hasNextPage,
+    adapter: relatedPaginationAdapter,
+    params: { category, articleId },
+    resetKey: `${category}-${articleId}`,
+    dedupe: true,
+    getItemId: (item) => item.node.id,
+  });
 
-                        setRelatedArtilesList(
-                            (prev) => [...prev,...list]
-                        )
-
-                        if (data.categoryArticles.pageInfo.hasNextPage) setAfterID(data.categoryArticles.pageInfo.endCursor)
-                        setHasMore(data.categoryArticles.pageInfo.hasNextPage)
-                    })
-                }
-            })
-            observer.observe(node);
-    
-            return () => observer.disconnect()
-    },[hasMore])
+  const { sentinelRef: relatedSentinelRef } = useInfiniteObserver({
+    enabled: tab === "related",
+    hasMore: hasMoreRelated,
+    isLoading: isLoadingRelated,
+    onIntersect: loadMoreRelated,
+    rootMargin: "300px 0px",
+    threshold: 0,
+  });
 
   const {
     commentState,
     socketError,
     submitComment,
     commentsSentinelRef,
-    hasMoreComments
+    hasMoreComments,
+    isLoadingComments,
+    commentsError,
+    retryComments,
   } = useArticleComments({
     articleId,
     initialComments: comments,
-    pageInfo:commentsPageInfo
+    pageInfo: commentsPageInfo,
+    scrollRootRef: commentsScrollRef,
   });
 
   const briefStyle = useMemo(
@@ -365,8 +382,13 @@ export default function ArticleDetailSidebar({
               );
             })}
           </Row>
+          {isLoadingRelated && (
+              <div className="text-center py-2">Loading related articles…</div>
+            )}
         </div>
-        <div ref={ref}></div>
+        {hasMoreRelated && (
+            <div ref={relatedSentinelRef} style={{ height: 1 }} aria-hidden="true" />
+          )}
         </>
       )}
 
@@ -387,13 +409,22 @@ export default function ArticleDetailSidebar({
                   </div>
                 )}
 
-                <Form.Control name="comment" as="textarea" rows={3}  placeholder="Write a comment..." />
+                <Form.Control
+                  name="comment"
+                  as="textarea"
+                  rows={3}
+                  placeholder="Write a comment..."
+                />
 
                 <div className="d-flex justify-content-end">
                   <Button
                     type="submit"
                     className="text-end p-0"
-                    style={{ backgroundColor: "#f8f9fa", color: "black", borderColor: "#f8f9fa" }}
+                    style={{
+                      backgroundColor: "#f8f9fa",
+                      color: "black",
+                      borderColor: "#f8f9fa",
+                    }}
                   >
                     <i className="bi bi-postcard" style={{ fontSize: 30 }}></i>
                   </Button>
@@ -403,6 +434,7 @@ export default function ArticleDetailSidebar({
           )}
 
           <div
+            ref={commentsScrollRef}
             className="px-3 pt-3 pb-2 mb-3 rounded mt-3"
             style={{
               background: "#f8f9fa",
@@ -413,13 +445,18 @@ export default function ArticleDetailSidebar({
             }}
           >
             <div className="comments-list">
-              {commentState.length === 0 && <p>Be the first to write a comment.</p>}
+              {commentState.length === 0 && (
+                <p>Be the first to write a comment.</p>
+              )}
 
               {commentState.map((comment, index) => {
                 const commentNode = comment.node;
 
                 return (
-                  <div className={`comment-box ${index > 0 ? "mt-2" : ""}`} key={index}>
+                  <div
+                    className={`comment-box ${index > 0 ? "mt-2" : ""}`}
+                    key={`${commentNode.created}-${commentNode.user.firstname}-${commentNode.user.lastname}-${index}`}
+                  >
                     <Row className="g-0">
                       <Col xs={2}>
                         {commentNode.user.avatarUrl ? (
@@ -431,14 +468,18 @@ export default function ArticleDetailSidebar({
                             height={40}
                           />
                         ) : (
-                          <i className="bi bi-person-circle" style={{ fontSize: "20px" }}></i>
+                          <i
+                            className="bi bi-person-circle"
+                            style={{ fontSize: "20px" }}
+                          ></i>
                         )}
                       </Col>
 
                       <Col xs={10}>
                         <div className="d-flex justify-content-between align-items-center mb-2">
                           <h6 className="mb-0">
-                            {commentNode.user.firstname} {commentNode.user.lastname}
+                            {commentNode.user.firstname}{" "}
+                            {commentNode.user.lastname}
                           </h6>
                           <span className="comment-time">
                             <RelativeTime value={commentNode.created ?? ""} />
@@ -451,7 +492,18 @@ export default function ArticleDetailSidebar({
                   </div>
                 );
               })}
-              {hasMoreComments && <div ref={commentsSentinelRef} />}
+
+              {isLoadingComments && (
+                <div className="text-center py-2">Loading comments…</div>
+              )}
+
+              {hasMoreComments && (
+                <div
+                  ref={commentsSentinelRef}
+                  style={{ height: 1 }}
+                  aria-hidden="true"
+                />
+              )}
             </div>
           </div>
         </div>

@@ -72,22 +72,7 @@ export default async function Page({params}:{params:PageParams}) {
                 <Row className="px-1">
                     <Col lg={8}>
                         <VideoView videoLink={article.videoLink!} videoType={article.videoType!} title={article.title}/>
-                        {/* {videoConfig && article.videoLink ? (
-                            <div className="ratio ratio-16x9" style={{pointerEvents:`${isMenuOpen ? "none":"auto"}`}}>
-                                <iframe 
-                                    loading="eager"
-                                    className="p-0 m-0"
-                                    src={`${videoConfig.src}${article.videoLink}`}
-                                    title={article.title}
-                                    allow={videoConfig.allow}
-                                    referrerPolicy={
-                                        "referrerPolicy" in videoConfig ? videoConfig.referrerPolicy as HTMLAttributeReferrerPolicy : undefined
-                                    }
-                                    allowFullScreen={videoConfig.allowFullScreen}
-                                />
-                            </div>
-                        ):null} */}
-
+                        
                         <a className={`badge ${article.badgeColor} mt-3`}>
                             <i className="bi bi-record-fill me-1"></i>
                             {article.category}

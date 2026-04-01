@@ -1,0 +1,88 @@
+{
+  "title": "About Us",
+  "content": {
+    "info": [
+      {
+        "title": "Who We Are",
+        "paragraph": [
+          "Big Chief Ent is a modern media platform dedicated to telling stories, spotlighting talent, and covering the ideas shaping culture today. While our roots are grounded in African American culture, our vision reaches across music, entertainment, business, sports, lifestyle, technology, and the conversations that move communities forward.",
+          "We are more than a blog. We are a growing digital media brand built to inform, elevate, and connect audiences through content that is relevant, engaging, and culturally aware."
+        ]
+      },
+      {
+        "title": "What We Cover",
+        "paragraph": [
+          "Our platform explores a wide range of topics with a strong cultural lens, giving readers a place where meaningful stories and fresh perspectives come together.",
+          {
+            "data": [
+              "Music across multiple genres, with special respect for the influence of Black creativity and innovation",
+              "Entertainment news, interviews, and trending conversations",
+              "Sports, personalities, and cultural impact beyond the game",
+              "Business, entrepreneurship, and wealth-building within the community",
+              "Technology, digital trends, and emerging opportunities",
+              "Lifestyle, commentary, and stories that reflect the rhythm of everyday culture"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Our Mission",
+        "paragraph": [
+          "Our mission is to create a media space that informs, inspires, and represents. We aim to highlight excellence, spark conversation, and provide coverage that feels both authentic and forward-thinking.",
+          "By blending culture, creativity, and information, we strive to build a platform that not only reports on what is happening, but also captures why it matters."
+        ]
+      },
+      {
+        "title": "Why It Matters",
+        "paragraph": [
+          "African American culture has long influenced the world through music, language, fashion, business, sports, and innovation. At Big Chief Ent, we recognize that impact and center it in the way we tell stories, while still embracing a wide spectrum of voices, genres, and perspectives.",
+          "We believe media should do more than chase headlines. It should create connection, preserve cultural influence, and open the door for deeper understanding."
+        ]
+      },
+      {
+        "title": "What Readers Can Expect",
+        "paragraph": [
+          "Our readers can expect content that is timely, professional, culturally connected, and engaging. We are committed to building a trusted destination for audiences who want more than surface-level coverage.",
+          {
+            "data": [
+              "Thoughtful stories with cultural relevance",
+              "Coverage that extends beyond one genre or industry",
+              "A professional but relatable editorial voice",
+              "A platform that celebrates creativity, ambition, and community"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Looking Ahead",
+        "paragraph": [
+          "As Big Chief Ent continues to grow, our focus remains clear: to become a respected media destination that reflects the energy, excellence, and influence of culture in all its forms.",
+          "We are building a platform for today’s audience and tomorrow’s opportunities—one story, one voice, and one conversation at a time."
+        ]
+      }
+    ],
+        "image_gallery":{
+            "title":"#1 Hip-Hop Platform!!!!",
+            "images":[
+                {
+                    "imageTitle": "Quality Films",
+                    "imageDescription": "Every content created is filmed using professional recorders and cameras for high quality content.",
+                    "url": "about/Coco.jpg",
+                    "altImage":"Coco posing with grace"
+                },
+                {
+                    "imageTitle": "Professional Staff",
+                    "imageDescription": "Everybody on staff is trained in the area of film production to give that movie feel.",
+                    "url": "about/group.jpeg",
+                    "altImage":"Greg and Trey showing that hip-hop isnt dead"
+                },
+                {
+                    "imageTitle": "Daily Content",
+                    "imageDescription": "We will produce content on the daily basis to keep you update and engage with whats going on in hip-hop in the area.",
+                    "url": "about/victor.jpg",
+                    "altImage":"Victor Alan show Davidson College how to really turn up"
+                }
+            ]
+        }
+  }
+}

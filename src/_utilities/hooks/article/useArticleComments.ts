@@ -1,21 +1,15 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState, useRef, useCallback } from "react";
+import { FormEvent, useEffect, useMemo, useState, useRef, useCallback, RefObject } from "react";
 import { useAppSelector } from "@/_store/hooks/UseAppSelector";
 import ReconnectingWebSocket from "reconnecting-websocket";
-import { ArticleService } from "@/_services/articles/articleservices";
+import { ArticleService, ArticleComment } from "@/_services/articles/articleservices";
+import { commentsPaginationAdapter } from "@/_core/pagination";
+import {
+  useInfiniteObserver,
+  usePaginatedCollection,
+} from "@/_core/pagination";
 
-interface ArticleComment{
-  node: {
-    user: {
-      firstname:string,
-      lastname:string,
-      avatarUrl?:string
-    },
-    body:string,
-    created:string
-  }
-}
 
 interface Props {
   articleId: string;
@@ -24,59 +18,48 @@ interface Props {
     hasNextPage:boolean,
     endCursor: string
   }
+  scrollRootRef?: RefObject<HTMLDivElement | null>;
 }
 
-export function useArticleComments({ articleId, initialComments, pageInfo }: Props) {
+export function useArticleComments({ articleId, initialComments, pageInfo,scrollRootRef }: Props) {
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const data = useAppSelector((state) => state.user.data)
-
-  const [commentState, setCommentState] = useState<ArticleComment[]>(initialComments);
-  const [hasMoreComments, setHasMoreComments] = useState<boolean>(pageInfo.hasNextPage)
-  const [endcursor, setEndCursor] = useState<string>(pageInfo.endCursor)
-  const [isLoading, setIsLoading] = useState(false);
   const [socketError, setSocketError] = useState<string | undefined>(undefined);
-
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const hasMoreRef = useRef(hasMoreComments);
-  const loadingRef = useRef(isLoading);
 
   const socketUrl = useMemo(
     () => `wss://bigchiefnewz-a2e8434d1e6d.herokuapp.com/ws/articles/${articleId}/`,
     [articleId]
   );
   
-  useEffect(() => {
-    hasMoreRef.current = hasMoreComments;
-  }, [hasMoreComments]);
+   const {
+    items: commentState,
+    isLoading,
+    hasMore: hasMoreComments,
+    error,
+    loadMore,
+    retry,
+    replaceItems,
+  } = usePaginatedCollection<ArticleComment, string, { articleId: string }>({
+    initialItems: initialComments,
+    initialCursor: pageInfo.endCursor,
+    initialHasMore: pageInfo.hasNextPage,
+    adapter: commentsPaginationAdapter,
+    params: { articleId },
+    resetKey: articleId,
+    dedupe: true,
+    getItemId: (item) =>
+      `${item.node.created}-${item.node.user.firstname}-${item.node.user.lastname}-${item.node.body}`,
+  });
 
-  useEffect(() => {
-    loadingRef.current = isLoading;
-  }, [isLoading]);
-
-  const loadMoreComments = async () => {
-    if (loadingRef.current || !hasMoreRef.current) return;
-    setIsLoading(true);
-    const newComments = await ArticleService.fetchMoreComments(articleId,endcursor)
-    setCommentState((prev) => [...prev, ...newComments.comments.edges])
-    if (newComments.comments.pageInfo.hasNextPage) setEndCursor(newComments.comments.pageInfo.endCursor)
-    setHasMoreComments(newComments.comments.pageInfo.hasNextPage)
-    observerRef.current?.disconnect();
-    setIsLoading(false);
-  }
-
-  const commentsSentinelRef = useCallback((node: HTMLDivElement | null) => {
-    if (!node) return;
-
-    observerRef.current?.disconnect();
-
-    observerRef.current = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        loadMoreComments();
-      }
-    });
-
-    observerRef.current.observe(node);
-  }, []);
+  const { sentinelRef: commentsSentinelRef } = useInfiniteObserver({
+    enabled: true,
+    hasMore: hasMoreComments,
+    isLoading,
+    onIntersect: loadMore,
+    root: scrollRootRef?.current ?? null,
+    rootMargin: "150px 0px",
+    threshold: 0,
+  });
 
   useEffect(() => {
     const ws = new ReconnectingWebSocket(socketUrl);
@@ -96,7 +79,18 @@ export function useArticleComments({ articleId, initialComments, pageInfo }: Pro
         },
       };
 
-      setCommentState((prev) => [nextComment, ...prev]);
+    replaceItems((prev) => {
+        const exists = prev.some(
+          (item) =>
+            item.node.body === nextComment.node.body &&
+            item.node.created === nextComment.node.created &&
+            item.node.user.firstname === nextComment.node.user.firstname &&
+            item.node.user.lastname === nextComment.node.user.lastname
+        );
+
+        if (exists) return prev;
+        return [nextComment, ...prev];
+      });
     };
 
     ws.onerror = () => {
@@ -135,6 +129,9 @@ export function useArticleComments({ articleId, initialComments, pageInfo }: Pro
     socketError,
     submitComment,
     commentsSentinelRef,
-    hasMoreComments
+    hasMoreComments,
+    isLoadingComments: isLoading,
+    commentsError: error,
+    retryComments: retry,
   };
 }
