@@ -7,316 +7,120 @@
         "lastUpdated": "April 2026",
         "info": [
           {
-            "title": "1. AGREEMENT TO TERMS",
+            "title": "1. Agreement to Terms",
             "paragraph": [
-              "These Terms and Conditions (“Terms”) constitute a legally binding agreement between you (“User,” “you,” or “your”) and Big Chief Entertainment, LLC, operating as BigChiefNewz (“Company,” “we,” “us,” or “our”), governing your access to and use of the website located at:",
-              "www.bigchiefnewz.com (the “Platform”)",
-              "By accessing, browsing, or using the Platform, you acknowledge that you have read, understood, and agree to be bound by these Terms.",
-              "If you do not agree, you must discontinue use immediately."
+              "These Terms constitute a legally binding agreement between you and Big Chief Entertainment, LLC governing use of the Platform.",
+              "By using the Platform, you agree to these Terms. If you do not agree, discontinue use immediately."
             ]
           },
           {
-            "title": "2. ELIGIBILITY",
+            "title": "2. Platform Services",
             "paragraph": [
-              "You represent and warrant that:",
-              {
-                "type": "list",
-                "data": [
-                  "You are at least 18 years of age or the age of majority in your jurisdiction",
-                  "You have the legal capacity to enter into a binding agreement",
-                  "You will comply with all applicable laws and regulations"
-                ]
-              }
+              "The Platform provides content hosting, advertising services, and monetization tools.",
+              "We may modify or discontinue services at any time without liability."
             ]
           },
           {
-            "title": "3. ACCOUNT REGISTRATION & SECURITY",
+            "title": "3. Accounts",
             "paragraph": [
-              "To access certain features, including content creation and participation:",
-              {
-                "type": "list",
-                "data": [
-                  "You may be required to create an account",
-                  "You agree to provide accurate, complete, and current information",
-                  "You are solely responsible for maintaining the confidentiality of your credentials"
-                ]
-              },
-              "You agree that:",
-              "Any activity conducted under your account shall be deemed authorized by you.",
-              "We reserve the right to suspend or terminate accounts at our sole discretion."
+              "You are responsible for your account and all activity under it.",
+              "We may suspend or terminate accounts at our discretion."
             ]
           },
           {
-            "title": "4. PLATFORM PURPOSE",
+            "title": "4. Intellectual Property",
             "paragraph": [
-              "BigChiefNewz is a digital media and content distribution platform focused on:",
-              {
-                "type": "list",
-                "data": [
-                  "Entertainment news",
-                  "Hip-hop culture",
-                  "User-generated content",
-                  "Sponsored and promotional material"
-                ]
-              }
+              "All Platform content is owned by the Company or its licensors and protected by law.",
+              "Unauthorized use is strictly prohibited."
             ]
           },
           {
-            "title": "5. INTELLECTUAL PROPERTY RIGHTS",
+            "title": "5. User Content License",
             "paragraph": [
-              "5.1 Ownership",
-              "All content on the Platform, including but not limited to:",
-              {
-                "type": "list",
-                "data": [
-                  "Articles",
-                  "Images",
-                  "Videos",
-                  "Code",
-                  "Design elements",
-                  "Branding, logos, and trademarks"
-                ]
-              },
-              "are the exclusive property of Big Chief Entertainment, LLC or its licensors and are protected by:",
-              {
-                "type": "list",
-                "data": [
-                  "U.S. Copyright Law",
-                  "Trademark Law",
-                  "International Intellectual Property Treaties"
-                ]
-              },
-              "5.2 Limited License",
-              "You are granted a revocable, non-exclusive, non-transferable, limited license to:",
-              {
-                "type": "list",
-                "data": [
-                  "Access and view content for personal, non-commercial use only"
-                ]
-              },
-              "You may NOT:",
-              {
-                "type": "list",
-                "data": [
-                  "Copy, reproduce, distribute, or republish content",
-                  "Use content for commercial gain",
-                  "Modify or create derivative works",
-                  "Scrape, crawl, or data-mine the Platform"
-                ]
-              },
-              "5.3 Strict Prohibition",
-              "Unauthorized use of Platform content constitutes:",
-              "A material breach of these Terms and may result in civil and/or criminal liability."
+              "You grant the Company a perpetual, worldwide, royalty-free license to use and monetize your content.",
+              "You confirm you have rights to all content submitted."
             ]
           },
           {
-            "title": "6. USER-GENERATED CONTENT",
+            "title": "6. Advertising System",
             "paragraph": [
-              "6.1 Ownership of User Content",
-              "You retain ownership of any content you submit, including:",
-              {
-                "type": "list",
-                "data": [
-                  "Articles",
-                  "Comments",
-                  "Media uploads"
-                ]
-              },
-              "However, by submitting content, you grant the Company:",
-              "A worldwide, perpetual, irrevocable, royalty-free, sublicensable license to use, reproduce, distribute, display, modify, and monetize such content.",
-              "6.2 Content Standards",
-              "You agree NOT to post content that:",
-              {
-                "type": "list",
-                "data": [
-                  "Is unlawful, defamatory, or abusive",
-                  "Infringes intellectual property rights",
-                  "Contains hate speech or threats",
-                  "Promotes illegal activity"
-                ]
-              },
-              "6.3 Moderation Rights",
-              "We reserve the absolute right to:",
-              {
-                "type": "list",
-                "data": [
-                  "Remove any content at our discretion",
-                  "Suspend or ban users",
-                  "Modify or restrict access"
-                ]
-              }
+              "We operate CPM and CPC advertising models.",
+              "Metrics such as impressions and clicks are estimates and not guarantees.",
+              "We reserve full control over ad delivery and placement."
             ]
           },
           {
-            "title": "7. CONTENT CREATOR & MONETIZATION TERMS",
+            "title": "7. Payments & Stripe Processing",
             "paragraph": [
-              "Where applicable:",
-              {
-                "type": "list",
-                "data": [
-                  "Users may be eligible for monetization through:",
-                  "Advertisements",
-                  "Engagement-based metrics"
-                ]
-              },
-              "The Company retains sole discretion over:",
-              {
-                "type": "list",
-                "data": [
-                  "Revenue models",
-                  "Payout calculations",
-                  "Eligibility criteria"
-                ]
-              },
-              "No guarantee of earnings is provided."
+              "All payments are processed via third-party providers including Stripe.",
+              "You agree to Stripe’s terms and applicable financial laws.",
+              "We are not liable for payment processor errors, delays, or disputes."
             ]
           },
           {
-            "title": "8. ADVERTISING & THIRD-PARTY CONTENT",
+            "title": "8. Creator Earnings, Holds, and Reserves",
             "paragraph": [
-              "The Platform may display:",
-              {
-                "type": "list",
-                "data": [
-                  "Sponsored content",
-                  "Third-party advertisements"
-                ]
-              },
-              "We do not guarantee:",
-              {
-                "type": "list",
-                "data": [
-                  "Accuracy",
-                  "Legitimacy",
-                  "Safety"
-                ]
-              },
-              "of third-party content.",
-              "You acknowledge:",
-              "Engagement with advertisements is at your own risk."
+              "Earnings are subject to verification and fraud detection.",
+              "We may apply payout holds, rolling reserves, or delays for risk management.",
+              "Payments are issued monthly and may take up to ten (10) business days.",
+              "Minimum payout thresholds apply and may change at any time.",
+              "We reserve the right to reverse or claw back payments tied to invalid activity."
             ]
           },
           {
-            "title": "9. PROHIBITED CONDUCT",
+            "title": "9. Tax Compliance",
             "paragraph": [
-              "You agree not to:",
-              {
-                "type": "list",
-                "data": [
-                  "Attempt to gain unauthorized access to systems",
-                  "Interfere with platform functionality",
-                  "Exploit vulnerabilities",
-                  "Use bots, scripts, or automation improperly",
-                  "Engage in fraudulent click activity (important for your ad system)"
-                ]
-              }
+              "Creators must provide required tax documentation, including W-9 forms for U.S. users, before receiving payouts.",
+              "We may issue 1099 forms where required by law.",
+              "You are solely responsible for reporting and paying all applicable taxes."
             ]
           },
           {
-            "title": "10. TERMINATION",
+            "title": "10. Fraud & Invalid Activity",
             "paragraph": [
-              "We reserve the right to:",
-              {
-                "type": "list",
-                "data": [
-                  "Suspend or terminate access",
-                  "Remove content",
-                  "Restrict features"
-                ]
-              },
-              "Without notice, for any violation or suspected violation."
+              "We monitor for click fraud, bot traffic, artificial engagement, and manipulation.",
+              "Violations may result in account termination and forfeiture of earnings.",
+              "We have sole authority to determine fraudulent activity."
             ]
           },
           {
-            "title": "11. DISCLAIMER OF WARRANTIES",
+            "title": "11. Advertiser Payments & Refund Policy",
             "paragraph": [
-              "The Platform is provided:",
-              "“AS IS” and “AS AVAILABLE”",
-              "We disclaim all warranties, including:",
-              {
-                "type": "list",
-                "data": [
-                  "Merchantability",
-                  "Fitness for a particular purpose",
-                  "Non-infringement"
-                ]
-              },
-              "We do not guarantee:",
-              {
-                "type": "list",
-                "data": [
-                  "Platform uptime",
-                  "Accuracy of content",
-                  "Error-free operation"
-                ]
-              }
+              "All advertising purchases are final unless otherwise agreed in writing.",
+              "Refunds are not guaranteed and are subject to investigation.",
+              "Chargebacks may result in account suspension and legal enforcement."
             ]
           },
           {
-            "title": "12. LIMITATION OF LIABILITY",
+            "title": "12. Disclaimer of Warranties",
             "paragraph": [
-              "To the fullest extent permitted by law:",
-              "Big Chief Entertainment, LLC shall not be liable for any indirect, incidental, consequential, or punitive damages.",
-              "This includes:",
-              {
-                "type": "list",
-                "data": [
-                  "Loss of revenue",
-                  "Data loss",
-                  "Business interruption"
-                ]
-              }
+              "The Platform is provided “AS IS” without warranties of any kind.",
+              "We do not guarantee uptime, accuracy, or performance."
             ]
           },
           {
-            "title": "13. INDEMNIFICATION",
+            "title": "13. Limitation of Liability",
             "paragraph": [
-              "You agree to indemnify and hold harmless the Company from:",
-              {
-                "type": "list",
-                "data": [
-                  "Claims",
-                  "Damages",
-                  "Legal fees"
-                ]
-              },
-              "arising from:",
-              {
-                "type": "list",
-                "data": [
-                  "Your use of the Platform",
-                  "Your content",
-                  "Your violation of these Terms"
-                ]
-              }
+              "We are not liable for indirect or consequential damages.",
+              "Total liability shall not exceed amounts paid within the last 30 days."
             ]
           },
           {
-            "title": "14. PRIVACY",
+            "title": "14. Indemnification",
             "paragraph": [
-              "Your use of the Platform is also governed by our Privacy Policy."
+              "You agree to indemnify and hold harmless the Company from claims arising from your use of the Platform."
             ]
           },
           {
-            "title": "15. MODIFICATIONS TO TERMS",
+            "title": "15. Arbitration & Class Action Waiver",
             "paragraph": [
-              "We reserve the right to modify these Terms at any time.",
-              "Continued use constitutes acceptance of updated Terms."
-            ]
-          },
-          {
-            "title": "16. GOVERNING LAW",
-            "paragraph": [
-              "These Terms shall be governed by the laws of:",
-              "The State of North Carolina, United States"
-            ]
-          },
-          {
-            "title": "17. CONTACT INFORMATION",
-            "paragraph": [
-              "Big Chief Entertainment, LLC",
-              "Email: support@bigchiefnewz.com",
-              "Location: Raleigh, North Carolina"
+              "PLEASE READ CAREFULLY. THIS SECTION AFFECTS YOUR RIGHTS.",
+              "All disputes shall be resolved by binding arbitration administered by the American Arbitration Association (AAA).",
+              "Arbitration will take place in North Carolina.",
+              "YOU WAIVE ALL RIGHTS TO CLASS ACTIONS AND JURY TRIALS.",
+              "Disputes must be brought individually.",
+              "You may opt out within 30 days by emailing support@bigchiefnewz.com.",
+              "We may seek court relief for intellectual property or security violations."
             ]
           }
         ]
@@ -327,38 +131,30 @@
         "lastUpdated": "April 2026",
         "info": [
           {
-            "title": "1. Information We Collect",
+            "title": "1. Data Collection",
             "paragraph": [
-              "We collect:",
-              "a. Personal Information",
+              "We collect personal, technical, and usage data.",
               {
                 "type": "list",
                 "data": [
-                  "Name (firstname, lastname)",
-                  "Email address",
-                  "Date of birth",
-                  "Profile image (avatar)"
-                ]
-              },
-              "b. Technical Data",
-              {
-                "type": "list",
-                "data": [
-                  "IP address",
-                  "Device/browser type",
-                  "Session cookies",
-                  "Authentication tokens"
-                ]
-              },
-              "c. Usage Data",
-              {
-                "type": "list",
-                "data": [
-                  "Pages visited",
-                  "Articles viewed",
-                  "Interactions (likes, comments, ratings)"
+                  "Account data",
+                  "Device data",
+                  "Usage behavior"
                 ]
               }
+            ]
+          },
+          {
+            "title": "2. Use of Data",
+            "paragraph": [
+              "Data is used for authentication, analytics, advertising, fraud prevention, and platform improvements."
+            ]
+          },
+          {
+            "title": "3. Sharing",
+            "paragraph": [
+              "Data may be shared with Stripe, advertisers, and infrastructure providers.",
+              "We do not sell personal data."
             ]
           }
         ]
@@ -368,10 +164,16 @@
         "title": "DMCA Policy",
         "info": [
           {
-            "title": "1. Copyright Respect",
+            "title": "1. Compliance",
             "paragraph": [
-              "We respect intellectual property rights under:",
-              "17 U.S.C. § 512 (DMCA)"
+              "We comply with 17 U.S.C. § 512.",
+              "Valid takedowns will result in removal of content."
+            ]
+          },
+          {
+            "title": "2. Repeat Infringers",
+            "paragraph": [
+              "Accounts of repeat violators will be terminated."
             ]
           }
         ]
@@ -381,10 +183,17 @@
         "title": "Content Creator Agreement",
         "info": [
           {
-            "title": "1. License Grant",
+            "title": "1. Monetization",
             "paragraph": [
-              "By uploading content, you grant:",
-              "A perpetual, worldwide, royalty-free license to use, distribute, monetize, and promote your content."
+              "Creators grant monetization rights to the Company.",
+              "Revenue is based on verified activity and platform rules."
+            ]
+          },
+          {
+            "title": "2. Payment Rules",
+            "paragraph": [
+              "Payments require tax compliance and fraud checks.",
+              "We may hold, delay, or deny payouts."
             ]
           }
         ]
@@ -394,17 +203,16 @@
         "title": "Advertising & Revenue Policy",
         "info": [
           {
-            "title": "1. Platform Model",
+            "title": "1. Models",
             "paragraph": [
-              "BigChiefNewz operates on:",
-              {
-                "type": "list",
-                "data": [
-                  "CPM (Cost per 1,000 impressions)",
-                  "Sponsored placements",
-                  "Native ads"
-                ]
-              }
+              "We operate CPM, CPC, and sponsored ad models."
+            ]
+          },
+          {
+            "title": "2. Fraud Detection",
+            "paragraph": [
+              "We actively detect invalid traffic and suspicious behavior.",
+              "Violations result in penalties including loss of earnings."
             ]
           }
         ]
