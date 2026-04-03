@@ -13,6 +13,7 @@ interface InfoImage {
 }
 
 interface ParagraphListBlock {
+  type?: "list";
   data: string[];
 }
 
@@ -28,16 +29,28 @@ interface ImageGalleryData {
   images: InfoImage[];
 }
 
+interface NestedContentSection {
+  title: string;
+  lastUpdated?: string;
+  info: InfoSection[];
+}
+
 interface InfoPageData {
   title: string;
   content: {
-    info: InfoSection[];
+    info?: InfoSection[];
+    sections?: NestedContentSection[];
     image_gallery?: ImageGalleryData;
   };
 }
 
 function isParagraphListBlock(value: ParagraphContent): value is ParagraphListBlock {
-  return typeof value === "object" && value !== null && Array.isArray(value.data);
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "data" in value &&
+    Array.isArray(value.data)
+  );
 }
 
 function normalizeRouteValue(value: string): string {
@@ -84,19 +97,58 @@ function RenderParagraph({ item }: { item: ParagraphContent }) {
   return null;
 }
 
+function RenderInfoSections({ sections }: { sections: InfoSection[] }) {
+  return (
+    <>
+      {sections.map((section, sectionIndex) => (
+        <div className="mb-4" key={`${section.title}-${sectionIndex}`}>
+          <h4>{section.title}</h4>
+
+          {section.paragraph.map((para, paragraphIndex) => (
+            <RenderParagraph
+              key={`${section.title}-paragraph-${paragraphIndex}`}
+              item={para}
+            />
+          ))}
+        </div>
+      ))}
+    </>
+  );
+}
+
+function RenderNestedSections({ sections }: { sections: NestedContentSection[] }) {
+  return (
+    <>
+      {sections.map((sectionGroup, groupIndex) => (
+        <div className="mb-5" key={`${sectionGroup.title}-${groupIndex}`}>
+          <h3 className="mt-4">{sectionGroup.title}</h3>
+
+          {sectionGroup.lastUpdated ? (
+            <p className="text-muted mb-3">
+              <strong>Last Updated:</strong> {sectionGroup.lastUpdated}
+            </p>
+          ) : null}
+
+          <RenderInfoSections sections={sectionGroup.info} />
+        </div>
+      ))}
+    </>
+  );
+}
+
 function ImageGallery({ data }: { data?: ImageGalleryData }) {
   if (!data || !Array.isArray(data.images) || data.images.length === 0) {
     return null;
   }
 
   return (
-    <div className="row mt-0">
+    <div className="row mt-4">
       <div className="col-12">
         <h4>{data.title}</h4>
       </div>
 
       {data.images.map((img, index) => (
-        <div className="col-md-6 col-lg-4 mt-2" key={`${img.url}-${index}`}>
+        <div className="col-md-6 col-lg-4 mt-3" key={`${img.url}-${index}`}>
           <Image
             className="rounded"
             src={`/images/${img.url}`}
@@ -117,7 +169,14 @@ export default async function Page({ params }: { params: PageParams }) {
   const { info } = await params;
   const itemData = await readInfoFile(info);
 
-  if (!itemData?.content?.info) {
+  const hasInfoSections =
+    Array.isArray(itemData?.content?.info) && itemData.content.info.length > 0;
+
+  const hasNestedSections =
+    Array.isArray(itemData?.content?.sections) &&
+    itemData.content.sections.length > 0;
+
+  if (!hasInfoSections && !hasNestedSections) {
     notFound();
   }
 
@@ -129,18 +188,13 @@ export default async function Page({ params }: { params: PageParams }) {
             <div className="col mx-auto">
               <h2>{itemData.title}</h2>
 
-              {itemData.content.info.map((section, sectionIndex) => (
-                <div key={`${section.title}-${sectionIndex}`}>
-                  <h4>{section.title}</h4>
+              {hasInfoSections ? (
+                <RenderInfoSections sections={itemData.content.info!} />
+              ) : null}
 
-                  {section.paragraph.map((para, paragraphIndex) => (
-                    <RenderParagraph
-                      key={`${section.title}-paragraph-${paragraphIndex}`}
-                      item={para}
-                    />
-                  ))}
-                </div>
-              ))}
+              {hasNestedSections ? (
+                <RenderNestedSections sections={itemData.content.sections!} />
+              ) : null}
             </div>
           </div>
 
