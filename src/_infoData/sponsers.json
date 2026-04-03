@@ -1,58 +1,88 @@
 {
-    "title": "Sponsers",
-    "content":{
-        "info":[
-            {
-                "title": "",
-                "paragraph": ["Our website does not request any money from our users nor do we ask for anything that goes against our values or the law. We believe in operating ethically and following all regulations to ensure a safe and trustworthy experience for our visitors. If you have any concerns or questions about our practices please feel free to reach out to us for clarification. We are committed to providing a transparent and honest platform for all individuals who visit our site."]
-            },
-            {
-                "title":"How Are We Supported",
-                "paragraph": [
-                    "When you visit our sponsor sites it helps us to continue providing valuable content to our readers. These sites are made possible through partnerships with companies like AdSense Amazon Ads Media. net and Adcash. By clicking on these ads to search making purchases through our links you are directly supporting our website and allowing us to keep creating helpful information for you.",
-                    "Your support through visiting our sponsor sites is essential for us to maintain and grow our platform. The partnerships we have with companies like AdSense, Amazon Ads, Media.net, and Adcash help us to generate the revenue needed to cover our expenses and invest in improving our content. So next time you see an ad on our site know that your click can make a big difference in helping us continue to provide quality information to our audience."
-                ]
-            },
-            {
-                "title": "Sending Content",
-                "paragraph": [
-                    "As a new and young website Big Chief Ent is in the early stages of development. In order to grow and expand we are looking to the community for content. We want to be transparent with our audience and let you know that we are willing to pay between 5 to 100 dollars for quality submissions.",
-                    "Your contributions are valuable to us as we strive to build a strong and engaging platform. By sharing your content with us you not only have the opportunity to showcase your work but also to be compensated for your efforts. We believe that by working together with the community we can create a vibrant and diverse website that offers something for everyone."
-                ]
-            },
-            {
-                "title": "Content WE WANT!!!",
-                "paragraph":[
-                    {
-                        "type": "list",
-                        "data": [
-                            "Funny Content",
-                            "Content Showcasing a Brand's Products/Services",
-                            "Relatable Content",
-                            "Content That Reflects Brand Values",
-                            "Educational/Informational Content",
-                            "Trendy Content",
-                            "Behind-the-Scenes Content",
-                            "Community Politics and Drama"
-                        ]
-                    }
-                ]
-            },
-            {
-                "title": "Coming soon",
-                "paragraph": [
-                    {
-                        "type": "list",
-                        "data": [
-                            "Private Sponsership Program",
-                            "User Profile to generate revenue with online payment service",
-                            "Appreciation Tip System",
-                            "Much more"
-                        ]
-                    },
-                    "We are introducing a new feature that enables users to become content creators on our platform. This initiative will provide guidance on effective strategies for building an audience and generating income.  Users will receive instruction on various techniques to enhance their following while monetizing their content. This addition aims to empower individuals to thrive as creators within our community."
-                ]
-            }
+  "title": "Partnerships & Monetization",
+  "content": {
+    "info": [
+      {
+        "title": "Advertising Partners",
+        "paragraph": [
+          "Big Chief Ent offers a powerful in-house advertising system designed for brands, businesses, and individuals looking to promote their products or services. Our platform provides a secure and streamlined advertising experience with full control over ad creation, placement, and performance tracking.",
+          "Every advertising partner will have access to a dedicated dashboard where they can upload advertisements, manage placements across the platform, and monitor real-time analytics such as impressions, clicks, and engagement performance."
         ]
-    }
+      },
+      {
+        "title": "How Advertising Works",
+        "paragraph": [
+          "We primarily operate on a CPM (Cost Per Mille) model, meaning advertisers are charged based on every 1,000 impressions their ads receive. This ensures consistent exposure and brand visibility across our growing audience.",
+          "In certain cases, advertisers may choose to use a CPC (Cost Per Click) model. This option is ideal for campaigns focused on direct user interaction, such as redirecting users to external websites, products, or services."
+        ]
+      },
+      {
+        "title": "Advertising Features",
+        "paragraph": [
+          {
+            "type": "list",
+            "data": [
+              "Custom advertising dashboard for full campaign control",
+              "Upload and manage multiple ad creatives",
+              "Flexible ad placement options across the platform",
+              "Real-time analytics including impressions, clicks, and engagement",
+              "CPM-based pricing for brand exposure",
+              "Optional CPC model for link-based campaigns",
+              "Secure in-house ad delivery system to protect users and advertisers",
+              "Fraud protection and click-spam prevention mechanisms"
+            ]
+          },
+          "All advertisements are processed through our internal systems to ensure security, performance, and a safe experience for both users and advertisers."
+        ]
+      },
+
+      {
+        "title": "Content Creator Accounts",
+        "paragraph": [
+          "Big Chief Ent empowers creators by providing a complete content management and monetization system. Every content creator will have access to a personalized dashboard designed to track and manage all their uploaded content.",
+          "Creators can monitor key performance metrics such as views, engagement, comments, and average ratings across videos and articles, giving them full insight into their audience and growth."
+        ]
+      },
+      {
+        "title": "Creator Dashboard & Features",
+        "paragraph": [
+          {
+            "type": "list",
+            "data": [
+              "Centralized dashboard for all uploaded content",
+              "Performance tracking (views, ratings, comments, engagement)",
+              "Real-time analytics on audience interaction",
+              "Easy content upload and management system",
+              "Built-in monetization from day one",
+              "Transparency in earnings and performance"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Monetization & Payout System",
+        "paragraph": [
+          "Our platform connects advertisers directly with content creators. Ads placed on creator content generate revenue based on impressions and engagement, allowing creators to earn from their work.",
+          "Creators begin earning immediately once their content is live and approved. Payments are processed on a monthly basis, with a structured payout system that ensures consistency and reliability.",
+          "As the platform grows, payment cycles will remain monthly and will not exceed a 10-day processing window after each cycle. All creators must adhere to platform policies and content guidelines to remain eligible for monetization."
+        ]
+      },
+      {
+        "title": "Important Notes",
+        "paragraph": [
+          {
+            "type": "list",
+            "data": [
+              "All creators must follow platform content and community guidelines",
+              "Revenue is generated through platform advertising partnerships",
+              "Payments begin immediately after approval and content publishing",
+              "Monthly payout cycles with a maximum processing window of 10 days",
+              "Violation of policies may result in demonetization or removal"
+            ]
+          },
+          "We are currently in an active development stage, and additional features, tools, and monetization options will continue to be introduced. More detailed information will be provided as the platform evolves."
+        ]
+      }
+    ]
+  }
 }
