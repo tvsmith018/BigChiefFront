@@ -6,6 +6,7 @@ import {
   useState,
   useCallback,
   ReactNode,
+  useEffect,
 } from "react";
 
 /**
@@ -37,6 +38,10 @@ export function NavigationUIProvider({ children }: { children: ReactNode }) {
   const openMenu = useCallback(() => setMenuOpen(true), []);
   const closeMenu = useCallback(() => setMenuOpen(false), []); 
   const toggleMenu = useCallback(() => setMenuOpen((prev) => !prev), []);
+
+  useEffect(()=>{
+    
+  })
 
   return (
     <NavigationUIContext.Provider

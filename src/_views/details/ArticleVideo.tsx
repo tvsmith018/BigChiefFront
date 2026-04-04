@@ -1,44 +1,59 @@
 "use client"
-import { HTMLAttributeReferrerPolicy, useEffect } from "react";
+import { useRef, useState } from "react";
+import Script from 'next/script';
 import { useNavigationUI } from "@/_navigation";
 
-const VIDEO_CONFIG = {
-  youtube: {
-    src: "https://www.youtube.com/embed/",
-    allow:
-      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share",
-    referrerPolicy: "strict-origin-when-cross-origin" as const,
-    allowFullScreen: true,
-  },
-  facebook: {
-    src: "https://www.facebook.com/plugins/",
-    allow: "autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share",
-    allowFullScreen: true,
-  },
-};
+
+declare global {
+  interface Window {
+    YT: any;
+    onYouTubeIframeAPIReady: () => void;
+  }
+}
 
 export default function VideoView({videoLink, videoType, title}:{videoLink:string, videoType:"youtube"|"facebook", title:string}){
 
     const {isMenuOpen, isSearchOpen} = useNavigationUI()
-    const videoConfig = 
-        videoType && videoType in VIDEO_CONFIG
-            ? VIDEO_CONFIG[videoType] : null
+
+    const playerRef = useRef<any>(null);
+    const [isReady, setIsReady] = useState(false);
+
+    const handleScriptLoad = () => {
+    if (window.YT && window.YT.Player) {
+      initializePlayer();
+    } else {
+      // Fallback: If YT exists but Player doesn't, wait for the global callback
+      window.onYouTubeIframeAPIReady = () => {
+        initializePlayer();
+      };
+    }
+  };
+
+  const initializePlayer = () => {
+    if (playerRef.current) return; // Prevent double initialization
+
+    playerRef.current = new window.YT.Player('youtube-player', {
+      height: '390',
+      width: '640',
+      videoId: videoLink,
+      events: {
+        onReady: () => setIsReady(true),
+      },
+    });
+  };
+   
 
     return <>
-        {videoConfig && videoLink ? (
+        <div className="flex flex-col items-center">
+            <Script
+                src="https://www.youtube.com/iframe_api"
+                strategy="afterInteractive"
+                onReady={handleScriptLoad} // Triggered when script is ready
+            />
+            
             <div className="ratio ratio-16x9" style={{pointerEvents: isMenuOpen || isSearchOpen ? `none`:`auto`}}>
-                <iframe
-                    loading="eager"
-                    className="p-0 m-0"
-                    src={`${videoConfig.src}${videoLink}`}
-                    title={title}
-                    allow={videoConfig.allow}
-                    referrerPolicy={
-                        "referrerPolicy" in videoConfig ? videoConfig.referrerPolicy as HTMLAttributeReferrerPolicy : undefined
-                    }
-                    allowFullScreen={videoConfig.allowFullScreen}
-                />
+                <div id="youtube-player" className="p-0 m-0"></div>
             </div>
-        ):null}
+    </div>
     </>
 }
