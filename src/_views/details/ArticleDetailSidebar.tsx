@@ -238,13 +238,27 @@ export default function ArticleDetailSidebar({
       {tab === "author" && (
         <div className="mt-3">
           {author.avatarUrl ? (
-            <Image
-              className="rounded-circle d-block mx-auto"
-              src={author.avatarUrl}
-              alt={`Image of ${author.firstname} ${author.lastname}`}
-              width={150}
-              height={150}
-            />
+            <span
+              className="d-flex mx-auto"
+              style={{
+                width: 150,
+                height: 150,
+                borderRadius: "50%",
+                overflow: "hidden",
+              }}
+            >
+              <Image
+                src={author.avatarUrl}
+                alt={`Image of ${author.firstname} ${author.lastname}`}
+                width={150}
+                height={150}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
+            </span>
           ) : null}
           <p className="mt-3">{author.bio}</p>
         </div>
