@@ -25,13 +25,36 @@ export default function NavigationMenuPanel({
       variants={scaleFade}
     >
       <div className="text-center">
-        <Image
-          src={isAuthenticated && data?.avatar ? data.avatar : Logo}
-          alt="User Avatar"
-          width={200}
-          height={200}
-          className={isAuthenticated ? "rounded-circle" : ""}
-        />
+        {isAuthenticated && data?.avatar ? (
+          <span
+            style={{
+              width: 200,
+              height: 200,
+              display: "inline-flex",
+              borderRadius: "50%",
+              overflow: "hidden",
+            }}
+          >
+            <Image
+              src={data.avatar}
+              alt="User Avatar"
+              width={200}
+              height={200}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
+            />
+          </span>
+        ) : (
+          <Image
+            src={Logo}
+            alt="User Avatar"
+            width={200}
+            height={200}
+          />
+        )}
         {isAuthenticated && <p className="mt-3">Hey {data?.firstname} {data?.lastname}, this is where your user stat brief data is going to be placed.  Please help us grow while we building this stuff it takes time but we at the point the site will never be down again.</p>}
       </div>
 

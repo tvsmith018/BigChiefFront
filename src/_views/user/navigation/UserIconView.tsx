@@ -40,7 +40,30 @@ export default function UserIconView(){
 
     return <Dropdown as={NavItem}>
             <Dropdown.Toggle as={NavLink} id="dropdown-basic" >
-                {isAuthenticated && data?.avatar ? <Image className='rounded-circle' src={data.avatar} alt={`Image of ${data.firstname ?? ""} ${data.lastname ?? ""}`} width={35} height={35}/>:<i className="bi bi-person-circle" style={{fontSize:"20px"}}></i>}
+                {isAuthenticated && data?.avatar ? (
+                    <span
+                        style={{
+                            width: 35,
+                            height: 35,
+                            display: "inline-flex",
+                            borderRadius: "50%",
+                            overflow: "hidden",
+                            verticalAlign: "middle",
+                        }}
+                    >
+                        <Image
+                            src={data.avatar}
+                            alt={`Image of ${data.firstname ?? ""} ${data.lastname ?? ""}`}
+                            width={35}
+                            height={35}
+                            style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                            }}
+                        />
+                    </span>
+                ) : <i className="bi bi-person-circle" style={{fontSize:"20px"}}></i>}
             </Dropdown.Toggle>
             <Dropdown.Menu>
                 {isAuthenticated ? <AuthLinks />:<GuestLinks />}
