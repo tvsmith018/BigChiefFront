@@ -7,8 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --ignore-pattern .next --ignore-pattern node_modules --max-warnings=0",
+    "test": "node --experimental-strip-types scripts/run-tests.mjs",
     "typecheck": "tsc --noEmit",
-    "validate": "npm run lint && npm run typecheck",
+    "validate": "npm run lint && npm run typecheck && npm run test",
+    "ci": "npm run validate && npm run build",
     "ngrok": "ngrok http 3000"
   },
   "dependencies": {

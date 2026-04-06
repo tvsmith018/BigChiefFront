@@ -1,7 +1,11 @@
-import { RequestOptions } from "./types";
+import type { RequestOptions } from "./types";
 
 export class HttpClient {
-  constructor(private baseUrl: string) {}
+  private baseUrl: string;
+
+  constructor(baseUrl: string) {
+    this.baseUrl = baseUrl;
+  }
 
   async request<T>(
     endpoint: string,

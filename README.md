@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Big Chief Ent Frontend
 
-## Getting Started
+Next.js 16 frontend for Big Chief Ent with server-rendered article pages, auth flows, navigation overlays, and paginated article/comment experiences.
 
-First, run the development server:
+## Requirements
+
+- Node.js 22
+- npm
+
+## Environment
+
+Create an `.env` file in the app root with one of these:
+
+```env
+NEXT_PUBLIC_API_URL="https://bigchiefnewz-a2e8434d1e6d.herokuapp.com"
+```
+
+Legacy support still works with:
+
+```env
+NEXT_PUBLIC_ARTICLEURL="https://bigchiefnewz-a2e8434d1e6d.herokuapp.com/graphql/"
+```
+
+## Scripts
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run lint
+npm run typecheck
+npm run test
+npm run validate
+npm run build
+npm run ci
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Quality Gate
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+`npm run ci` is the local release check. It runs:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. ESLint
+2. TypeScript type checking
+3. Native Node tests
+4. Production build
 
-## Learn More
+## CI
 
-To learn more about Next.js, take a look at the following resources:
+GitHub Actions is configured in `.github/workflows/ci.yml` to run the same checks on pushes and pull requests.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Notes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Auth and session bootstrapping are handled server-side.
+- API base URL resolution is centralized in `src/_network/config/endpoints.ts`.
+- Network request behavior is centralized in `src/_network/core/HttpClient.ts`.
