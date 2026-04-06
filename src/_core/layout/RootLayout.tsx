@@ -2,20 +2,18 @@ import Script from "next/script";
 import { AppProviders } from "@/_core/providers/AppProviders";
 import { AppShell } from "@/_core/layout/AppShell";
 import { DevTools } from "@/_core/scripts/DevTools";
-import { headers } from 'next/headers'
+import { authProxy } from "@/_services/auth/authproxy";
 
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-
-  const headerList = await headers()
-  const userData = headerList.get('userdata')
-  const user = userData ? JSON.parse(userData):null
+  const user = await authProxy();
   const preloadedState = {
-    user: user.user == null || user.user.detail != null
-      ? { isAuthenticated: false, data: undefined, accessRefresh:user.accessRefresh }:{ isAuthenticated: true, data: user, accessRefresh:user.accessRefresh },
+    user: user
+      ? { isAuthenticated: true, data: user }
+      : { isAuthenticated: false, data: undefined },
   };
   
     return (

@@ -26,9 +26,9 @@ export function useArticleRating({ articleId }: Props) {
         try {
             const token = await getSession()
             const has_rate = await ArticleService.canRate(token, articleId)
-            setCanRate(!has_rate.data?.has_rated)
+            setCanRate(!has_rate.has_rated)
             
-        } catch(e){
+        } catch {
             setCanRate(false)
         }
     }
@@ -45,7 +45,7 @@ export function useArticleRating({ articleId }: Props) {
     try {
         const message = await ArticleService.submitRate(token, articleId, value);
 
-        if(message.success){
+        if(message.message){
             setCanRate(false)
         }
     } finally {

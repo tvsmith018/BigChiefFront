@@ -1,4 +1,10 @@
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL!;
+const rawApiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
+
+if (!rawApiBaseUrl) {
+  throw new Error("Missing NEXT_PUBLIC_API_URL environment variable.");
+}
+
+export const API_BASE_URL = rawApiBaseUrl.replace(/\/+$/, "");
 export const GRAPHQL_URL = `${API_BASE_URL}/graphql/`;
 
 export const AUTH_ENDPOINTS = {
@@ -6,4 +12,5 @@ export const AUTH_ENDPOINTS = {
   resetPassword: "/authorized/reset-password/",
   checkExistence: "/authorized/check-email/",
   signup: "/authorized/signup/",
+  refreshToken: "/authorized/api/token/refresh/",
 };

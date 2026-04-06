@@ -1,6 +1,7 @@
 
 import { LoginSchema, EmailSchema, PasswordSchema, FirstnameSchema, LastnameSchema, DOBSchema } from "@/_utilities/datatype/Auth/Schemas/loginFormSchema";
 import { createSession, deleteSession } from "@/_navigation/server/session";
+import { API_BASE_URL } from "@/_network/config/endpoints";
 import { User } from "@/_types/auth/user";
 import { LoginActionResult } from "@/_types/auth/auth-state";
 import { JWTToken } from "@/_utilities/datatype/Auth/types/token";
@@ -28,6 +29,12 @@ type SignupResponse = {
 function normalizeOtp(resp: GenerateOtpResponse) {
   const code = resp.data;
   return { code, message: resp.message };
+}
+
+function extractUser(payload: User | { data?: User } | null | undefined): User | null {
+  if (!payload) return null;
+  if ("data" in payload && payload.data) return payload.data;
+  return payload as User;
 }
 
 function readOtp(formData: FormData) {
@@ -247,12 +254,14 @@ export async function loginAction(
       access: JWTDATA.access ?? ""
     }
     
-    const [userResponse, _] = await Promise.all([
+    const [userResponse] = await Promise.all([
       LoginService.getUser(token),
       createSession(token)
     ]);
 
-    return userResponse.data
+    return extractUser(userResponse as User | { data?: User }) ?? {
+      netError: "Unable to load user profile. Our apologies!",
+    }
     
   } catch {
     return {
@@ -275,7 +284,7 @@ export class SignupService {
 
   static async submitSignup(form: FormData) {
     // raw fetch because of multipart
-    const res = await fetch(`https://bigchiefnewz-a2e8434d1e6d.herokuapp.com${auth_end.signup}`, {
+    const res = await fetch(`${API_BASE_URL}${auth_end.signup}`, {
       method: "POST",
       body: form,
       credentials: "include",

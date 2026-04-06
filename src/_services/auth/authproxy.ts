@@ -1,4 +1,3 @@
-// src/_auth/proxy.ts
 import "server-only";
 
 import { cookies } from "next/headers";
@@ -8,22 +7,30 @@ import { auth_end, httpClient } from "@/_network";
 import type { User } from "@/_types/auth/user";
 import type { JWTToken } from "@/_utilities/datatype/Auth/types/token";
 
-/**
- * Cookie names (matches your createSession() code)
- */
-const COOKIE_REFRESH = "session"; // refresh token cookie
-const COOKIE_ACCESS = "access";   // access token cookie
+const COOKIE_REFRESH = "session";
+const COOKIE_ACCESS = "access";
+const ACCESS_MAX_AGE_SECONDS = 60 * 60 * 24;
 
-/**
- * Server-only: fetch current user using access token.
- * If token is expired/invalid → return null.
- */
+function getCookieSettings(maxAge: number) {
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax" as const,
+    path: "/",
+    maxAge,
+  };
+}
+
+function extractUser(payload: User | { data?: User } | null | undefined): User | null {
+  if (!payload) return null;
+  if ("data" in payload && payload.data) return payload.data;
+  return payload as User;
+}
 
 async function fetchMe(access?: string): Promise<User | null> {
   if (!access) return null;
 
-  // Auth MUST never be cached
-  const res = await httpClient.request<User>(
+  const res = await httpClient.request<User | { data?: User }>(
     "/authorized/me/",
     {
       method: "GET",
@@ -35,108 +42,62 @@ async function fetchMe(access?: string): Promise<User | null> {
     { cache: "no-store" }
   );
 
-  // Your httpClient seems to sometimes return {details: ...} on errors
-  if (!res) return null;
-  if (res?.data?.detail) return null;
-
-  // // If your API returns {data: user}, unwrap. Otherwise treat as user directly.
-  const user = (res?.data ?? res) as User;
-
-  // // Quick sanity check (optional)
+  const user = extractUser(res);
   if (!user || typeof user !== "object") return null;
+  if ("detail" in user || "messages" in user) return null;
 
   return user;
 }
 
-/**
- * Server-only: refresh access token using refresh cookie.
- */
-async function refreshAccess(refresh: string): Promise<JWTToken| null> {
-
-  const res_raw  = await httpClient.request<JWTToken>(
-    "/authorized/token/refresh/",
+async function refreshAccess(refresh: string): Promise<string | null> {
+  const res = await httpClient.request<JWTToken>(
+    auth_end.refreshToken,
     {
       method: "POST",
-      body: { refresh: refresh },
+      body: { refresh },
     },
     { cache: "no-store" }
-  )
-  const res = res_raw as JWTToken
-  
-  
-  if (res.detail) return null
+  );
 
-  return res ?? null
+  if (!res || res.detail || !res.access) return null;
+
+  return res.access;
 }
 
-/**
- * 🔑 Main entry: returns { user, accessRefreshed }
- */
-export async function authProxy(): Promise<{ user: User | null; accessRefreshed: boolean }> {
+export async function authProxy(): Promise<User | null> {
   const cookieStore = await cookies();
-  let refresh_bool:boolean = false;
-
   const refresh = cookieStore.get(COOKIE_REFRESH)?.value;
   let access = cookieStore.get(COOKIE_ACCESS)?.value;
 
-  // no refresh cookie = not logged in
-  if (!refresh) return { user: null, accessRefreshed: refresh_bool };
+  if (!refresh) return null;
 
-  // in case of no access
-  try{
+  try {
     if (!access) {
-      const new_token = await refreshAccess(refresh)
-      refresh_bool = true;
-      
-      if (!new_token) return { user: null, accessRefreshed: refresh_bool }
-
-      cookieStore.set(COOKIE_ACCESS, new_token.access!, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        path: "/",
-        maxAge: 60 * 60 * 24, // 1 day (match your accessExpiresAt)
-      })
+      access = await refreshAccess(refresh) ?? undefined;
+      if (!access) return null;
+      cookieStore.set(COOKIE_ACCESS, access, getCookieSettings(ACCESS_MAX_AGE_SECONDS));
     }
 
     const user = await fetchMe(access);
+    if (user) return user;
 
-  /** Access Expired*/ 
-    if (user?.detail){
-      const new_token = await refreshAccess(refresh);
-      refresh_bool = true;
-      if (!new_token) return { user: null, accessRefreshed: refresh_bool}
+    access = await refreshAccess(refresh) ?? undefined;
+    if (!access) return null;
 
-      cookieStore.set(COOKIE_ACCESS, new_token.access!, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        path: "/",
-        maxAge: 60 * 60 * 24, // 1 day (match your accessExpiresAt)
-      })
-    }
-    return { user: user, accessRefreshed: refresh_bool}
+    cookieStore.set(COOKIE_ACCESS, access, getCookieSettings(ACCESS_MAX_AGE_SECONDS));
+    return await fetchMe(access);
   } catch {
-    return { user: null, accessRefreshed: refresh_bool }
+    return null;
   }
-  
 }
 
-/**
- * ✅ Use on PROTECTED routes
- * If not logged in → redirect("/auth")
- */
 export async function requireAuth(redirectTo: string = "/auth") {
-  const { user } = await authProxy();
+  const user = await authProxy();
   if (!user) redirect(redirectTo);
   return user;
 }
 
-/**
- * ✅ Use on GUEST routes like /auth
- * If logged in → redirect("/")
- */
 export async function requireGuest(redirectTo: string = "/") {
-  const { user } = await authProxy();
+  const user = await authProxy();
   if (user) redirect(redirectTo);
 }

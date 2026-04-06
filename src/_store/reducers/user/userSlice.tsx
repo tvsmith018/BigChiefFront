@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export interface UserState {
   isAuthenticated: boolean;
-  data?: any; // replace with User type later
+  data?: any;
 }
 
 const initialState: UserState = {

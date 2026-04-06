@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx --ignore-pattern .next --ignore-pattern node_modules --max-warnings=0",
+    "typecheck": "tsc --noEmit",
+    "validate": "npm run lint && npm run typecheck",
     "ngrok": "ngrok http 3000"
   },
   "dependencies": {
