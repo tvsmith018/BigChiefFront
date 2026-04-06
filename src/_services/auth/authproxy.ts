@@ -6,26 +6,11 @@ import { redirect } from "next/navigation";
 import { auth_end, httpClient } from "@/_network";
 import type { User } from "@/_types/auth/user";
 import type { JWTToken } from "@/_utilities/datatype/Auth/types/token";
+import { extractUser, getCookieSettings, isAuthErrorUser } from "./auth.helpers";
 
 const COOKIE_REFRESH = "session";
 const COOKIE_ACCESS = "access";
 const ACCESS_MAX_AGE_SECONDS = 60 * 60 * 24;
-
-function getCookieSettings(maxAge: number) {
-  return {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax" as const,
-    path: "/",
-    maxAge,
-  };
-}
-
-function extractUser(payload: User | { data?: User } | null | undefined): User | null {
-  if (!payload) return null;
-  if ("data" in payload && payload.data) return payload.data;
-  return payload as User;
-}
 
 async function fetchMe(access?: string): Promise<User | null> {
   if (!access) return null;
@@ -44,7 +29,7 @@ async function fetchMe(access?: string): Promise<User | null> {
 
   const user = extractUser(res);
   if (!user || typeof user !== "object") return null;
-  if ("detail" in user || "messages" in user) return null;
+  if (isAuthErrorUser(user)) return null;
 
   return user;
 }

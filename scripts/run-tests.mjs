@@ -2,6 +2,11 @@ import assert from "node:assert/strict";
 
 import { normalizeApiBaseUrl, resolveApiBaseUrl } from "../src/_network/config/endpoints.ts";
 import { HttpClient } from "../src/_network/core/HttpClient.ts";
+import {
+  extractUser,
+  getCookieSettings,
+  isAuthErrorUser,
+} from "../src/_services/auth/auth.helpers.ts";
 
 async function testEndpoints() {
   assert.equal(
@@ -69,9 +74,48 @@ async function testHttpClient() {
   }
 }
 
+async function testAuthHelpers() {
+  assert.deepEqual(getCookieSettings(3600, "production"), {
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: 3600,
+  });
+
+  assert.deepEqual(getCookieSettings(3600, "development"), {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+    path: "/",
+    maxAge: 3600,
+  });
+
+  assert.equal(extractUser(null), null);
+  assert.deepEqual(
+    extractUser({ data: { firstname: "Terrance", lastname: "Smith" } }),
+    { firstname: "Terrance", lastname: "Smith" }
+  );
+  assert.deepEqual(
+    extractUser({ firstname: "Big", lastname: "Chief" }),
+    { firstname: "Big", lastname: "Chief" }
+  );
+
+  assert.equal(isAuthErrorUser(null), true);
+  assert.equal(isAuthErrorUser({ detail: "expired" }), true);
+  assert.equal(
+    isAuthErrorUser({
+      messages: [{ token_class: "AccessToken", token_type: "access", message: "expired" }],
+    }),
+    true
+  );
+  assert.equal(isAuthErrorUser({ firstname: "Valid" }), false);
+}
+
 async function main() {
   await testEndpoints();
   await testHttpClient();
+  await testAuthHelpers();
   console.log("Smoke tests passed.");
 }
 

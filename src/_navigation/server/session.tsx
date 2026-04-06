@@ -3,21 +3,12 @@
 import { cookies } from "next/headers";
 
 import { API_BASE_URL } from "@/_network/config/endpoints";
+import { getCookieSettings } from "@/_services/auth/auth.helpers";
 
 const COOKIE_REFRESH = "session";
 const COOKIE_ACCESS = "access";
 const refreshExpiresAt = 60 * 60 * 24 * 14;
 const accessExpiresAt = 60 * 60 * 24;
-
-function getCookieSettings(maxAge: number) {
-  return {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax" as const,
-    path: "/",
-    maxAge,
-  };
-}
 
 async function refresh(session: string) {
   const responseRefresh = await fetch(`${API_BASE_URL}/authorized/api/token/refresh/`, {

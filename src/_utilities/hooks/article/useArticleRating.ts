@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAppSelector } from "@/_store/hooks/UseAppSelector";
 import { ArticleService } from "@/_services/articles/articleservices";
-import { getSession } from "@/_navigation/server/session";
+import { getSession } from "@/_navigation";
 
 interface Props {
   articleId: string;
