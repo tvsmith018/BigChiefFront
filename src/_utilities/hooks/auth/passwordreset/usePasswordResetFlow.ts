@@ -16,7 +16,7 @@ export function usePasswordResetFlow() {
 
   const boundAction = useMemo(() => {
     return passwordResetAction.bind(null, flowVersion, screen.toString(), generatedID, email, password);
-  }, [screen, generatedID, email, password]);
+  }, [email, flowVersion, generatedID, password, screen]);
 
   const [passwordState, passwordresetaction, passwordpending] = useActionState(boundAction, undefined);
   const lastStateRef = useRef<typeof passwordState>(undefined)
@@ -105,7 +105,7 @@ export function usePasswordResetFlow() {
     if (passwordState.screen === "success-screen" && !passwordState.networkError) {
       setScreen(ScreenNames.success_screen);
     }
-  }, [passwordState, screen]);
+  }, [flowVersion, passwordState, screen]);
 
   return {
     show,

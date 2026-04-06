@@ -2,10 +2,9 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Nav from "react-bootstrap/Nav";
 import Dropdown from "react-bootstrap/Dropdown";
-import Link from "next/link";
 import Logo from "../../../public/images/newlogo.jpg";
 import localizationData from "@/_utilities/localization/en.json";
-import { NavigationLink, NavigationUser } from "../../_types/navigation/navigation.types";
+import { NavigationLink } from "../../_types/navigation/navigation.types";
 import { scaleFade } from "../animations/navigation.motion";
 import { useAppSelector} from '@/_store/hooks/UseAppSelector';
 

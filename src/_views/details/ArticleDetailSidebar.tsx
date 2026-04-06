@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import Nav from "react-bootstrap/Nav";
@@ -21,14 +21,6 @@ import {
 } from "@/_core/pagination";
 
 type DetailTab = "comment" | "stat" | "author" | "related" | "article";
-
-interface Author {
-    firstname:string,
-    lastname:string,
-    avatarUrl:string,
-    bio:string,
-    dob:string
-}
 
 interface RelatedArticle{
     node: {
@@ -104,9 +96,7 @@ export default function ArticleDetailSidebar({
     items: relatedArticlesList,
     isLoading: isLoadingRelated,
     hasMore: hasMoreRelated,
-    error: relatedError,
     loadMore: loadMoreRelated,
-    retry: retryRelated,
   } = usePaginatedCollection<
     RelatedArticle,
     string,
@@ -138,8 +128,6 @@ export default function ArticleDetailSidebar({
     commentsSentinelRef,
     hasMoreComments,
     isLoadingComments,
-    commentsError,
-    retryComments,
   } = useArticleComments({
     articleId,
     initialComments: comments,
@@ -175,14 +163,8 @@ export default function ArticleDetailSidebar({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const renderTooltip = useCallback(
-    (label: string) => (props: any) =>
-      (
-        <Tooltip id={`tooltip-${label}`} {...props}>
-          {label}
-        </Tooltip>
-      ),
-    []
+  const renderTooltip = (label: string) => (
+    <Tooltip id={`tooltip-${label}`}>{label}</Tooltip>
   );
 
   return (

@@ -17,11 +17,15 @@ const persistConfig = {
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
+type PersistedReducerState = ReturnType<typeof persistedReducer>;
 
 export function makeStore(preloadedState?: PreloadedState) {
   return configureStore({
     reducer: persistedReducer,
-    preloadedState: preloadedState as any,
+    preloadedState: {
+      ...rootReducer(undefined, { type: "@@INIT" }),
+      ...preloadedState,
+    } as PersistedReducerState,
     middleware: (getDefault) =>
       getDefault({
         serializableCheck: { ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"] },

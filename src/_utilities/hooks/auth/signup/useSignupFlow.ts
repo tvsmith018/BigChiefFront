@@ -39,7 +39,7 @@ export function useSignupFlow() {
       password,
       selectedAvatar
     );
-  }, [screen, generatedID, selectedDate, firstname, lastname, email, password, selectedAvatar]);
+  }, [email, firstname, flowVersion, generatedID, lastname, password, screen, selectedAvatar, selectedDate]);
 
   const [signupState, signupaction, signuppending] = useActionState(boundAction, undefined);
    const lastStateRef = useRef<typeof signupState>(undefined)
@@ -178,7 +178,7 @@ export function useSignupFlow() {
     if (signupState.screen === "success-screen" && !signupState.networkError) {
       setScreen(ScreenNames.success_screen);
     }
-  }, [signupState]);
+  }, [flowVersion, screen, signupState]);
 
   return {
     show,

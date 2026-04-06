@@ -1,4 +1,3 @@
-import dynamic from "next/dynamic";
 // app/_navigation/index.ts
 
 // Root / layout entry

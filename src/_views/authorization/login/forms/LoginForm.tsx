@@ -11,7 +11,10 @@ import ResetView from "@/_views/authorization/passwordreset/resetview";
 interface LoginFormProps {
   action: (payload: FormData) => void;
   pending: boolean;
-  errors?: any;
+  errors?: {
+    email?: string[];
+    password?: string[];
+  };
   netError?: string;
 }
 

@@ -3,18 +3,14 @@ import Nav from "react-bootstrap/Nav";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import NavigationSearchPanel from "./NavigationSearchPanel";
 import NavigationMenuPanel from "./NavigationMenuPanel";
-import { NavigationLink, NavigationUser } from "../../_types/navigation/navigation.types";
+import { NavigationLink } from "../../_types/navigation/navigation.types";
 import { useNavigationUI } from "../context/NavigationUIContext";
 
 interface Props {
-  isAuthenticated: boolean;
-  user?: NavigationUser;
   sideLinks: NavigationLink[];
 }
 
 export default function NavigationOverlay({
-  isAuthenticated,
-  user,
   sideLinks,
 }: Props) {
   const {

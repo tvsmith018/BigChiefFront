@@ -10,21 +10,6 @@ import VideoView from "@/_views/details/ArticleVideo";
 
 type PageParams = Promise<{id:string}>
 
-const VIDEO_CONFIG = {
-  youtube: {
-    src: "https://www.youtube.com/embed/",
-    allow:
-      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share",
-    referrerPolicy: "strict-origin-when-cross-origin" as const,
-    allowFullScreen: true,
-  },
-  facebook: {
-    src: "https://www.facebook.com/plugins/",
-    allow: "autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share",
-    allowFullScreen: true,
-  },
-};
-
 function formatPublishedDate(value: string) {
   const date = new Date(value);
 
@@ -62,10 +47,6 @@ export default async function Page({params}:{params:PageParams}) {
     if (!bundle) notFound();
 
     const {article, comments, related, relatedPageInfo} = bundle;
-    const videoConfig = 
-        article.videoType && article.videoType in VIDEO_CONFIG
-            ? VIDEO_CONFIG[article.videoType] : null
-
     return <main>
         <section className='p-0'>
             <Container className='p-1'>

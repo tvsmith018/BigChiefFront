@@ -4,14 +4,10 @@ import UserIconView from "@/_views/user/navigation/UserIconView";
 
 interface Props {
   links: string[];
-  isAuthenticated: boolean;
-  user?: any;
 }
 
 export default function NavigationTopBar({
   links,
-  isAuthenticated,
-  user,
 }: Props) {
   return (
     <div className="navbar-top d-block small">

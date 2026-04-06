@@ -2,7 +2,7 @@
 
 interface LoginErrorsProps {
   errors?: {
-    email?: string;
+    email?: string[];
     password?: string[];
   };
   netError?: string;
@@ -18,7 +18,7 @@ export function LoginErrors({ errors, netError }: LoginErrorsProps) {
       )}
 
       {errors?.email && (
-        <p className="text-danger">- {errors.email}</p>
+        <p className="text-danger">- {errors.email.join(", ")}</p>
       )}
 
       {errors?.password && (

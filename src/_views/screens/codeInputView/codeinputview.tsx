@@ -60,10 +60,10 @@ export default function CodeInputView({prompt, onComplete, onResendClick}:{promp
   }, [disabled]);
 
   useEffect(()=>{
-    if (disabled == false) {
+    if (disabled === false) {
       onComplete()
     }
-  },[disabled])
+  }, [disabled, onComplete])
 
   const formattedSeconds = String(timeRemaining % 60).padStart(2, '0'); 
 

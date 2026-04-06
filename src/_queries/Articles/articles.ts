@@ -1,5 +1,3 @@
-import { article } from "framer-motion/client";
-
 export const HOME_PAGE_QUERY = `
   query {
     slide: articles(featuredType:"slide", orderBy:"-created"){

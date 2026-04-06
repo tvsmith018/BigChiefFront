@@ -33,9 +33,7 @@ export default function CardListView({ list, title, pageInfo ,category }: Props)
     items: articles,
     isLoading,
     hasMore,
-    error,
     loadMore,
-    retry,
   } = usePaginatedCollection<ArticleEdge, string, { category?: string }>({
     initialItems: list,
     initialCursor: pageInfo.endCursor,

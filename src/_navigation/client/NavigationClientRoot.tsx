@@ -4,7 +4,6 @@
 
 import NavigationTopBar from "./NavigationTopBar";
 import NavigationPrimary from "./NavigationPrimary";
-import { NavigationUIProvider } from "../context/NavigationUIContext";
 import { NavigationLink, NavigationUser } from "../../_types/navigation/navigation.types";
 import { NAVIGATION_TOP_LINKS } from "../config/navigation.config";
 
@@ -24,8 +23,6 @@ export default function NavigationClientRoot({
       <header className="navbar-light navbar-sticky header-static">
         <NavigationTopBar
           links={NAVIGATION_TOP_LINKS}
-          isAuthenticated={isAuthenticated}
-          user={user}
         />
 
         <NavigationPrimary

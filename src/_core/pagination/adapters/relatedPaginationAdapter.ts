@@ -1,4 +1,3 @@
-import type { PaginationAdapter } from "../type";
 import { ArticleService } from "@/_services/articles/articleservices";
 
 export const relatedPaginationAdapter = {

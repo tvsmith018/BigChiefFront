@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 
 import { loginAction } from "@/_services/auth/authservices";
 import { storeUser } from "@/_store/reducers/user/userSlice";
-import { User } from "@/_types/auth/user";
 
 export function useLogin() {
   const dispatch = useAppDispatch();
@@ -20,9 +19,10 @@ export function useLogin() {
   useEffect(() => {
     if (!state) return;
     if (state.errors || state.netError) return;
+    if (!("firstname" in state || "lastname" in state || "id" in state)) return;
     dispatch(storeUser(state));
     router.push("/")
-  }, [state]);
+  }, [dispatch, router, state]);
 
   return {
     state,

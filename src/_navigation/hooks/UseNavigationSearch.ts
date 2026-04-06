@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import { ArticleService } from "@/_services/articles/articleservices";
+import type { Article } from "@/_types/articles/article.types";
 
 /**
  * Navigation-level search logic.
@@ -10,7 +11,7 @@ import { ArticleService } from "@/_services/articles/articleservices";
 export function useNavigationSearch() {
   const [query, setQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<Array<{ node: Article }>>([]);
 
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 

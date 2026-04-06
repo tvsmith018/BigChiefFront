@@ -13,8 +13,6 @@ interface Props {
 }
 
 export default function NavigationPrimary({
-  isAuthenticated,
-  user,
   sideLinks,
 }: Props) {
 
@@ -32,8 +30,6 @@ export default function NavigationPrimary({
         </NavbarBrand>
 
         <NavigationOverlay
-          isAuthenticated={isAuthenticated}
-          user={user}
           sideLinks={sideLinks}
         />
       </Container>

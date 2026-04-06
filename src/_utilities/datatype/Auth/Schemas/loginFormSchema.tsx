@@ -1,10 +1,5 @@
 import { AuthFormSchema } from "./base/authFormSchema"
 
-interface Payload {
-  email?:string, 
-  password?:string
-}
-
 export const LoginSchema = AuthFormSchema.omit({
   lastname: true,
   firstname: true,

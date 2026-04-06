@@ -1,9 +1,9 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState, useRef, useCallback, RefObject } from "react";
+import { FormEvent, useEffect, useMemo, useState, RefObject } from "react";
 import { useAppSelector } from "@/_store/hooks/UseAppSelector";
 import ReconnectingWebSocket from "reconnecting-websocket";
-import { ArticleService, ArticleComment } from "@/_services/articles/articleservices";
+import { ArticleComment } from "@/_services/articles/articleservices";
 import { commentsPaginationAdapter } from "@/_core/pagination";
 import {
   useInfiniteObserver,
@@ -98,9 +98,7 @@ export function useArticleComments({ articleId, initialComments, pageInfo,scroll
     };
 
     return () => ws.close();
-  }, [socketUrl]);
-
-  useEffect(()=>{},[])
+  }, [replaceItems, socketUrl]);
 
   const submitComment = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -115,7 +113,7 @@ export function useArticleComments({ articleId, initialComments, pageInfo,scroll
     
     try {
       ws.onopen = () => {
-        ws.send(JSON.stringify({ body, user_id: data.id}));
+        ws.send(JSON.stringify({ body, user_id: data?.id }));
         ws.close();
         form.reset()
       };

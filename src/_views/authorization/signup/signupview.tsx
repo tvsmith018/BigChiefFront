@@ -24,7 +24,6 @@ export default function SignupView() {
     screen,
     error,
     setError,
-    selectedDate,
     setSelectedDate,
     open,
     close,

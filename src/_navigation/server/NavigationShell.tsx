@@ -1,14 +1,20 @@
 // app/_views/navigation/server/NavigationShell.tsx
 
 import { fetchNavigationConfig } from "./navigation.cms";
-import { UseNavigationVisibility } from "../hooks/UseNavigationVisibility";
 import NavigationClientRoot from "../client/NavigationClientRoot";
 import { NavigationUser } from "@/_types/navigation/navigation.types";
 
 import { PreloadedState } from "@/_store/preloader";
 
 export default async function NavigationShell({ preloadedState }: { preloadedState?: PreloadedState  }) {
-  const user:NavigationUser|undefined = preloadedState?.user?.data ?? undefined;
+  const userData = preloadedState?.user?.data;
+  const user: NavigationUser | undefined = userData
+    ? {
+        firstname: userData.firstname ?? "",
+        lastname: userData.lastname ?? "",
+        avatarURL: userData.avatarURL ?? userData.avatarUrl ?? userData.avatar,
+      }
+    : undefined;
   const isAuthenticated: boolean = preloadedState?.user?.isAuthenticated ?? false
   /** 
    * 2. Resolve roles
