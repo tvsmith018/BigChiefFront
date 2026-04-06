@@ -18,13 +18,6 @@ export default async function RootLayout({
   
     return (
     <html lang="en">
-      <head>
-        <meta
-          httpEquiv="Content-Security-Policy"
-          content="upgrade-insecure-requests"
-        />
-      </head>
-
       <body>
         <AppProviders preloadedState={preloadedState}>
           <AppShell preloadedState={preloadedState}>{children}</AppShell>
