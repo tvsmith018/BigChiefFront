@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 
-import { normalizeApiBaseUrl, resolveApiBaseUrl } from "../src/_network/config/endpoints.ts";
+import {
+  AUTH_ENDPOINTS,
+  normalizeApiBaseUrl,
+  resolveApiBaseUrl,
+  resolveWebSocketBaseUrl,
+} from "../src/_network/config/endpoints.ts";
 import { HttpClient } from "../src/_network/core/HttpClient.ts";
 import {
   extractUser,
@@ -34,6 +39,15 @@ async function testEndpoints() {
     resolveApiBaseUrl({}),
     "https://bigchiefnewz-a2e8434d1e6d.herokuapp.com"
   );
+  assert.equal(
+    resolveWebSocketBaseUrl("https://api.example.com"),
+    "wss://api.example.com"
+  );
+  assert.equal(
+    resolveWebSocketBaseUrl("http://localhost:8000"),
+    "ws://localhost:8000"
+  );
+  assert.equal(AUTH_ENDPOINTS.refreshToken, "/authorized/token/refresh/");
 }
 
 async function testHttpClient() {

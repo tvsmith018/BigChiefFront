@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useMemo, useState, RefObject } from "react";
 import { useAppSelector } from "@/_store/hooks/UseAppSelector";
 import ReconnectingWebSocket from "reconnecting-websocket";
 import { ArticleComment } from "@/_services/articles/articleservices";
+import { WEBSOCKET_BASE_URL } from "@/_network/config/endpoints";
 import { commentsPaginationAdapter } from "@/_core/pagination";
 import {
   useInfiniteObserver,
@@ -27,7 +28,7 @@ export function useArticleComments({ articleId, initialComments, pageInfo,scroll
   const [socketError, setSocketError] = useState<string | undefined>(undefined);
 
   const socketUrl = useMemo(
-    () => `wss://bigchiefnewz-a2e8434d1e6d.herokuapp.com/ws/articles/${articleId}/`,
+    () => `${WEBSOCKET_BASE_URL}/ws/articles/${articleId}/`,
     [articleId]
   );
   
