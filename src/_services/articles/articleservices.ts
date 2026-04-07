@@ -26,12 +26,18 @@ interface Author {
 }
 
 type RatingResponse = {
-  has_rated:boolean
-}
+  success: boolean;
+  data: {
+    has_rated: boolean;
+  };
+};
 
 type SetRatingResponse = {
-  message:string
-}
+  success: boolean;
+  data: {
+    message: string;
+  };
+};
 
 export interface ArticleDetail {
   id: string;
