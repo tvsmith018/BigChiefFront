@@ -1,7 +1,7 @@
 
 import { LoginSchema, EmailSchema, PasswordSchema, FirstnameSchema, LastnameSchema, DOBSchema } from "@/_utilities/datatype/Auth/Schemas/loginFormSchema";
 import { createSession, deleteSession } from "@/_navigation";
-import { API_BASE_URL } from "@/_network/config/endpoints";
+import { API_BASE_URL, resolveHttpBaseUrl } from "@/_network/config/endpoints";
 import { User } from "@/_types/auth/user";
 import { LoginActionResult } from "@/_types/auth/auth-state";
 import { JWTToken } from "@/_utilities/datatype/Auth/types/token";
@@ -284,7 +284,7 @@ export class SignupService {
 
   static async submitSignup(form: FormData) {
     // raw fetch because of multipart
-    const res = await fetch(`${API_BASE_URL}${auth_end.signup}`, {
+    const res = await fetch(`${resolveHttpBaseUrl(API_BASE_URL)}${auth_end.signup}`, {
       method: "POST",
       body: form,
       credentials: "include",

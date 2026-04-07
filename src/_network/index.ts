@@ -5,9 +5,10 @@ import {
   API_BASE_URL,
   AUTH_ENDPOINTS,
   resolveGraphQLEndpoint,
+  resolveHttpBaseUrl,
 } from "./config/endpoints";
 
-export const httpClient = new HttpClient(API_BASE_URL);
+export const httpClient = new HttpClient(() => resolveHttpBaseUrl(API_BASE_URL));
 export const graphQLClient = new GraphQLClient(() =>
   resolveGraphQLEndpoint(API_BASE_URL)
 );

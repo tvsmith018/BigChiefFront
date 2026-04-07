@@ -1,5 +1,6 @@
 const DEFAULT_API_BASE_URL = "https://bigchiefnewz-a2e8434d1e6d.herokuapp.com";
 export const GRAPHQL_BROWSER_PATH = "/api/graphql";
+export const API_BROWSER_BASE_PATH = "/api/backend";
 
 export function normalizeApiBaseUrl(value: string) {
   return value.replace(/\/graphql\/?$/, "").replace(/\/+$/, "");
@@ -28,6 +29,17 @@ export function resolveGraphQLEndpoint(
   }
 
   return `${normalizeApiBaseUrl(apiBaseUrl)}/graphql/`;
+}
+
+export function resolveHttpBaseUrl(
+  apiBaseUrl: string,
+  isBrowser: boolean = typeof window !== "undefined"
+) {
+  if (isBrowser) {
+    return API_BROWSER_BASE_PATH;
+  }
+
+  return normalizeApiBaseUrl(apiBaseUrl);
 }
 
 export const API_BASE_URL = normalizeApiBaseUrl(resolveApiBaseUrl());

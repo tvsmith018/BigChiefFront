@@ -1,10 +1,20 @@
 import type { RequestOptions } from "./types";
 
-export class HttpClient {
-  private baseUrl: string;
+type HttpBaseUrlResolver = string | (() => string);
 
-  constructor(baseUrl: string) {
+export class HttpClient {
+  private baseUrl: HttpBaseUrlResolver;
+
+  constructor(baseUrl: HttpBaseUrlResolver) {
     this.baseUrl = baseUrl;
+  }
+
+  private getBaseUrl() {
+    if (typeof this.baseUrl === "function") {
+      return this.baseUrl();
+    }
+
+    return this.baseUrl;
   }
 
   async request<T>(
@@ -17,7 +27,7 @@ export class HttpClient {
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
     try {
-      const res = await fetch(`${this.baseUrl}${endpoint}`, {
+      const res = await fetch(`${this.getBaseUrl()}${endpoint}`, {
         method: config.method ?? "GET",
         headers: {
           "Content-Type": "application/json",

@@ -2,10 +2,12 @@ import assert from "node:assert/strict";
 
 import {
   AUTH_ENDPOINTS,
+  API_BROWSER_BASE_PATH,
   GRAPHQL_BROWSER_PATH,
   normalizeApiBaseUrl,
   resolveApiBaseUrl,
   resolveGraphQLEndpoint,
+  resolveHttpBaseUrl,
   resolveWebSocketBaseUrl,
 } from "../src/_network/config/endpoints.ts";
 import { HttpClient } from "../src/_network/core/HttpClient.ts";
@@ -56,6 +58,14 @@ async function testEndpoints() {
   assert.equal(
     resolveGraphQLEndpoint("https://api.example.com", false),
     "https://api.example.com/graphql/"
+  );
+  assert.equal(
+    resolveHttpBaseUrl("https://api.example.com", true),
+    API_BROWSER_BASE_PATH
+  );
+  assert.equal(
+    resolveHttpBaseUrl("https://api.example.com", false),
+    "https://api.example.com"
   );
   assert.equal(AUTH_ENDPOINTS.refreshToken, "/authorized/token/refresh/");
 }
