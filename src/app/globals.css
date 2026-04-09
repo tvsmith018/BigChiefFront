@@ -17880,6 +17880,14 @@ div.nav.nav-pills div.nav-item a.nav-link.active{
 .bc-article-detail-page {
   background-color: #fff;
   color: #241711;
+  /* Stop mobile horizontal panning from sub-pixel / bleed / long strings; does not change layout. */
+  overflow-x: clip;
+}
+
+@supports not (overflow: clip) {
+  .bc-article-detail-page {
+    overflow-x: hidden;
+  }
 }
 
 .bc-article-detail-section {
@@ -17896,6 +17904,7 @@ div.nav.nav-pills div.nav-item a.nav-link.active{
   --bs-gutter-x: 1.5rem;
   --bs-gutter-y: 1.5rem;
   align-items: start;
+  min-width: 0;
 }
 
 .bc-article-detail-main {
@@ -17913,6 +17922,7 @@ div.nav.nav-pills div.nav-item a.nav-link.active{
   color: #1d120c;
   letter-spacing: -0.02em;
   max-width: 24ch;
+  overflow-wrap: break-word;
 }
 
 .bc-article-detail-meta {
@@ -17945,6 +17955,11 @@ div.nav.nav-pills div.nav-item a.nav-link.active{
 
 .bc-article-detail-sidebar {
   min-width: 0;
+}
+
+.bc-article-detail-sidebar p {
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .bc-article-detail-sidebar__tabs {
@@ -17990,10 +18005,20 @@ div.nav.nav-pills div.nav-item a.nav-link.active{
 
 .bc-article-video-bleed {
   width: 100%;
+  /* Keep embeds from imposing a wider minimum width than the column (no visual change when ratio fits). */
+  min-width: 0;
+  max-width: 100%;
 }
 
 .bc-article-video-bleed .ratio {
   margin-bottom: 0;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.bc-article-video-bleed iframe,
+.bc-article-video-bleed #youtube-player {
+  max-width: 100%;
 }
 
 .bc-partner-overview,
