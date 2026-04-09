@@ -135,33 +135,41 @@ export class ArticleService {
     { revalidate: 1, tags:["article-metadata"]}
   )
   
-  static fetchDetailsBundle = unstable_cache(
-    async (id:string)=>{
-      const articleData = await graphQLClient.query<GraphQLArticleResponse>(article_detail_query(id));
-      const article = articleData.articles.edges[0]?.node ?? null;
+  static fetchDetailsBundle = async (id:string) => {
+    const articleData = await graphQLClient.query<GraphQLArticleResponse>(
+      article_detail_query(id),
+      undefined,
+      { cache: "no-store" }
+    );
+    const article = articleData.articles.edges[0]?.node ?? null;
 
-      if(!article) return null
+    if(!article) return null
 
-      const [commentData, relatedData] = await Promise.all([
-        graphQLClient.query<GraphQLCommentsResponse>(article_comment_query(id,10)),
-        graphQLClient.query<GraphQLRelatedArticleResponse>(article_related_query(article.category,id))
-      ])
-
-      const related = (relatedData.categoryArticles.edges ?? []).filter(
-        (item) => item.node.title != article.title
+    const [commentData, relatedData] = await Promise.all([
+      graphQLClient.query<GraphQLCommentsResponse>(
+        article_comment_query(id,10),
+        undefined,
+        { cache: "no-store" }
+      ),
+      graphQLClient.query<GraphQLRelatedArticleResponse>(
+        article_related_query(article.category,id),
+        undefined,
+        { cache: "no-store" }
       )
-      const relatedPageInfo = relatedData.categoryArticles.pageInfo
+    ])
 
-      return {
-        article,
-        comments: commentData,
-        related,
-        relatedPageInfo
-      }
-    },
-    ["article-detail-bundle"],
-    { revalidate: 1, tags:["article-detail-bundle"] }
-  )
+    const related = (relatedData.categoryArticles.edges ?? []).filter(
+      (item) => item.node.title != article.title
+    )
+    const relatedPageInfo = relatedData.categoryArticles.pageInfo
+
+    return {
+      article,
+      comments: commentData,
+      related,
+      relatedPageInfo
+    }
+  }
 
   static canRate = async (token:JWTToken, articleId:string)=>{
     const hasRating = await httpClient.request<RatingResponse>(

@@ -5,7 +5,7 @@ import { Button, Card, Col, Container, Nav, Row } from "react-bootstrap";
 import {
   ProfileListCard,
   ProfileMiniInfoCard,
-  ProfileRibbonTitle,
+  ProfileRibbonTitle, 
 } from "@/_components/account/SharedPanels";
 
 const avatarImage = "/images/about/victor.jpg";
