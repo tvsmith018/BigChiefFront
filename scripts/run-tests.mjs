@@ -68,6 +68,11 @@ async function testEndpoints() {
     "https://api.example.com"
   );
   assert.equal(AUTH_ENDPOINTS.refreshToken, "/authorized/token/refresh/");
+  assert.equal(
+    resolveApiBaseUrl({ NEXT_PUBLIC_API_URL: "https://only-api.example.com" }),
+    "https://only-api.example.com"
+  );
+  assert.equal(normalizeApiBaseUrl("https://x.com/"), "https://x.com");
 }
 
 async function testHttpClient() {

@@ -47,33 +47,34 @@ export default async function Page({params}:{params:PageParams}) {
     if (!bundle) notFound();
 
     const {article, comments, related, relatedPageInfo} = bundle;
-    return <main>
-        <section className='p-0'>
-            <Container className='p-1'>
-                <Row className="px-1">
-                    <Col lg={8}>
-                        <VideoView videoLink={article.videoLink!} videoType={article.videoType!} title={article.title}/>
+    return <main className="bc-article-detail-page">
+        <section className='bc-article-detail-section'>
+            <Container className='bc-article-detail-container'>
+                <Row className="bc-article-detail-grid">
+                    <Col lg={8} className="bc-article-detail-main">
+                        <div className="bc-article-video-bleed">
+                            <VideoView videoLink={article.videoLink!} videoType={article.videoType!} title={article.title}/>
+                        </div>
                         
-                        <a className={`badge ${article.badgeColor} mt-3`}>
+                        <span className={`badge ${article.badgeColor} mt-3 bc-article-detail-badge`}>
                             <i className="bi bi-record-fill me-1"></i>
                             {article.category}
-                        </a>
+                        </span>
 
-                        <h1 className="mt-2 mb-0">{article.title}</h1>
+                        <h1 className="mt-2 mb-0 bc-article-detail-title">{article.title}</h1>
 
-                        <div className="d-flex align-items-center">
-                            <p className="m-0 fs-3">{formatPublishedDate(article.created)}</p>
-                            <p className="m-0 fs-3 ms-4 d-none d-lg-block">0 views</p>
-                            <p className="m-0 fs-3 ms-4 d-none d-lg-block">
+                        <div className="bc-article-detail-meta">
+                            <p className="m-0 bc-article-detail-meta__item">{formatPublishedDate(article.created)}</p>
+                            <p className="m-0 bc-article-detail-meta__item d-none d-lg-block">0 views</p>
+                            <p className="m-0 bc-article-detail-meta__item d-none d-lg-block">
                                 <i className="bi bi-arrow-right"></i> neutral
                             </p>
-                            <div className="ms-auto">
+                            <div className="bc-article-detail-meta__rating">
                                 <ArticleRatingView articleId={decodeId} />
                             </div>
                         </div>
                         <div
-                            className="mt-3 border rounded px-3 py-2 d-none d-lg-block"
-                            style={{ backgroundColor: "rgba(255, 193, 7, 0.2)" }}
+                            className="bc-article-detail-summary d-none d-lg-block"
                         >
                             <p className="m-0 fs-2" style={{ lineHeight: 1 }}>
                                 {article.briefsummary}

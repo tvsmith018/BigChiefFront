@@ -32,10 +32,16 @@ export default function UserIconView(){
     </>
 
     const AuthLinks = ()=>(
-        <Dropdown.Item href="#" role='button' onClick={handleLogout}>
-            <i className="bi bi-box-arrow-in-left me-2"></i>
-            Logout
-        </Dropdown.Item>
+        <>
+            <Dropdown.Item href="/profile" role='button'>
+                <i className="bi bi-box-arrow-in-left me-2"></i>
+                Profile
+            </Dropdown.Item>
+            <Dropdown.Item href="#" role='button' onClick={handleLogout}>
+                <i className="bi bi-box-arrow-in-left me-2"></i>
+                Logout
+            </Dropdown.Item>
+        </>
     )
 
     return <Dropdown as={NavItem}>

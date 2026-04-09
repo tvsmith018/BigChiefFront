@@ -33,9 +33,18 @@ export default function ResetView() {
   return (
     <>
       <div className="mb-4 d-flex justify-content-center">
-        <a style={{ color: "#9c7248", cursor: "pointer" }} onClick={open}>
+        <button
+          type="button"
+          className="border-0 bg-transparent p-0 text-decoration-none shadow-none"
+          style={{
+            color: "#9c7248",
+            cursor: "pointer",
+            font: "inherit",
+          }}
+          onClick={open}
+        >
           Forgot Password?
-        </a>
+        </button>
       </div>
 
       <Modal show={show} onHide={close} size="sm" centered>

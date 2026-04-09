@@ -168,8 +168,8 @@ export default function ArticleDetailSidebar({
   );
 
   return (
-    <Col className="containerDesktop">
-      <div className="px-3 pt-1" style={tabButtonStyle ? briefStyle : undefined}>
+    <Col lg={4} className="containerDesktop bc-article-detail-sidebar">
+      <div className="bc-article-detail-sidebar__tabs px-3 pt-1" style={tabButtonStyle ? briefStyle : undefined}>
         <p className="fw-semibold d-lg-none">{briefsummary}</p>
 
         <Nav
@@ -290,7 +290,18 @@ export default function ArticleDetailSidebar({
             <p>
               {articleCollapse === "....Read More" ? body.substring(0, 200) : body}
               &nbsp;&nbsp;
-              <span onClick={toggleArticleCollapse}>
+              <span
+                role="button"
+                tabIndex={0}
+                style={{ cursor: "pointer" }}
+                onClick={toggleArticleCollapse}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    toggleArticleCollapse();
+                  }
+                }}
+              >
                 <strong>{articleCollapse}</strong>
               </span>
             </p>
@@ -328,10 +339,10 @@ export default function ArticleDetailSidebar({
                       </Col>
 
                       <Col className="mt-2">
-                        <a className={`badge ${article.badgeColor} mb-2`}>
+                        <span className={`badge ${article.badgeColor} mb-2`}>
                           <i className="bi bi-record-fill me-1"></i>
                           {article.category}
-                        </a>
+                        </span>
 
                         <h5>
                           <Link
@@ -513,7 +524,18 @@ export default function ArticleDetailSidebar({
           <p>
             {articleCollapse === "....Read More" ? body.substring(0, 200) : body}
             &nbsp;&nbsp;
-            <span onClick={toggleArticleCollapse}>
+            <span
+              role="button"
+              tabIndex={0}
+              style={{ cursor: "pointer" }}
+              onClick={toggleArticleCollapse}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  toggleArticleCollapse();
+                }
+              }}
+            >
               <strong>{articleCollapse}</strong>
             </span>
           </p>

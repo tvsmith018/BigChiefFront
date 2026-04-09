@@ -40,7 +40,6 @@ async function HomeDataLoader() {
 }
 
 export default async function Page() {
-
   return <main style={{ overflowX: "hidden" }}>
     
       <Suspense fallback={<div className="page-skeleton" />}>

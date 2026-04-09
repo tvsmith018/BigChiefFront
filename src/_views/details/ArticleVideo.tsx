@@ -55,17 +55,17 @@ export default function VideoView({videoLink}:{videoLink:string, videoType:"yout
   };
    
 
-    return <>
-        <div className="flex flex-col items-center">
-            <Script
-                src="https://www.youtube.com/iframe_api"
-                strategy="afterInteractive"
-                onReady={handleScriptLoad} // Triggered when script is ready
-            />
+  return <>
+    <div className="flex flex-col items-center">
+      <Script
+        src="https://www.youtube.com/iframe_api"
+        strategy="afterInteractive"
+        onReady={handleScriptLoad} // Triggered when script is ready
+      />
             
-            <div className="ratio ratio-16x9" style={{pointerEvents: isMenuOpen || isSearchOpen ? `none`:`auto`}}>
-                <div id="youtube-player" className="p-0 m-0"></div>
-            </div>
+      <div className="ratio ratio-16x9" style={{pointerEvents: isMenuOpen || isSearchOpen ? `none`:`auto`}}>
+        <div id="youtube-player" className="p-0 m-0"></div>
+      </div>
     </div>
-    </>
+  </>
 }

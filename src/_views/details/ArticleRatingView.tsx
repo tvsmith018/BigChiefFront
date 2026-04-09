@@ -21,15 +21,22 @@ export default function ArticleRatingView({ articleId }: { articleId: string }) 
         return (
           <FormLabel key={index}>
             <FormCheck type="radio" name="rate" value={currentRate} disabled/>
-            <i
+            <button
+              type="button"
+              className="border-0 bg-transparent p-0 align-baseline shadow-none d-inline"
+              style={{ lineHeight: 0, verticalAlign: "baseline" }}
+              aria-label={`Rate ${currentRate} out of 5 stars`}
+              onClick={() => submitRating(currentRate)}
+            >
+              <i
                 className="bi bi-star-fill pe-2"
                 style={{
-                    fontSize: 20,
-                    color: currentRate <= rating ?  "rgba(255, 193, 7, 0.7)" : "grey",
-                    cursor: "pointer",
+                  fontSize: 20,
+                  color: currentRate <= rating ? "rgba(255, 193, 7, 0.7)" : "grey",
+                  cursor: "pointer",
                 }}
-                onClick={() => submitRating(currentRate)}
-            ></i>
+              />
+            </button>
           </FormLabel>
         );
       })}

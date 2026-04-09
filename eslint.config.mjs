@@ -18,7 +18,11 @@ const eslintConfig = [
       "src/_utilities/datePicker/*.js",
     ],
   },
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  ...compat.extends(
+    "next/core-web-vitals",
+    "next/typescript",
+    "plugin:jsx-a11y/recommended",
+  ),
   {
     rules: {
       "no-restricted-imports": [

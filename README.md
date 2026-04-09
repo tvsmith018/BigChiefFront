@@ -51,3 +51,4 @@ GitHub Actions is configured in `.github/workflows/ci.yml` to run the same check
 - Auth and session bootstrapping are handled server-side.
 - API base URL resolution is centralized in `src/_network/config/endpoints.ts`.
 - Network request behavior is centralized in `src/_network/core/HttpClient.ts`.
+- Current frontend verification and grade notes are documented in [docs/FRONTEND_VERIFICATION_2026-04-07.md](C:\Users\terrance\BigChiefEnt-Offical\frontend\app\docs\FRONTEND_VERIFICATION_2026-04-07.md).

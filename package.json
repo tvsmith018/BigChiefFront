@@ -11,7 +11,8 @@
     "test": "node --experimental-strip-types scripts/run-tests.mjs",
     "typecheck": "tsc --noEmit",
     "validate": "npm run lint && npm run typecheck && npm run test",
-    "ci": "npm run validate && npm run build",
+    "test:e2e": "playwright test",
+    "ci": "npm run validate && npm run build && npm run test:e2e",
     "ngrok": "ngrok http 3000"
   },
   "dependencies": {
@@ -35,6 +36,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.59.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -42,6 +44,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.2.1",
     "eslint-plugin-boundaries": "^5.4.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
     "typescript": "^5"
   }
 }
