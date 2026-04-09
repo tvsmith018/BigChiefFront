@@ -46,26 +46,30 @@ export default function VideoView({videoLink}:{videoLink:string, videoType:"yout
   const initializePlayer = () => {
     if (playerRef.current || !window.YT.Player) return; // Prevent double initialization
 
-    playerRef.current = new window.YT.Player('youtube-player', {
-      height: '390',
-      width: '640',
+    playerRef.current = new window.YT.Player("youtube-player", {
+      height: "100%",
+      width: "100%",
       videoId: videoLink,
       events: { onReady: () => undefined },
     });
   };
    
 
-  return <>
-    <div className="flex flex-col items-center">
+  return (
+    <div className="w-100 d-flex flex-column">
       <Script
         src="https://www.youtube.com/iframe_api"
         strategy="afterInteractive"
-        onReady={handleScriptLoad} // Triggered when script is ready
+        onReady={handleScriptLoad}
       />
-            
-      <div className="ratio ratio-16x9" style={{pointerEvents: isMenuOpen || isSearchOpen ? `none`:`auto`}}>
-        <div id="youtube-player" className="p-0 m-0"></div>
+      <div
+        className="ratio ratio-16x9 w-100"
+        style={{
+          pointerEvents: isMenuOpen || isSearchOpen ? "none" : "auto",
+        }}
+      >
+        <div id="youtube-player" className="p-0 m-0" />
       </div>
     </div>
-  </>
+  );
 }
