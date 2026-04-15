@@ -33,6 +33,7 @@ export default function SignupView() {
     onResendClick,
     setSelectedAvatar,
     signupaction,
+    handleConfirmSignup,
     signuppending,
   } = useSignupFlow();
 
@@ -63,8 +64,18 @@ export default function SignupView() {
         <Modal.Header closeButton />
 
         <Modal.Body>
-          <Form action={signupaction} autoComplete="off" id="signup" name="signup">
-            {/* ✅ KEEP EXACT BRAND BLOCK (same as ResetView) */}
+          <Form
+            action={signupaction}
+            autoComplete="off"
+            id="signup"
+            name="signup"
+            onSubmit={(e) => {
+              if (screen === ScreenNames.confirm_password_screen) {
+                e.preventDefault();
+                void handleConfirmSignup(new FormData(e.currentTarget));
+              }
+            }}
+          >
             <div className="mt-2" style={{ display: "flex", justifyContent: "center" }}>
               <div>
                 <p style={{ fontFamily: "exlibris", fontSize: "50px", lineHeight: "20px", color: "black" }}>
@@ -118,7 +129,9 @@ export default function SignupView() {
               />
             )}
 
-            {screen == ScreenNames.image_screen && <ImagePreView setFile={setSelectedAvatar} />}
+            {screen == ScreenNames.image_screen && (
+              <ImagePreView setFile={setSelectedAvatar} />
+            )}
 
             {screen == ScreenNames.new_password_screen && <NewPasswordnputView error={error} removeError={setError} />}
 
@@ -157,6 +170,7 @@ export default function SignupView() {
               disabled={signuppending}
               form="signup"
               type="submit"
+              
               style={{
                 backgroundColor: "#9c7248",
                 borderColor: "#9c7248",

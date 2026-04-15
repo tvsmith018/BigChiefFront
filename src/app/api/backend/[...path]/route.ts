@@ -17,8 +17,6 @@ function buildUpstreamUrl(request: NextRequest) {
   );
   const search = request.nextUrl.search;
 
-  // Django routes in this backend use trailing slashes. Next route pathnames
-  // can arrive normalized without the terminal slash, so restore it here.
   if (!upstreamPath.endsWith("/")) {
     upstreamPath = `${upstreamPath}/`;
   }
@@ -65,16 +63,27 @@ async function buildProxyHeaders(request: NextRequest) {
     headers.set("authorization", `Bearer ${accessToken}`);
   }
 
+  const signupClient = request.headers.get("x-signup-client");
+  if (signupClient) {
+    headers.set("x-signup-client", signupClient);
+  }
+
   return headers;
 }
 
 async function proxyRequest(request: NextRequest, context: RouteContext) {
   await context.params;
   const upstreamUrl = buildUpstreamUrl(request);
-  const requestBody =
-    request.method === "GET" || request.method === "HEAD"
-      ? undefined
-      : await request.text();
+
+  // Read body as raw bytes. request.text() UTF-8-decodes the whole body and destroys
+  // multipart binary (file parts), which shows up as repeated EF BF BD on the server.
+  let bodyBytes: ArrayBuffer | null = null;
+  if (request.method !== "GET" && request.method !== "HEAD") {
+    bodyBytes = await request.arrayBuffer();
+  }
+
+  const requestBody: BodyInit | undefined =
+    bodyBytes && bodyBytes.byteLength > 0 ? bodyBytes : undefined;
 
   let proxyHeaders = await buildProxyHeaders(request);
 
@@ -105,14 +114,16 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
     }
   }
 
-  const responseText = await upstreamResponse.text();
+  const responseBuf = await upstreamResponse.arrayBuffer();
+  const outHeaders = new Headers();
+  const ct = upstreamResponse.headers.get("content-type");
+  if (ct) {
+    outHeaders.set("content-type", ct);
+  }
 
-  return new NextResponse(responseText, {
+  return new NextResponse(responseBuf.byteLength ? responseBuf : null, {
     status: upstreamResponse.status,
-    headers: {
-      "content-type":
-        upstreamResponse.headers.get("content-type") ?? "application/json",
-    },
+    headers: outHeaders,
   });
 }
 

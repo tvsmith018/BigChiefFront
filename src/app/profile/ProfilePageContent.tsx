@@ -6,7 +6,7 @@ import {
   ProfileListCard,
   ProfileMiniInfoCard,
   ProfileRibbonTitle, 
-} from "@/_components/account/SharedPanels";
+} from "@/_views/account/SharedPanels";
 
 const avatarImage = "/images/about/victor.jpg";
 const postImage = "/images/about/group.jpeg";

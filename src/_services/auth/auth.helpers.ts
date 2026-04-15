@@ -1,4 +1,5 @@
 import type { User } from "@/_types/auth/user";
+import type { OTPResponse } from "@/_types/auth/otp/otpresponse";
 
 export function getCookieSettings(maxAge: number, nodeEnv = process.env.NODE_ENV) {
   return {
@@ -16,7 +17,20 @@ export function extractUser(payload: User | { data?: User } | null | undefined):
   return payload as User;
 }
 
+
 export function isAuthErrorUser(user: User | null) {
   if (!user) return true;
   return "detail" in user || "messages" in user;
+}
+
+
+export function normalizeOtp(resp: OTPResponse) {
+  const code = resp.data;
+  return { code, message: resp.message };
+}
+
+export function readOtp(formData: FormData) {
+  let otp = "";
+  for (let i = 0; i <= 5; i++) otp += String(formData.get(`texbox-${i}`) ?? "");
+  return otp;
 }

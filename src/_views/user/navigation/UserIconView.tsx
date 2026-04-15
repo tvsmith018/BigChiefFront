@@ -2,7 +2,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import NavItem from 'react-bootstrap/NavItem';
 import NavLink from 'react-bootstrap/NavLink';
 import Image from 'next/image';
-import { logoutAction } from '@/_services/auth/authservices';
+import { logoutAction } from '@/_services/auth/authactions';
 import { useAppDispatch } from '@/_store/hooks/UseAppDispatch';
 import { useAppSelector} from '@/_store/hooks/UseAppSelector';
 import { removeUser } from '@/_store/reducers/user/userSlice';

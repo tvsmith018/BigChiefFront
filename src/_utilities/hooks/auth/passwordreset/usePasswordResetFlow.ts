@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState, useActionState, useRef } from "react";
 import { ScreenNames } from "@/_utilities/datatype/Auth/types/screenNames";
-import { passwordResetAction, codeResend } from "@/_services/auth/authservices";
+import { passwordResetAction } from "@/_services/auth/authactions";
+import { codeResend } from "@/_services/auth/passwordreset/passwordresetservice";
 
 export function usePasswordResetFlow() {
   const [show, setShow] = useState(false);

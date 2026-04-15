@@ -1,19 +1,19 @@
 "use client";
 
-import { useEffect, useMemo, useState, useActionState, useRef } from "react";
+import { useEffect, useMemo, useState, useActionState, useRef, useCallback } from "react";
 import { ScreenNames } from "@/_utilities/datatype/Auth/types/screenNames";
-import { signupAction, signupCodeResend } from "@/_services/auth/authservices";
+import { signupAction } from "@/_services/auth/authactions";
+import { signupCodeResend } from "@/_services/auth/signup/signupservice";
+import { completeSignupWithMultipart } from "@/_services/auth/signup/completeSignupWithMultipart";
+import { storeUser } from "@/_store/reducers/user/userSlice";
+import { useAppDispatch } from "@/_store/hooks/UseAppDispatch";
+import { useRouter } from "next/navigation";  
 
-/**
- * Mirrors usePasswordResetFlow:
- * - local wizard state
- * - bind server action with current wizard state
- * - small helpers for UI (open/close/back/resend)
- */
 export function useSignupFlow() {
+  const dispatch = useAppDispatch();
+  const router = useRouter();
   const [show, setShow] = useState(false);
   const [flowVersion, setFlowVersion] = useState(0);
-
   const [screen, setScreen] = useState<ScreenNames>(ScreenNames.email_screen);
   const [generatedID, setGeneratedID] = useState<string | undefined>(undefined);
 
@@ -23,26 +23,65 @@ export function useSignupFlow() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedAvatar, setSelectedAvatar] = useState<File | undefined>(undefined);
   const [password, setPassword] = useState<string | undefined>(undefined);
+  const [finalSubmitPending, setFinalSubmitPending] = useState(false);
 
   const [error, setError] = useState<string[] | undefined>(undefined);
 
   const boundAction = useMemo(() => {
     return signupAction.bind(
       null,
-      flowVersion, 
+      flowVersion,
       screen.toString(),
       generatedID,
       selectedDate,
       firstname,
       lastname,
       email,
-      password,
-      selectedAvatar
+      password
     );
-  }, [email, firstname, flowVersion, generatedID, lastname, password, screen, selectedAvatar, selectedDate]);
+  }, [
+    email,
+    firstname,
+    flowVersion,
+    generatedID,
+    lastname,
+    password,
+    screen,
+    selectedDate,
+  ]);
+
+  const handleConfirmSignup = useCallback(
+    async (formData: FormData) => {
+      setFinalSubmitPending(true);
+      setError(undefined);
+      try {
+        const result = await completeSignupWithMultipart({
+          confirmPassword: String(formData.get("confirmnewpassword") ?? ""),
+          password: password ?? "",
+          email: email ?? "",
+          firstname: firstname ?? "",
+          lastname: lastname ?? "",
+          dob: selectedDate,
+          avatar: selectedAvatar,
+        });
+
+        if ("ok" in result && result.ok) {
+          setError(undefined);
+          dispatch(storeUser(result.user));
+          router.push("/");
+          return;
+        }
+        if ("confirmError" in result) setError(result.confirmError);
+        if ("networkError" in result) setError(result.networkError);
+      } finally {
+        setFinalSubmitPending(false);
+      }
+    },
+    [dispatch, router, email, firstname, lastname, password, selectedAvatar, selectedDate]
+  );
 
   const [signupState, signupaction, signuppending] = useActionState(boundAction, undefined);
-   const lastStateRef = useRef<typeof signupState>(undefined)
+  const lastStateRef = useRef<typeof signupState>(undefined);
 
   const open = () => setShow(true);
 
@@ -116,7 +155,6 @@ export function useSignupFlow() {
     if (data.error) setError(data.error);
     if (data.networkError) setError(data.networkError);
 
-    // align to your PasswordResetFlow style (data.code?.code)
     if (data.code) setGeneratedID(data.code.code);
   };
 
@@ -130,7 +168,6 @@ export function useSignupFlow() {
       return;
     }
 
-    // errors
     if (signupState.errors && screen === ScreenNames.email_screen) setError(signupState.errors.email);
     if (signupState.errors && screen === ScreenNames.firstname_screen) setError(signupState.errors.firstname);
     if (signupState.errors && screen === ScreenNames.lastname_screen) setError(signupState.errors.lastname);
@@ -141,7 +178,6 @@ export function useSignupFlow() {
     if (signupState.passwordError) setError(signupState.passwordError.password);
     if (signupState.confirmError) setError(signupState.confirmError);
 
-    // advance screens (same logic you had, but organized)
     if (signupState.screen === "code-screen" && !signupState.errors) {
       setGeneratedID(signupState.gen_code);
       setEmail(signupState.payload?.email);
@@ -177,6 +213,7 @@ export function useSignupFlow() {
 
     if (signupState.screen === "success-screen" && !signupState.networkError) {
       setScreen(ScreenNames.success_screen);
+      setError(undefined);
     }
   }, [flowVersion, screen, signupState]);
 
@@ -198,6 +235,7 @@ export function useSignupFlow() {
     onResendClick,
 
     signupaction,
-    signuppending,
+    handleConfirmSignup,
+    signuppending: signuppending || finalSubmitPending,
   };
 }

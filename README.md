@@ -1,54 +1,33 @@
-# Big Chief Ent Frontend
+# Big Chief Ent — Frontend documentation
 
-Next.js 16 frontend for Big Chief Ent with server-rendered article pages, auth flows, navigation overlays, and paginated article/comment experiences.
+This folder contains **engineering documentation** for the Next.js frontend (`frontend/app`). It is written for **junior to mid-level** developers and anyone onboarding to the codebase or reviewing it for production readiness.
 
-## Requirements
+## Documents
 
-- Node.js 22
-- npm
+| Document | Purpose |
+|----------|---------|
+| [**FRONTEND_ENGINEERING_GUIDE.md**](./FRONTEND_ENGINEERING_GUIDE.md) | **Start here.** End-to-end description of the frontend: stack, folder structure, auth and data flow, security notes, testing, CI, and an enterprise-style quality assessment by category. |
+| [**TESTING_AND_CI.md**](./TESTING_AND_CI.md) | Focused **runbook**: what each test layer does, exact commands, CI order, troubleshooting. Links back to the main guide for deeper context. |
 
-## Environment
-
-Create an `.env` file in the app root with one of these:
-
-```env
-NEXT_PUBLIC_API_URL="https://bigchiefnewz-a2e8434d1e6d.herokuapp.com"
-```
-
-Legacy support still works with:
-
-```env
-NEXT_PUBLIC_ARTICLEURL="https://bigchiefnewz-a2e8434d1e6d.herokuapp.com/graphql/"
-```
-
-## Scripts
+## Quick commands (run from `frontend/app`)
 
 ```bash
-npm run dev
-npm run lint
-npm run typecheck
-npm run test
-npm run validate
-npm run build
-npm run ci
+npm install
+npm run dev              # local development (Turbopack)
+npm run validate         # lint + TypeScript + all automated tests (no build)
+npm run ci               # full pipeline: validate + production build + E2E
 ```
 
-## Quality Gate
+## Repository layout reminder
 
-`npm run ci` is the local release check. It runs:
+```
+frontend/
+├── doc/                 # This documentation (you are here)
+└── app/                 # Next.js application (npm package root)
+    ├── e2e/             # Playwright end-to-end tests
+    ├── scripts/         # Node smoke test runner (run-tests.mjs)
+    ├── src/             # Application source (`src/app` = routes)
+    └── package.json
+```
 
-1. ESLint
-2. TypeScript type checking
-3. Native Node tests
-4. Production build
-
-## CI
-
-GitHub Actions is configured in `.github/workflows/ci.yml` to run the same checks on pushes and pull requests.
-
-## Notes
-
-- Auth and session bootstrapping are handled server-side.
-- API base URL resolution is centralized in `src/_network/config/endpoints.ts`.
-- Network request behavior is centralized in `src/_network/core/HttpClient.ts`.
-- Current frontend verification and grade notes are documented in [docs/FRONTEND_VERIFICATION_2026-04-07.md](C:\Users\terrance\BigChiefEnt-Offical\frontend\app\docs\FRONTEND_VERIFICATION_2026-04-07.md).
+For the full narrative, open [**FRONTEND_ENGINEERING_GUIDE.md**](./FRONTEND_ENGINEERING_GUIDE.md).

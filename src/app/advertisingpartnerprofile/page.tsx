@@ -4,7 +4,7 @@ import {
   DashboardTabs,
   DashboardWidgetTitle,
   type SharedNavItem,
-} from "@/_components/account/SharedPanels";
+} from "@/_views/account/SharedPanels";
 
 const partnerNavItems: SharedNavItem[] = [
   { icon: "bi-house-door-fill", label: "Dashboard", active: true },

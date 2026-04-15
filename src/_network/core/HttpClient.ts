@@ -27,13 +27,26 @@ export class HttpClient {
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
     try {
+      const body = config.body;
+      const isFormData =
+        typeof FormData !== "undefined" && body instanceof FormData;
+
+      const extraHeaders = (config.headers ?? {}) as Record<string, string>;
+      const headers: HeadersInit = isFormData
+        ? { ...extraHeaders }
+        : { "Content-Type": "application/json", ...extraHeaders };
+
+      const fetchBody =
+        body === undefined || body === null
+          ? undefined
+          : isFormData
+            ? body
+            : JSON.stringify(body);
+
       const res = await fetch(`${this.getBaseUrl()}${endpoint}`, {
         method: config.method ?? "GET",
-        headers: {
-          "Content-Type": "application/json",
-          ...config.headers,
-        },
-        body: config.body ? JSON.stringify(config.body) : undefined,
+        headers,
+        body: fetchBody,
         credentials: config.credentials ?? "include",
         signal: controller.signal,
         ...options,

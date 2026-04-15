@@ -15,7 +15,10 @@ import {
   extractUser,
   getCookieSettings,
   isAuthErrorUser,
+  normalizeOtp,
+  readOtp,
 } from "../src/_services/auth/auth.helpers.ts";
+import { validateSignupConfirmInput } from "../src/_services/auth/signup/signupValidation.ts";
 
 async function testEndpoints() {
   assert.equal(
@@ -113,6 +116,87 @@ async function testHttpClient() {
   }
 }
 
+async function testHttpClientFormData() {
+  const originalFetch = globalThis.fetch;
+
+  try {
+    let receivedInit;
+
+    globalThis.fetch = async (_input, init) => {
+      receivedInit = init;
+      return new Response(JSON.stringify({ data: "ok" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    };
+
+    const client = new HttpClient("https://example.com");
+    const fd = new FormData();
+    fd.append("email", "a@b.com");
+    fd.append("password", "secret");
+
+    const res = await client.request("/signup", {
+      method: "POST",
+      body: fd,
+      headers: { "X-Signup-Client": "web" },
+    });
+
+    assert.deepEqual(res, { data: "ok" });
+    assert.equal(receivedInit?.method, "POST");
+    assert.ok(receivedInit?.body instanceof FormData);
+    assert.equal(receivedInit?.body, fd);
+    const hdrs = receivedInit?.headers;
+    assert.ok(hdrs);
+    const contentType =
+      typeof hdrs.get === "function"
+        ? hdrs.get("Content-Type")
+        : hdrs["Content-Type"] ?? hdrs["content-type"];
+    assert.notEqual(contentType, "application/json");
+    assert.equal(
+      typeof hdrs.get === "function" ? hdrs.get("X-Signup-Client") : hdrs["X-Signup-Client"],
+      "web"
+    );
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+}
+
+async function testSignupValidation() {
+  const base = {
+    confirmPassword: "x",
+    password: "x",
+    email: "a@b.com",
+    firstname: "A",
+    lastname: "B",
+    dob: new Date("2000-01-01"),
+  };
+
+  assert.equal(validateSignupConfirmInput(base), null);
+
+  assert.deepEqual(validateSignupConfirmInput({ ...base, confirmPassword: "" }), {
+    confirmError: ["Cannot be blanked!!!"],
+  });
+  assert.deepEqual(validateSignupConfirmInput({ ...base, password: "" }), {
+    confirmError: ["Missing password state, try again."],
+  });
+  assert.deepEqual(
+    validateSignupConfirmInput({ ...base, confirmPassword: "a", password: "b" }),
+    { confirmError: ["Passwords are not the same!!!!"] }
+  );
+  assert.deepEqual(validateSignupConfirmInput({ ...base, email: "" }), {
+    networkError: ["Missing email state, try again."],
+  });
+  assert.deepEqual(validateSignupConfirmInput({ ...base, firstname: "" }), {
+    networkError: ["Missing firstname state, try again."],
+  });
+  assert.deepEqual(validateSignupConfirmInput({ ...base, lastname: "" }), {
+    networkError: ["Missing lastname state, try again."],
+  });
+  assert.deepEqual(validateSignupConfirmInput({ ...base, dob: undefined }), {
+    networkError: ["Missing dob state, try again."],
+  });
+}
+
 async function testAuthHelpers() {
   assert.deepEqual(getCookieSettings(3600, "production"), {
     httpOnly: true,
@@ -149,11 +233,22 @@ async function testAuthHelpers() {
     true
   );
   assert.equal(isAuthErrorUser({ firstname: "Valid" }), false);
+
+  const otpForm = new FormData();
+  for (let i = 0; i <= 5; i++) otpForm.append(`texbox-${i}`, String(i));
+  assert.equal(readOtp(otpForm), "012345");
+
+  assert.deepEqual(
+    normalizeOtp({ data: "123456", message: "ok" }),
+    { code: "123456", message: "ok" }
+  );
 }
 
 async function main() {
   await testEndpoints();
   await testHttpClient();
+  await testHttpClientFormData();
+  await testSignupValidation();
   await testAuthHelpers();
   console.log("Smoke tests passed.");
 }

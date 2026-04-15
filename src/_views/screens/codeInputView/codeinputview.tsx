@@ -75,6 +75,7 @@ export default function CodeInputView({prompt, onComplete, onResendClick}:{promp
           type="text" // Use 'text' to control input length and content
           maxLength={1}
           value={digit}
+          inputMode="numeric"
           onChange={(e:React.ChangeEvent<HTMLInputElement>) => handleChange(e, index)}
           onKeyDown={(e:React.KeyboardEvent<HTMLInputElement>) => handleKeyDown(e, index)}
           ref={(el:never) => (inputRefs.current[index] = el)}

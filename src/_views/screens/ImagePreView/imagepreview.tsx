@@ -2,7 +2,11 @@ import FormControl from "react-bootstrap/FormControl"
 import { useState, Dispatch, SetStateAction } from "react";
 import Image from "next/image";
 
-export default function ImagePreView({setFile}:{setFile:Dispatch<SetStateAction<File | undefined>>}) {
+type ImagePreViewProps = {
+  setFile: Dispatch<SetStateAction<File | undefined>>;
+};
+
+export default function ImagePreView({ setFile }: ImagePreViewProps) {
   const [previewUrl, setPreviewUrl] = useState('');
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     
@@ -15,9 +19,24 @@ export default function ImagePreView({setFile}:{setFile:Dispatch<SetStateAction<
 
   return <>
     {!previewUrl && <div style={{height:"200px", width:"100%", backgroundColor:"gray"}}></div>}
-    {previewUrl && <div style={{height:"200px", width:"100%"}}>
-      <Image src={previewUrl} alt="Preview" style={{ width: '100%', height:"200px" }} />
-    </div>}
+    {previewUrl && (
+      <div
+        style={{
+          position: "relative",
+          height: "200px",
+          width: "100%",
+        }}
+      >
+        <Image
+          src={previewUrl}
+          alt="Preview"
+          fill
+          unoptimized
+          sizes="100vw"
+          style={{ objectFit: "cover" }}
+        />
+      </div>
+    )}
     <FormControl accept=".jpeg,.png,.jpg" type="file" onChange={handleFileChange} className="mt-3"/>
     <p className="mt-2">Please upload a image to set as your profile picture.  This is optional but highly recommended.</p>
   </>

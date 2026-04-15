@@ -8,7 +8,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --ignore-pattern .next --ignore-pattern node_modules --max-warnings=0",
-    "test": "node --experimental-strip-types scripts/run-tests.mjs",
+    "test": "npm run test:smoke && npm run test:unit",
+    "test:smoke": "node --experimental-strip-types scripts/run-tests.mjs",
+    "test:unit": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "validate": "npm run lint && npm run typecheck && npm run test",
     "test:e2e": "playwright test",
@@ -37,14 +39,20 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@playwright/test": "^1.59.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^4.7.0",
+    "@vitest/coverage-v8": "^4.1.4",
     "eruda": "^3.4.3",
     "eslint": "^9",
     "eslint-config-next": "15.2.1",
     "eslint-plugin-boundaries": "^5.4.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
-    "typescript": "^5"
+    "happy-dom": "^20.9.0",
+    "typescript": "^5",
+    "vitest": "^4.1.4"
   }
 }
