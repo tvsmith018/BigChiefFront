@@ -1,11 +1,13 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface AppState {
   isHydrated: boolean;
+  authTransitioning: boolean;
 }
 
 const initialState: AppState = {
   isHydrated: false,
+  authTransitioning: false,
 };
 
 const appSlice = createSlice({
@@ -15,8 +17,11 @@ const appSlice = createSlice({
     markHydrated(state) {
       state.isHydrated = true;
     },
+    setAuthTransitioning(state, action: PayloadAction<boolean>) {
+      state.authTransitioning = action.payload;
+    },
   },
 });
 
-export const { markHydrated } = appSlice.actions;
+export const { markHydrated, setAuthTransitioning } = appSlice.actions;
 export default appSlice.reducer;

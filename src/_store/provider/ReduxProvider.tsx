@@ -44,7 +44,12 @@ export function ReduxProvider({
     const store = storeRef.current;
     if (!store) return;
 
-    const current = store.getState().user;
+    const state = store.getState();
+    if (state.app.authTransitioning) {
+      return;
+    }
+
+    const current = state.user;
 
     if (serverIsAuthenticated && serverUser) {
       if (!current.isAuthenticated || !sameUser(current.data, serverUser)) {

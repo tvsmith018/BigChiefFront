@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { logoutAction } from "@/_services/auth/authactions";
 import { useAppDispatch } from "@/_store/hooks/UseAppDispatch";
 import { useAppSelector } from "@/_store/hooks/UseAppSelector";
+import { setAuthTransitioning } from "@/_store/reducers/app/appSlice";
 import { removeUser } from "@/_store/reducers/user/userSlice";
 
 export default function UserIconView() {
@@ -23,14 +24,16 @@ export default function UserIconView() {
     if (isLoggingOut) return;
     setIsLoggingOut(true);
 
+    // Make UI switch immediately.
+    dispatch(setAuthTransitioning(true));
+    dispatch(removeUser());
+    router.replace("/");
+
     try {
-      // 1) clear server cookies/session first
+      // Keep server in sync without blocking immediate UI transition.
       await logoutAction();
     } finally {
-      // 2) then sync client auth state exactly once
-      dispatch(removeUser());
-      // 3) and navigate to home by product rule
-      router.replace("/");
+      dispatch(setAuthTransitioning(false));
       router.refresh();
       setIsLoggingOut(false);
     }

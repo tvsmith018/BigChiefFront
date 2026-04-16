@@ -31,6 +31,7 @@ export function SessionSync() {
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const currentUser = useAppSelector((state) => state.user.data);
+  const authTransitioning = useAppSelector((state) => state.app.authTransitioning);
 
   const unauthStreakRef = useRef(0);
   const lastAuthSuccessAtRef = useRef(Date.now());
@@ -39,6 +40,8 @@ export function SessionSync() {
     let active = true;
 
     const sync = async () => {
+      if (authTransitioning) return;
+
       try {
         const res = await fetch("/api/session", {
           method: "GET",
@@ -103,7 +106,7 @@ export function SessionSync() {
       window.removeEventListener("focus", onFocus);
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
-  }, [dispatch, isAuthenticated, currentUser]);
+  }, [dispatch, isAuthenticated, currentUser, authTransitioning]);
 
   return null;
 }
