@@ -1,4 +1,4 @@
-# Frontend Verification - April 7, 2026
+# Frontend Verification - April 16, 2026
 
 This document records the current frontend grade, the major work completed so far, the quality checks that were run, and the key integration fixes made while aligning the frontend to the live backend.
 
@@ -8,13 +8,14 @@ This frontend is not frozen. It is already operational, fast, and production-cap
 
 ## Current grade
 
-- Frontend overall: `A`
+- Frontend overall: `A-`
 - Frontend architecture and maintainability: `A`
-- Frontend performance: `A`
-- Frontend operational reliability: `A`
+- Frontend performance: `A-`
+- Frontend operational reliability: `A-`
+- Frontend auth/session behavior: `A-`
 - Frontend test maturity: `B+`
 
-## Why the frontend is graded `A`
+## Why the frontend is graded `A-`
 
 The frontend is in a strong place because:
 
@@ -22,15 +23,17 @@ The frontend is in a strong place because:
 - the build is stable
 - lint, typecheck, tests, and production build are all part of the quality gate
 - auth and session handling are significantly more reliable than before
+- recent auth sync drift fixes are now in place across login, logout, idle resume, and protected route access
 - browser-to-backend integration is more stable through same-origin proxying
 - frontend-to-backend gaps are documented instead of being hidden debt
 - the codebase is maintainable enough to keep building on safely
 
-It is not being called a full `A+` yet because:
+It is not being called a full `A` yet because:
 
 - test coverage is still lighter than a top-tier enterprise frontend
 - some remaining product surface is still being built against the backend
 - there is still room for deeper integration coverage across more real user flows
+- auth/session logic now has stronger protections, but still benefits from additional end-to-end regression coverage to harden future changes
 
 ## Major frontend work completed so far
 
@@ -53,6 +56,13 @@ The frontend has moved well beyond an early prototype. Major work completed so f
 - frontend-to-backend mapping and gap analysis documentation
 - safer avatar rendering and image cropping behavior for user images
 - stronger support for backend-aligned article, auth, comment, and rating flows
+- auth/session stabilization improvements:
+  - server-first auth checks for protected and guest routes
+  - sync endpoint and client heartbeat for session reconciliation after idle/focus changes
+  - Redux auth state no longer persisted as stale source-of-truth
+  - provider-level server-to-client auth state reconciliation
+  - smoother login/signup redirects to `/profile` and logout redirect to `/`
+  - reduced logout/login state flicker during token/session transition windows
 
 ## Quality checks run
 
@@ -102,6 +112,10 @@ The following frontend health signals are strong:
 - CI is configured to enforce the same checks
 - the frontend is already fast in practice
 - frontend proxy paths were used to solve real live-integration issues instead of relying on weak client-only workarounds
+- current auth flow behavior verifies:
+  - login and signup route to `/profile`
+  - logout routes to `/`
+  - state sync no longer requires manual refresh in normal use
 
 ## Meaningful notes still worth tracking
 
@@ -110,6 +124,7 @@ The frontend is strong, but these are still the honest areas to keep improving:
 - add deeper feature-level tests, especially around auth, payments, and long-running flows
 - continue building the remaining frontend surface that the backend already supports
 - keep refining product polish and consistency as new pages are added
+- keep monitoring auth/session sync overhead and tune polling/focus strategy if needed as traffic grows
 
 None of those are blockers for continued frontend work. They are the normal next steps for growing a strong app responsibly.
 

@@ -7,6 +7,7 @@ import { signupCodeResend } from "@/_services/auth/signup/signupservice";
 import { completeSignupWithMultipart } from "@/_services/auth/signup/completeSignupWithMultipart";
 import { storeUser } from "@/_store/reducers/user/userSlice";
 import { useAppDispatch } from "@/_store/hooks/UseAppDispatch";
+import { setAuthTransitioning } from "@/_store/reducers/app/appSlice";
 import { useRouter } from "next/navigation";  
 
 export function useSignupFlow() {
@@ -67,9 +68,13 @@ export function useSignupFlow() {
 
         if ("ok" in result && result.ok) {
           setError(undefined);
+          dispatch(setAuthTransitioning(true));
           dispatch(storeUser(result.user));
           router.replace("/profile");
           router.refresh();
+          window.setTimeout(() => {
+            dispatch(setAuthTransitioning(false));
+          }, 1500);
           return;
         }
         if ("confirmError" in result) setError(result.confirmError);
