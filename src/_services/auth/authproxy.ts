@@ -94,7 +94,7 @@ async function refreshSession(
 export const authProxy = cache(async function authProxy(): Promise<User | null> {
   const cookieStore = await cookies();
   const refresh = cookieStore.get(COOKIE_REFRESH)?.value;
-  let access = cookieStore.get(COOKIE_ACCESS)?.value;
+  const access = cookieStore.get(COOKIE_ACCESS)?.value;
 
   if (!refresh) {
     if (access) cookieStore.delete(COOKIE_ACCESS);

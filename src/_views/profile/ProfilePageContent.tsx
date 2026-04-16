@@ -8,17 +8,8 @@ import {
   ProfileRibbonTitle, 
 } from "@/_views/account/SharedPanels";
 
-import { useAppSelector } from "@/_store/hooks/UseAppSelector";
 import { ProfileMePayload } from "@/_types/profile/profileMePayload";
 const postImage = "/images/about/group.jpeg";
-
-const sideNavItems = [
-  { icon: "bi-house-door-fill", label: "Feed" },
-  // { icon: "bi-bell-fill", label: "Notifications", badge: "1" },
-  // { icon: "bi-chat-left-text-fill", label: "Messages", badge: "1" },
-  // { icon: "bi-collection-play-fill", label: "My Content" },
-  { icon: "bi-bookmark-heart-fill", label: "Saved Articles" },
-];
 
 const activityTabs = ["My Posts", "Watch History", "My Ratings", "Photos"];
 
@@ -28,7 +19,7 @@ const accountCenterItems = [
 ];
 
 export default function ProfilePageContent({ profile }: { profile: ProfileMePayload }) {
-  const {user, settings, stats} = profile;
+  const {user} = profile;
   const avatarImage = user?.avatar || "/images/about/victor.jpg";
   return (
     <main className="bc-profile-page">

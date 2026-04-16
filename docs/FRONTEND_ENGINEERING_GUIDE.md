@@ -381,18 +381,20 @@ This section translates an **internal engineering review** into **clear expectat
 | Security telemetry | Add centralized client/server security event reporting to improve incident response speed. |
 | Ongoing review | Keep GraphQL and REST proxy forwarding rules reviewed whenever auth/session logic changes. |
 
-### 16.3 Architecture — **B+**
+### 16.3 Architecture — **A**
 
 | Strength | Detail |
 |----------|--------|
 | Layering | Clear split: `app`, `_views`, `_services`, `_network`, `_store`. |
 | Next.js patterns | App Router, layouts, route handlers used intentionally. |
 | Pagination / core | Shared `_core/pagination` patterns improve consistency. |
+| Import boundaries | ESLint boundaries rules now enforce critical layer constraints (network/store isolated from route/view layer). |
+| Global request policy | `src/proxy.ts` now documents and enforces a clear minimal policy (no auth redirects there, request correlation ID propagation). |
 
 | Gap | What to do |
 |-----|------------|
-| Import boundaries | `eslint-plugin-boundaries` is listed but layer rules are not fully spelled out in ESLint—consider enforcing allowed import directions. |
-| Middleware | Clarify global request policy (security headers, redirects) vs minimal `proxy` behavior. |
+| Boundary depth | Expand boundaries rules over time from critical constraints to fuller directional architecture map as modules stabilize. |
+| Runtime policy docs | Keep proxy/layout/API policy docs synchronized as auth/security responsibilities evolve. |
 
 ### 16.4 Testing — **B+**
 
