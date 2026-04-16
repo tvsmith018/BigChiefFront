@@ -3,7 +3,7 @@
 **Product:** Big Chief Ent (hip-hop blog / content platform)  
 **Audience:** Junior to mid-level engineers, reviewers, and operators  
 **Scope:** The Next.js application under `frontend/app`  
-**Last updated:** April 2026  
+**Last updated:** April 16, 2026  
 
 ---
 
@@ -361,9 +361,9 @@ This section translates an **internal engineering review** into **clear expectat
 
 ### 16.1 Overall
 
-| Grade | **B** |
+| Grade | **A** |
 |-------|--------|
-| **Summary** | The frontend is **production-viable** with **good structure and CI**. To reach **enterprise-grade operations**, invest in **observability** and **broader automated coverage** of user journeys. |
+| **Summary** | The frontend is **production-capable and strong** with stable architecture, CI quality gates, and hardened auth/session behavior. To push toward **A+**, continue deepening automated journey coverage and observability sink integrations. |
 
 ### 16.2 Security — **A-**
 
@@ -414,12 +414,12 @@ Hooks and pagination adapters promote reuse. Auth flows can still **drift**; pre
 
 Strict lint and TypeScript help. **Console noise** and occasional **naming inconsistencies** (e.g. legacy folder names) add onboarding cost. Align **eslint-config-next** major with **Next** over time.
 
-### 16.7 Observability — **C / C+**
+### 16.7 Observability — **B+**
 
 | Observation | Detail |
 |-------------|--------|
-| Current state | No first-class error reporting (e.g. Sentry) or RUM in the dependency set reviewed; logging is not structured end-to-end. |
-| Enterprise expectation | Global **error boundary**, **client + server error reporting**, and **Web Vitals** or RUM for production traffic. |
+| Current state | Baseline observability is now in place: global + route error boundaries, structured application logging primitives, request correlation IDs on proxy responses, and Web Vitals reporting hooks. |
+| Enterprise expectation | Keep this baseline and add sink integrations (APM/RUM, alerting, and long-term dashboards) so client + server error/event signals are queryable and actionable at scale. |
 
 ### 16.8 Accessibility — **B**
 
@@ -468,3 +468,4 @@ Before tagging a release or merging to production:
 |---------|------|-------|
 | 1.0 | 2026-04 | Initial enterprise-style guide: stack, structure, testing, CI, quality assessment. |
 | 1.1 | 2026-04-16 | Security hardening update: auth log cleanup, proxy parity improvements, baseline security headers, revised security grade. |
+| 1.2 | 2026-04-16 | Observability baseline update: error boundaries, Web Vitals reporter, request correlation IDs, structured logger guidance. |

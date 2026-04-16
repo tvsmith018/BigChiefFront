@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { auth_end, httpClient } from "@/_network";
 import type { User } from "@/_types/auth/user";
 import type { JWTToken } from "@/_utilities/datatype/Auth/types/token";
+import { logError, logWarn } from "@/_utilities/observability/logger";
 import {
   extractUser,
   getCookieSettings,
@@ -97,6 +98,7 @@ export const authProxy = cache(async function authProxy(): Promise<User | null> 
 
   if (!refresh) {
     if (access) cookieStore.delete(COOKIE_ACCESS);
+    logWarn("auth_proxy_no_refresh_cookie");
     return null;
   }
 
@@ -109,6 +111,7 @@ export const authProxy = cache(async function authProxy(): Promise<User | null> 
     const newAccess = await refreshSession(refresh, cookieStore);
     if (!newAccess) {
       clearAuthCookies(cookieStore);
+      logWarn("auth_proxy_refresh_failed");
       return null;
     }
 
@@ -121,6 +124,7 @@ export const authProxy = cache(async function authProxy(): Promise<User | null> 
     );
     if (!retryAccess) {
       clearAuthCookies(cookieStore);
+      logWarn("auth_proxy_retry_refresh_failed");
       return null;
     }
 
@@ -128,8 +132,10 @@ export const authProxy = cache(async function authProxy(): Promise<User | null> 
     if (user) return user;
 
     clearAuthCookies(cookieStore);
+    logWarn("auth_proxy_user_fetch_failed_after_refresh");
     return null;
   } catch {
+    logError("auth_proxy_unexpected_error", new Error("authProxy failed"));
     return null;
   }
 });

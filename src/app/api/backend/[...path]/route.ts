@@ -74,6 +74,7 @@ async function buildProxyHeaders(request: NextRequest) {
 async function proxyRequest(request: NextRequest, context: RouteContext) {
   await context.params;
   const upstreamUrl = buildUpstreamUrl(request);
+  const requestId = request.headers.get("x-request-id") ?? crypto.randomUUID();
 
   // Read body as raw bytes. request.text() UTF-8-decodes the whole body and destroys
   // multipart binary (file parts), which shows up as repeated EF BF BD on the server.
@@ -86,6 +87,7 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
     bodyBytes && bodyBytes.byteLength > 0 ? bodyBytes : undefined;
 
   let proxyHeaders = await buildProxyHeaders(request);
+  proxyHeaders.set("x-request-id", requestId);
 
   let upstreamResponse = await fetch(upstreamUrl, {
     method: request.method,
@@ -103,6 +105,7 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
       if (refreshedAccessToken) {
         proxyHeaders = new Headers(proxyHeaders);
         proxyHeaders.set("authorization", `Bearer ${refreshedAccessToken}`);
+        proxyHeaders.set("x-request-id", requestId);
 
         upstreamResponse = await fetch(upstreamUrl, {
           method: request.method,
@@ -123,6 +126,7 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
   outHeaders.set("x-content-type-options", "nosniff");
   outHeaders.set("x-frame-options", "DENY");
   outHeaders.set("referrer-policy", "strict-origin-when-cross-origin");
+  outHeaders.set("x-request-id", requestId);
 
   return new NextResponse(responseBuf.byteLength ? responseBuf : null, {
     status: upstreamResponse.status,

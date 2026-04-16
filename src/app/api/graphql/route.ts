@@ -62,7 +62,9 @@ function buildSecurityHeaders(contentType: string) {
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
+  const requestId = request.headers.get("x-request-id") ?? crypto.randomUUID();
   let proxyHeaders = await buildProxyHeaders(request);
+  proxyHeaders.set("x-request-id", requestId);
 
   let upstreamResponse = await fetch(GRAPHQL_UPSTREAM_URL, {
     method: "POST",
@@ -78,6 +80,7 @@ export async function POST(request: NextRequest) {
       if (refreshedAccessToken) {
         proxyHeaders = new Headers(proxyHeaders);
         proxyHeaders.set("authorization", `Bearer ${refreshedAccessToken}`);
+        proxyHeaders.set("x-request-id", requestId);
         upstreamResponse = await fetch(GRAPHQL_UPSTREAM_URL, {
           method: "POST",
           headers: proxyHeaders,
@@ -93,6 +96,9 @@ export async function POST(request: NextRequest) {
 
   return new NextResponse(responseText, {
     status: upstreamResponse.status,
-    headers: buildSecurityHeaders(contentType),
+    headers: {
+      ...buildSecurityHeaders(contentType),
+      "x-request-id": requestId,
+    },
   });
 }

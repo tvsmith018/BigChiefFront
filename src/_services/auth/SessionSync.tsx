@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 
 import type { User } from "@/_types/auth/user";
+import { logWarn } from "@/_utilities/observability/logger";
 import { useAppDispatch } from "@/_store/hooks/UseAppDispatch";
 import { useAppSelector } from "@/_store/hooks/UseAppSelector";
 import { removeUser, storeUser } from "@/_store/reducers/user/userSlice";
@@ -76,6 +77,7 @@ export function SessionSync() {
         dispatch(removeUser());
       } catch {
         // Ignore transient network issues; next heartbeat/focus will reconcile.
+        logWarn("session_sync_fetch_failed");
       }
     };
 
