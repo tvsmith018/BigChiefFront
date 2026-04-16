@@ -3,6 +3,7 @@ import {
   API_BROWSER_BASE_PATH,
   AUTH_ENDPOINTS,
   GRAPHQL_BROWSER_PATH,
+  PROFILE_ENDPOINTS,
   normalizeApiBaseUrl,
   resolveApiBaseUrl,
   resolveGraphQLEndpoint,
@@ -55,5 +56,9 @@ describe("endpoints", () => {
   it("AUTH_ENDPOINTS has stable paths", () => {
     expect(AUTH_ENDPOINTS.refreshToken).toBe("/authorized/token/refresh/");
     expect(AUTH_ENDPOINTS.signup).toBe("/authorized/signup/");
+  });
+
+  it("PROFILE_ENDPOINTS has stable paths", () => {
+    expect(PROFILE_ENDPOINTS.me).toBe("/profiles/me/");
   });
 });

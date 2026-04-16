@@ -1,11 +1,26 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import { makeStore, makePersistor } from "@/_store/store"; // see below
-import { PreloadedState } from "../preloader";
-import { useRef } from "react";
+
+import type { User } from "@/_types/auth/user";
+import { makePersistor, makeStore } from "@/_store/store";
+import { removeUser, storeUser } from "../reducers/user/userSlice";
 import { markHydrated } from "../reducers/app/appSlice";
+import { SessionSync } from "@/_services/auth/SessionSync";
+import { PreloadedState } from "../preloader";
+
+function sameUser(a?: User, b?: User) {
+  if (!a && !b) return true;
+  if (!a || !b) return false;
+  return (
+    a.id === b.id &&
+    a.firstname === b.firstname &&
+    a.lastname === b.lastname &&
+    a.avatar === b.avatar
+  );
+}
 
 export function ReduxProvider({
   children,
@@ -22,15 +37,37 @@ export function ReduxProvider({
     persistorRef.current = makePersistor(storeRef.current);
   }
 
+  const serverIsAuthenticated = preloadedState?.user?.isAuthenticated ?? false;
+  const serverUser = preloadedState?.user?.data;
+
+  useEffect(() => {
+    const store = storeRef.current;
+    if (!store) return;
+
+    const current = store.getState().user;
+
+    if (serverIsAuthenticated && serverUser) {
+      if (!current.isAuthenticated || !sameUser(current.data, serverUser)) {
+        store.dispatch(storeUser(serverUser));
+      }
+      return;
+    }
+
+    if (current.isAuthenticated) {
+      store.dispatch(removeUser());
+    }
+  }, [serverIsAuthenticated, serverUser]);
+
   return (
     <Provider store={storeRef.current}>
-      <PersistGate 
-        loading={null}  
+      <PersistGate
+        loading={null}
         persistor={persistorRef.current!}
-        onBeforeLift={()=>{
-          storeRef.current?.dispatch(markHydrated())
+        onBeforeLift={() => {
+          storeRef.current?.dispatch(markHydrated());
         }}
       >
+        <SessionSync />
         {children}
       </PersistGate>
     </Provider>

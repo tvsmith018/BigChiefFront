@@ -53,3 +53,7 @@ export const AUTH_ENDPOINTS = {
   signup: "/authorized/signup/",
   refreshToken: "/authorized/token/refresh/",
 };
+
+export const PROFILE_ENDPOINTS = {
+  me: "/profiles/me/",
+};

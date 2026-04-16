@@ -68,7 +68,8 @@ export function useSignupFlow() {
         if ("ok" in result && result.ok) {
           setError(undefined);
           dispatch(storeUser(result.user));
-          router.push("/");
+          router.replace("/profile");
+          router.refresh();
           return;
         }
         if ("confirmError" in result) setError(result.confirmError);

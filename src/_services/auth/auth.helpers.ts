@@ -11,6 +11,22 @@ export function getCookieSettings(maxAge: number, nodeEnv = process.env.NODE_ENV
   };
 }
 
+/**
+ * True when the API returned an auth/JWT error (not our `{ success: true, data }` envelope).
+ * Avoid treating arbitrary `detail` as failure — that breaks on throttling and other DRF shapes.
+ */
+export function isApiAuthFailure(payload: unknown): boolean {
+  if (!payload || typeof payload !== "object") return false;
+  const p = payload as Record<string, unknown>;
+  if (p.success === true) return false;
+  if (p.code === "token_not_valid") return true;
+  if (Array.isArray(p.messages)) return true;
+  if (p.detail !== undefined && p.success !== true) {
+    return true;
+  }
+  return false;
+}
+
 export function extractUser(payload: User | { data?: User } | null | undefined): User | null {
   if (!payload) return null;
   if ("data" in payload && payload.data) return payload.data;

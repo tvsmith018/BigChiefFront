@@ -4,6 +4,7 @@ import { AppShell } from "@/_core/layout/AppShell";
 import { DevTools } from "@/_core/scripts/DevTools";
 import { authProxy } from "@/_services/auth/authproxy";
 
+/** Syncs session on every request: refresh access (~20m backend TTL), validate /me, clear cookies if invalid. Cached per request via `authProxy`. */
 export default async function RootLayout({
   children,
 }: {

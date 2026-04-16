@@ -1,16 +1,30 @@
 import "server-only";
 
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { auth_end, httpClient } from "@/_network";
 import type { User } from "@/_types/auth/user";
 import type { JWTToken } from "@/_utilities/datatype/Auth/types/token";
-import { extractUser, getCookieSettings, isAuthErrorUser } from "./auth.helpers";
+import {
+  extractUser,
+  getCookieSettings,
+  isApiAuthFailure,
+  isAuthErrorUser,
+} from "./auth.helpers";
 
 const COOKIE_REFRESH = "session";
 const COOKIE_ACCESS = "access";
 const ACCESS_MAX_AGE_SECONDS = 60 * 60 * 24;
+const REFRESH_MAX_AGE_SECONDS = 60 * 60 * 24 * 14;
+
+function clearAuthCookies(
+  cookieStore: Awaited<ReturnType<typeof cookies>>
+) {
+  cookieStore.delete(COOKIE_REFRESH);
+  cookieStore.delete(COOKIE_ACCESS);
+}
 
 async function fetchMe(access?: string): Promise<User | null> {
   if (!access) return null;
@@ -27,6 +41,8 @@ async function fetchMe(access?: string): Promise<User | null> {
     { cache: "no-store" }
   );
 
+  if (isApiAuthFailure(res)) return null;
+
   const user = extractUser(res);
   if (!user || typeof user !== "object") return null;
   if (isAuthErrorUser(user)) return null;
@@ -34,55 +50,102 @@ async function fetchMe(access?: string): Promise<User | null> {
   return user;
 }
 
-async function refreshAccess(refresh: string): Promise<string | null> {
+/**
+ * Refresh tokens; persists new access. If API returns a new refresh (rotation), updates session cookie.
+ */
+async function refreshSession(
+  refreshToken: string,
+  cookieStore: Awaited<ReturnType<typeof cookies>>
+): Promise<string | null> {
   const res = await httpClient.request<JWTToken>(
     auth_end.refreshToken,
     {
       method: "POST",
-      body: { refresh },
+      body: { refresh: refreshToken },
     },
     { cache: "no-store" }
   );
 
-  if (!res || res.detail || !res.access) return null;
+  if (!res?.access) return null;
+
+  cookieStore.set(
+    COOKIE_ACCESS,
+    res.access,
+    getCookieSettings(ACCESS_MAX_AGE_SECONDS)
+  );
+
+  if (res.refresh) {
+    cookieStore.set(
+      COOKIE_REFRESH,
+      res.refresh,
+      getCookieSettings(REFRESH_MAX_AGE_SECONDS)
+    );
+  }
 
   return res.access;
 }
 
-export async function authProxy(): Promise<User | null> {
+/**
+ * - Try existing access with `/authorized/me/` first (avoids refresh throttle: backend limits refresh/hour).
+ * - Refresh only when access is missing or `/me` fails.
+ * - Clears cookies only when refresh fails or `/me` fails after a successful refresh.
+ */
+export const authProxy = cache(async function authProxy(): Promise<User | null> {
   const cookieStore = await cookies();
   const refresh = cookieStore.get(COOKIE_REFRESH)?.value;
   let access = cookieStore.get(COOKIE_ACCESS)?.value;
 
-  if (!refresh) return null;
+  if (!refresh) {
+    if (access) cookieStore.delete(COOKIE_ACCESS);
+    return null;
+  }
 
   try {
-    if (!access) {
-      access = await refreshAccess(refresh) ?? undefined;
-      if (!access) return null;
-      cookieStore.set(COOKIE_ACCESS, access, getCookieSettings(ACCESS_MAX_AGE_SECONDS));
+    if (access) {
+      const user = await fetchMe(access);
+      if (user) return user;
     }
 
-    const user = await fetchMe(access);
+    const newAccess = await refreshSession(refresh, cookieStore);
+    if (!newAccess) {
+      clearAuthCookies(cookieStore);
+      return null;
+    }
+
+    let user = await fetchMe(newAccess);
     if (user) return user;
 
-    access = await refreshAccess(refresh) ?? undefined;
-    if (!access) return null;
+    const retryAccess = await refreshSession(
+      cookieStore.get(COOKIE_REFRESH)?.value ?? refresh,
+      cookieStore
+    );
+    if (!retryAccess) {
+      clearAuthCookies(cookieStore);
+      return null;
+    }
 
-    cookieStore.set(COOKIE_ACCESS, access, getCookieSettings(ACCESS_MAX_AGE_SECONDS));
-    return await fetchMe(access);
+    user = await fetchMe(retryAccess);
+    if (user) return user;
+
+    clearAuthCookies(cookieStore);
+    return null;
   } catch {
     return null;
   }
+});
+
+export async function getSessionAccessToken(): Promise<string | null> {
+  await authProxy();
+  const cookieStore = await cookies();
+  return cookieStore.get(COOKIE_ACCESS)?.value ?? null;
 }
 
-export async function requireAuth(redirectTo: string = "/auth") {
+export async function requireAuth(redirectTo: string = "/auth"): Promise<void> {
   const user = await authProxy();
   if (!user) redirect(redirectTo);
-  return user;
 }
 
-export async function requireGuest(redirectTo: string = "/") {
+export async function requireGuest(redirectTo: string = "/"): Promise<void> {
   const user = await authProxy();
   if (user) redirect(redirectTo);
 }

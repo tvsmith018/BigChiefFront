@@ -8,14 +8,15 @@ import {
   ProfileRibbonTitle, 
 } from "@/_views/account/SharedPanels";
 
-const avatarImage = "/images/about/victor.jpg";
+import { useAppSelector } from "@/_store/hooks/UseAppSelector";
+import { ProfileMePayload } from "@/_types/profile/profileMePayload";
 const postImage = "/images/about/group.jpeg";
 
 const sideNavItems = [
   { icon: "bi-house-door-fill", label: "Feed" },
-  { icon: "bi-bell-fill", label: "Notifications", badge: "1" },
-  { icon: "bi-chat-left-text-fill", label: "Messages", badge: "1" },
-  { icon: "bi-collection-play-fill", label: "My Content" },
+  // { icon: "bi-bell-fill", label: "Notifications", badge: "1" },
+  // { icon: "bi-chat-left-text-fill", label: "Messages", badge: "1" },
+  // { icon: "bi-collection-play-fill", label: "My Content" },
   { icon: "bi-bookmark-heart-fill", label: "Saved Articles" },
 ];
 
@@ -26,12 +27,14 @@ const accountCenterItems = [
   { icon: "bi-credit-card-2-front-fill", label: "Subscription & Billing" },
 ];
 
-export default function ProfilePageContent() {
+export default function ProfilePageContent({ profile }: { profile: ProfileMePayload }) {
+  const {user, settings, stats} = profile;
+  const avatarImage = user?.avatar || "/images/about/victor.jpg";
   return (
     <main className="bc-profile-page">
       <Container className="pt-0 pb-4 pb-lg-5">
         <Row className="g-4 align-items-start">
-          <Col xl={3} lg={4} className="d-none d-lg-block">
+          {/* <Col xl={3} lg={4} className="d-none d-lg-block">
             <aside className="bc-profile-sidebar">
               <Card className="bc-profile-panel-card">
                 <Card.Body className="p-3">
@@ -83,7 +86,7 @@ export default function ProfilePageContent() {
                 </Card.Body>
               </Card>
             </aside>
-          </Col>
+          </Col> */}
 
           <Col xl={6} lg={8}>
             <section className="bc-profile-main">
@@ -92,21 +95,21 @@ export default function ProfilePageContent() {
                   <div className="bc-profile-avatar bc-profile-avatar--hero mx-auto">
                     <Image
                       src={avatarImage}
-                      alt="Terrance V. Smith"
+                      alt={user?.firstname + " " + user?.lastname}
                       width={140}
                       height={140}
                     />
                   </div>
                   <h1 className="bc-profile-name bc-profile-name--hero mt-3">
-                    Terrance V. Smith
+                    {user?.firstname + " " + user?.lastname}
                   </h1>
                   <p className="bc-profile-status">Standard Member</p>
 
                   <div className="bc-profile-hero-actions">
-                    <Button variant="light" className="bc-profile-btn bc-profile-btn--soft">
+                    {/* <Button variant="light" className="bc-profile-btn bc-profile-btn--soft">
                       <i className="bi bi-chat-fill me-2" />
                       Message
-                    </Button>
+                    </Button> */}
                     <Button className="bc-profile-btn">
                       <i className="bi bi-pencil-fill me-2" />
                       Edit Profile
