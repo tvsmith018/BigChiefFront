@@ -7,7 +7,7 @@ import localizationData from "@/_utilities/localization/en.json";
  * Pretend CMS fetch.
  * Replace with GraphQL / REST later.
  */
-export async function fetchNavigationConfig(session?:string): Promise<NavigationLink[]> {
+export async function fetchNavigationConfig(): Promise<NavigationLink[]> {
   // This can be cached with `cache()` or `revalidate`
   return [
   {

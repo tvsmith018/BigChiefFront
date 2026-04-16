@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import ProfilePageContent from "../../_views/profile/ProfilePageContent";
 import { ProfileService } from "@/_services/profiles/profileservices";
 import { getSessionAccessToken } from "@/_services/auth/authproxy";
-import type { ProfileMePayload } from "@/_types/profile/profileMePayload";
 import type { ProfileMeApiResponse } from "@/_types/profile/profileMeApiResponse";
 
 function getProfileMeErrorMessage(

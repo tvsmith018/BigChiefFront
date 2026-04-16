@@ -408,13 +408,13 @@ This section translates an **internal engineering review** into **clear expectat
 | UI / hook coverage | Most screens and hooks are not yet covered by RTL/Vitest; add tests for **highest-risk flows** first. |
 | E2E breadth | Expand Playwright for critical journeys (login/signup) when environments allow. |
 
-### 16.5 Reusability — **B**
+### 16.5 Reusability — **B+**
 
-Hooks and pagination adapters promote reuse. Auth flows can still **drift**; prefer shared error mapping and small shared primitives as features grow.
+Hooks and pagination adapters promote reuse. Auth/session primitives are now more consistently shared across login/signup/logout and route protection, reducing drift risk and improving repeatability.
 
-### 16.6 Maintainability — **B**
+### 16.6 Maintainability — **B+**
 
-Strict lint and TypeScript help. **Console noise** and occasional **naming inconsistencies** (e.g. legacy folder names) add onboarding cost. Align **eslint-config-next** major with **Next** over time.
+Strict lint and TypeScript help. Architecture guardrails are stronger through boundary lint rules and clearer request policy, though some legacy naming/style inconsistencies still add minor onboarding cost.
 
 ### 16.7 Observability — **B+**
 
