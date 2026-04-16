@@ -120,6 +120,9 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
   if (ct) {
     outHeaders.set("content-type", ct);
   }
+  outHeaders.set("x-content-type-options", "nosniff");
+  outHeaders.set("x-frame-options", "DENY");
+  outHeaders.set("referrer-policy", "strict-origin-when-cross-origin");
 
   return new NextResponse(responseBuf.byteLength ? responseBuf : null, {
     status: upstreamResponse.status,

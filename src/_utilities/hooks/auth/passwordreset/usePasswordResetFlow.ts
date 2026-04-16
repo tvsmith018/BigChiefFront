@@ -71,7 +71,6 @@ export function usePasswordResetFlow() {
   };
 
   useEffect(() => {
-    console.log(passwordState)
     if (!passwordState) return;
 
     if (lastStateRef.current === passwordState) return;

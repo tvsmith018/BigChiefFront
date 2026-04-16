@@ -31,7 +31,6 @@ export class PasswordResetService {
   export async function codeResend(email: string) {
     try {
       const { code, message } = await PasswordResetService.requestCode(email);
-      console.log(code)
   
       if (message) return { error: [message] };
       if (!code) return { networkError: ["Unable to resend code right now. Try again."] };

@@ -9,10 +9,6 @@ import localizationData from "@/_utilities/localization/en.json";
  */
 export async function fetchNavigationConfig(session?:string): Promise<NavigationLink[]> {
   // This can be cached with `cache()` or `revalidate`
-
-  if (session) {
-    console.log("perform navigation network services")
-  }
   return [
   {
     label: localizationData.sidebar_link1,

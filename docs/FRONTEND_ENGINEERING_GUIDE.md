@@ -365,19 +365,21 @@ This section translates an **internal engineering review** into **clear expectat
 |-------|--------|
 | **Summary** | The frontend is **production-viable** with **good structure and CI**. To reach **enterprise-grade operations**, invest in **observability** and **broader automated coverage** of user journeys. |
 
-### 16.2 Security — **B+**
+### 16.2 Security — **A-**
 
 | Strength | Detail |
 |----------|--------|
 | BFF / proxy | API routes hide upstream configuration; multipart proxy uses binary-safe body handling. |
 | Cookies | Server paths use httpOnly, production `secure`, SameSite via shared helpers. |
 | Type safety | Strict TypeScript + lint reduce entire bug classes. |
+| Proxy parity | GraphQL and REST proxy handlers both support cookie/header auth forwarding plus 401 refresh+retry flow. |
+| Response hardening | Security headers are applied on proxy responses and globally (`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`). |
 
 | Gap | What to do |
 |-----|------------|
-| Debug logging | Remove or gate `console.log` in auth-related code paths for production. |
-| Policy depth | Document CSP / security headers strategy if the org requires it. |
-| GraphQL vs REST | Confirm proxy parity with product security assumptions. |
+| CSP hardening | Move from baseline headers to route-aware Content-Security-Policy once third-party/script inventory is finalized. |
+| Security telemetry | Add centralized client/server security event reporting to improve incident response speed. |
+| Ongoing review | Keep GraphQL and REST proxy forwarding rules reviewed whenever auth/session logic changes. |
 
 ### 16.3 Architecture — **B+**
 
@@ -465,3 +467,4 @@ Before tagging a release or merging to production:
 | Version | Date | Notes |
 |---------|------|-------|
 | 1.0 | 2026-04 | Initial enterprise-style guide: stack, structure, testing, CI, quality assessment. |
+| 1.1 | 2026-04-16 | Security hardening update: auth log cleanup, proxy parity improvements, baseline security headers, revised security grade. |
