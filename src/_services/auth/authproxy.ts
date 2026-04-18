@@ -20,6 +20,33 @@ const COOKIE_ACCESS = "access";
 const ACCESS_MAX_AGE_SECONDS = 60 * 60 * 24;
 const REFRESH_MAX_AGE_SECONDS = 60 * 60 * 24 * 14;
 
+function getErrorName(error: unknown): string {
+  if (error instanceof Error) return error.name;
+  return typeof error;
+}
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return String(error ?? "");
+}
+
+function isTransientAuthProxyError(error: unknown): boolean {
+  const name = getErrorName(error).toLowerCase();
+  const message = getErrorMessage(error).toLowerCase();
+
+  return (
+    name.includes("abort") ||
+    name.includes("typeerror") ||
+    name.includes("syntaxerror") ||
+    message.includes("aborted") ||
+    message.includes("timed out") ||
+    message.includes("timeout") ||
+    message.includes("network") ||
+    message.includes("fetch") ||
+    message.includes("json")
+  );
+}
+
 function clearAuthCookies(
   cookieStore: Awaited<ReturnType<typeof cookies>>
 ) {
@@ -134,8 +161,18 @@ export const authProxy = cache(async function authProxy(): Promise<User | null> 
     clearAuthCookies(cookieStore);
     logWarn("auth_proxy_user_fetch_failed_after_refresh");
     return null;
-  } catch {
-    logError("auth_proxy_unexpected_error", new Error("authProxy failed"));
+  } catch (error: unknown) {
+    if (isTransientAuthProxyError(error)) {
+      logWarn("auth_proxy_transient_error", {
+        errorName: getErrorName(error),
+        errorMessage: getErrorMessage(error),
+      });
+      return null;
+    }
+
+    logError("auth_proxy_unexpected_error", error, {
+      errorName: getErrorName(error),
+    });
     return null;
   }
 });
