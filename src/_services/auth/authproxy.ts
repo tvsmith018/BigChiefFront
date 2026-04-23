@@ -120,12 +120,37 @@ async function refreshSession(
  */
 export const authProxy = cache(async function authProxy(): Promise<User | null> {
   const cookieStore = await cookies();
+  const access = cookieStore.get(COOKIE_ACCESS)?.value;
+
+  if (!access) {
+    return null;
+  }
+
+  try {
+    return await fetchMe(access);
+  } catch (error: unknown) {
+    if (isTransientAuthProxyError(error)) {
+      logWarn("auth_proxy_transient_error", {
+        errorName: getErrorName(error),
+        errorMessage: getErrorMessage(error),
+      });
+      return null;
+    }
+
+    logError("auth_proxy_unexpected_error", error, {
+      errorName: getErrorName(error),
+    });
+    return null;
+  }
+});
+
+export const authProxyRoute = cache(async function authProxyRoute(): Promise<User | null> {
+  const cookieStore = await cookies();
   const refresh = cookieStore.get(COOKIE_REFRESH)?.value;
   const access = cookieStore.get(COOKIE_ACCESS)?.value;
 
   if (!refresh) {
     if (access) cookieStore.delete(COOKIE_ACCESS);
-    logWarn("auth_proxy_no_refresh_cookie");
     return null;
   }
 
@@ -178,7 +203,8 @@ export const authProxy = cache(async function authProxy(): Promise<User | null> 
 });
 
 export async function getSessionAccessToken(): Promise<string | null> {
-  await authProxy();
+  const user = await authProxy();
+  if (!user) return null;
   const cookieStore = await cookies();
   return cookieStore.get(COOKIE_ACCESS)?.value ?? null;
 }

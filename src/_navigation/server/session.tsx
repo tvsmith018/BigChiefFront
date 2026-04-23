@@ -9,25 +9,42 @@ const COOKIE_REFRESH = "session";
 const COOKIE_ACCESS = "access";
 const refreshExpiresAt = 60 * 60 * 24 * 14;
 const accessExpiresAt = 60 * 60 * 24;
+const SESSION_REFRESH_TIMEOUT_MS = 8_000;
 
 async function refresh(session: string) {
-  const responseRefresh = await fetch(`${API_BASE_URL}${AUTH_ENDPOINTS.refreshToken}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      refresh: session,
-    }),
-    cache: "no-store",
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(
+    () => controller.abort(),
+    SESSION_REFRESH_TIMEOUT_MS
+  );
 
-  if (!responseRefresh.ok) {
+  try {
+    const responseRefresh = await fetch(
+      `${API_BASE_URL}${AUTH_ENDPOINTS.refreshToken}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          refresh: session,
+        }),
+        cache: "no-store",
+        signal: controller.signal,
+      }
+    );
+
+    if (!responseRefresh.ok) {
+      return undefined;
+    }
+
+    const data = await responseRefresh.json();
+    return data.access as string | undefined;
+  } catch {
     return undefined;
+  } finally {
+    clearTimeout(timeoutId);
   }
-
-  const data = await responseRefresh.json();
-  return data.access as string | undefined;
 }
 
 export async function createSession(token: { refresh: string; access: string }) {
@@ -89,11 +106,15 @@ export async function getSession() {
   const session = cookieStore.get(COOKIE_REFRESH)?.value;
   let access = cookieStore.get(COOKIE_ACCESS)?.value;
 
-  if (!access && session) {
-    access = await refresh(session);
-    if (access) {
-      cookieStore.set(COOKIE_ACCESS, access, getCookieSettings(accessExpiresAt));
+  try {
+    if (!access && session) {
+      access = await refresh(session);
+      if (access) {
+        cookieStore.set(COOKIE_ACCESS, access, getCookieSettings(accessExpiresAt));
+      }
     }
+  } catch {
+    access = undefined;
   }
 
   return {

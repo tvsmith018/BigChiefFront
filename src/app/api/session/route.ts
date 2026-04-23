@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { authProxy } from "@/_services/auth/authproxy";
+import { authProxyRoute } from "@/_services/auth/authproxy";
 
 export const dynamic = "force-dynamic";
 const SESSION_AUTH_TIMEOUT_MS = 5_000;
@@ -8,7 +8,7 @@ const SESSION_AUTH_TIMEOUT_MS = 5_000;
 async function resolveSessionUser() {
   try {
     return await Promise.race([
-      authProxy(),
+      authProxyRoute(),
       new Promise<null>((resolve) =>
         setTimeout(() => resolve(null), SESSION_AUTH_TIMEOUT_MS)
       ),

@@ -2,7 +2,6 @@ import { graphQLClient,  httpClient} from "@/_network";
 import { home_query, load_article_set, search_query, article_detail_metaData, article_detail_query, article_comment_query, article_related_query} from "@/_queries";
 
 import { ArticleEdge, Article } from "@/_types/articles/article.types";
-import { JWTToken } from "@/_utilities/datatype/Auth/types/token";
 import { logWarn } from "@/_utilities/observability/logger";
 import { unstable_cache } from "next/cache";
 
@@ -202,14 +201,13 @@ export class ArticleService {
     }
   }
 
-  static canRate = async (token:JWTToken, articleId:string)=>{
+  static canRate = async (articleId:string)=>{
     const hasRating = await httpClient.request<RatingResponse>(
       `/articles/rating/${articleId}/`,
       {
         method:"GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token.access}`,
         },
       },
       {cache:"no-store"}
@@ -217,7 +215,7 @@ export class ArticleService {
     return hasRating
   }
 
-  static submitRate = async (token:JWTToken, articleId:string, rate:number) => {
+  static submitRate = async (articleId:string, rate:number) => {
     
     const setRating = await httpClient.request<SetRatingResponse>(
       `/articles/rating/${articleId}/set/`,
@@ -225,7 +223,6 @@ export class ArticleService {
         method:"POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token.access}`,
         },
         body: {rate: rate}
       },

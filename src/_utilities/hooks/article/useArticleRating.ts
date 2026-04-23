@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useAppSelector } from "@/_store/hooks/UseAppSelector";
 import { ArticleService } from "@/_services/articles/articleservices";
-import { getSession } from "@/_navigation";
 
 interface Props {
   articleId: string;
@@ -24,8 +23,7 @@ export function useArticleRating({ articleId }: Props) {
 
     async function loadRatingStatus() {
         try {
-            const token = await getSession()
-            const has_rate = await ArticleService.canRate(token, articleId)
+            const has_rate = await ArticleService.canRate(articleId)
             setCanRate(!has_rate.data.has_rated)
             
         } catch {
@@ -38,12 +36,11 @@ export function useArticleRating({ articleId }: Props) {
 
   const submitRating = async (value: number) => {
     if (!isAuthenticated || canRate === false) return;
-    const token = await getSession()
     setIsSubmitting(true);
     setRating(value);
 
     try {
-        const message = await ArticleService.submitRate(token, articleId, value);
+        const message = await ArticleService.submitRate(articleId, value);
 
         if(message.success){
             setCanRate(false)
