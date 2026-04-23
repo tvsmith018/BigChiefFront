@@ -61,44 +61,59 @@ function buildSecurityHeaders(contentType: string) {
 }
 
 export async function POST(request: NextRequest) {
-  const body = await request.text();
   const requestId = request.headers.get("x-request-id") ?? crypto.randomUUID();
-  let proxyHeaders = await buildProxyHeaders(request);
-  proxyHeaders.set("x-request-id", requestId);
 
-  let upstreamResponse = await fetch(GRAPHQL_UPSTREAM_URL, {
-    method: "POST",
-    headers: proxyHeaders,
-    body,
-    cache: "no-store",
-  });
+  try {
+    const body = await request.text();
+    let proxyHeaders = await buildProxyHeaders(request);
+    proxyHeaders.set("x-request-id", requestId);
 
-  if (upstreamResponse.status === 401) {
-    const refreshToken = request.cookies.get("session")?.value;
-    if (refreshToken) {
-      const refreshedAccessToken = await refreshAccessToken(refreshToken);
-      if (refreshedAccessToken) {
-        proxyHeaders = new Headers(proxyHeaders);
-        proxyHeaders.set("authorization", `Bearer ${refreshedAccessToken}`);
-        proxyHeaders.set("x-request-id", requestId);
-        upstreamResponse = await fetch(GRAPHQL_UPSTREAM_URL, {
-          method: "POST",
-          headers: proxyHeaders,
-          body,
-          cache: "no-store",
-        });
+    let upstreamResponse = await fetch(GRAPHQL_UPSTREAM_URL, {
+      method: "POST",
+      headers: proxyHeaders,
+      body,
+      cache: "no-store",
+    });
+
+    if (upstreamResponse.status === 401) {
+      const refreshToken = request.cookies.get("session")?.value;
+      if (refreshToken) {
+        const refreshedAccessToken = await refreshAccessToken(refreshToken);
+        if (refreshedAccessToken) {
+          proxyHeaders = new Headers(proxyHeaders);
+          proxyHeaders.set("authorization", `Bearer ${refreshedAccessToken}`);
+          proxyHeaders.set("x-request-id", requestId);
+          upstreamResponse = await fetch(GRAPHQL_UPSTREAM_URL, {
+            method: "POST",
+            headers: proxyHeaders,
+            body,
+            cache: "no-store",
+          });
+        }
       }
     }
+
+    const responseText = await upstreamResponse.text();
+    const contentType =
+      upstreamResponse.headers.get("content-type") ?? "application/json";
+
+    return new NextResponse(responseText, {
+      status: upstreamResponse.status,
+      headers: {
+        ...buildSecurityHeaders(contentType),
+        "x-request-id": requestId,
+      },
+    });
+  } catch {
+    return NextResponse.json(
+      { detail: "GraphQL upstream unreachable." },
+      {
+        status: 503,
+        headers: {
+          ...buildSecurityHeaders("application/json"),
+          "x-request-id": requestId,
+        },
+      }
+    );
   }
-
-  const responseText = await upstreamResponse.text();
-  const contentType = upstreamResponse.headers.get("content-type") ?? "application/json";
-
-  return new NextResponse(responseText, {
-    status: upstreamResponse.status,
-    headers: {
-      ...buildSecurityHeaders(contentType),
-      "x-request-id": requestId,
-    },
-  });
 }

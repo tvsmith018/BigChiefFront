@@ -1,8 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  images: { remotePatterns:[
+  images: {
+    // Avoid Next image optimizer upstream timeouts in local dev by fetching
+    // remote images directly from the browser.
+    unoptimized: process.env.NODE_ENV === "development",
+    remotePatterns:[
       {
+        protocol: "https",
         hostname: 'res.cloudinary.com',
       },
     ]

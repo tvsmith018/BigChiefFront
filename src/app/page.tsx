@@ -16,11 +16,26 @@ export const metadata: Metadata = {
 async function HomeDataLoader() {
   const data = await ArticleService.fetchHomePage();
 
-  const slides = data.slide!.edges;
-  const featured = data.main!.edges[0];
-  const secondary = data.side!.edges;
-  const list = data.list!.edges;
-  const list_page_info = data.list!.pageInfo;
+  const slides = data.slide?.edges ?? [];
+  const featured = data.main?.edges?.[0];
+  const secondary = data.side?.edges ?? [];
+  const list = data.list?.edges ?? [];
+  const list_page_info = data.list?.pageInfo ?? {
+    hasNextPage: false,
+    endCursor: "",
+  };
+
+  if (!featured) {
+    return (
+      <section className="pt-4 pb-2">
+        <div className="container">
+          <p className="mb-0 text-muted">
+            Content is temporarily unavailable. Please try again in a moment.
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <>

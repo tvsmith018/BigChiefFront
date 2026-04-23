@@ -76,62 +76,77 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
   const upstreamUrl = buildUpstreamUrl(request);
   const requestId = request.headers.get("x-request-id") ?? crypto.randomUUID();
 
-  // Read body as raw bytes. request.text() UTF-8-decodes the whole body and destroys
-  // multipart binary (file parts), which shows up as repeated EF BF BD on the server.
-  let bodyBytes: ArrayBuffer | null = null;
-  if (request.method !== "GET" && request.method !== "HEAD") {
-    bodyBytes = await request.arrayBuffer();
-  }
+  try {
+    // Read body as raw bytes. request.text() UTF-8-decodes the whole body and destroys
+    // multipart binary (file parts), which shows up as repeated EF BF BD on the server.
+    let bodyBytes: ArrayBuffer | null = null;
+    if (request.method !== "GET" && request.method !== "HEAD") {
+      bodyBytes = await request.arrayBuffer();
+    }
 
-  const requestBody: BodyInit | undefined =
-    bodyBytes && bodyBytes.byteLength > 0 ? bodyBytes : undefined;
+    const requestBody: BodyInit | undefined =
+      bodyBytes && bodyBytes.byteLength > 0 ? bodyBytes : undefined;
 
-  let proxyHeaders = await buildProxyHeaders(request);
-  proxyHeaders.set("x-request-id", requestId);
+    let proxyHeaders = await buildProxyHeaders(request);
+    proxyHeaders.set("x-request-id", requestId);
 
-  let upstreamResponse = await fetch(upstreamUrl, {
-    method: request.method,
-    headers: proxyHeaders,
-    body: requestBody,
-    cache: "no-store",
-  });
+    let upstreamResponse = await fetch(upstreamUrl, {
+      method: request.method,
+      headers: proxyHeaders,
+      body: requestBody,
+      cache: "no-store",
+    });
 
-  if (upstreamResponse.status === 401) {
-    const refreshToken = request.cookies.get("session")?.value;
+    if (upstreamResponse.status === 401) {
+      const refreshToken = request.cookies.get("session")?.value;
 
-    if (refreshToken) {
-      const refreshedAccessToken = await refreshAccessToken(refreshToken);
+      if (refreshToken) {
+        const refreshedAccessToken = await refreshAccessToken(refreshToken);
 
-      if (refreshedAccessToken) {
-        proxyHeaders = new Headers(proxyHeaders);
-        proxyHeaders.set("authorization", `Bearer ${refreshedAccessToken}`);
-        proxyHeaders.set("x-request-id", requestId);
+        if (refreshedAccessToken) {
+          proxyHeaders = new Headers(proxyHeaders);
+          proxyHeaders.set("authorization", `Bearer ${refreshedAccessToken}`);
+          proxyHeaders.set("x-request-id", requestId);
 
-        upstreamResponse = await fetch(upstreamUrl, {
-          method: request.method,
-          headers: proxyHeaders,
-          body: requestBody,
-          cache: "no-store",
-        });
+          upstreamResponse = await fetch(upstreamUrl, {
+            method: request.method,
+            headers: proxyHeaders,
+            body: requestBody,
+            cache: "no-store",
+          });
+        }
       }
     }
-  }
 
-  const responseBuf = await upstreamResponse.arrayBuffer();
-  const outHeaders = new Headers();
-  const ct = upstreamResponse.headers.get("content-type");
-  if (ct) {
-    outHeaders.set("content-type", ct);
-  }
-  outHeaders.set("x-content-type-options", "nosniff");
-  outHeaders.set("x-frame-options", "DENY");
-  outHeaders.set("referrer-policy", "strict-origin-when-cross-origin");
-  outHeaders.set("x-request-id", requestId);
+    const responseBuf = await upstreamResponse.arrayBuffer();
+    const outHeaders = new Headers();
+    const ct = upstreamResponse.headers.get("content-type");
+    if (ct) {
+      outHeaders.set("content-type", ct);
+    }
+    outHeaders.set("x-content-type-options", "nosniff");
+    outHeaders.set("x-frame-options", "DENY");
+    outHeaders.set("referrer-policy", "strict-origin-when-cross-origin");
+    outHeaders.set("x-request-id", requestId);
 
-  return new NextResponse(responseBuf.byteLength ? responseBuf : null, {
-    status: upstreamResponse.status,
-    headers: outHeaders,
-  });
+    return new NextResponse(responseBuf.byteLength ? responseBuf : null, {
+      status: upstreamResponse.status,
+      headers: outHeaders,
+    });
+  } catch {
+    return NextResponse.json(
+      { detail: "Upstream API unreachable." },
+      {
+        status: 503,
+        headers: {
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY",
+          "referrer-policy": "strict-origin-when-cross-origin",
+          "x-request-id": requestId,
+        },
+      }
+    );
+  }
 }
 
 export async function GET(request: NextRequest, context: RouteContext) {

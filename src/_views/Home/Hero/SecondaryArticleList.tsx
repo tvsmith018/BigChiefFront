@@ -9,7 +9,7 @@ import { RelativeTime } from "@/_core/date/RelativeTime";
 import { Article } from "@/_types/articles/article.types";
 
 interface SecondaryArticleListProps {
-  articles: [{node:Article}];
+  articles: Array<{ node: Article }>;
 }
 
 export function SecondaryArticleList({

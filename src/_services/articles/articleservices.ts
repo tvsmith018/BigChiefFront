@@ -3,13 +3,14 @@ import { home_query, load_article_set, search_query, article_detail_metaData, ar
 
 import { ArticleEdge, Article } from "@/_types/articles/article.types";
 import { JWTToken } from "@/_utilities/datatype/Auth/types/token";
+import { logWarn } from "@/_utilities/observability/logger";
 import { unstable_cache } from "next/cache";
 
 interface ArticleReturn {
   articles:{
-    edges:[{
+    edges:Array<{
       node:Article
-    }],
+    }>,
     pageInfo:{
       hasNextPage:boolean,
       endCursor: string
@@ -112,62 +113,92 @@ interface GraphQLCommentsResponse {
 
 export class ArticleService {
   static async fetchHomePage():Promise<ArticleEdge> {
-    const data = await graphQLClient.query<ArticleEdge>(home_query, undefined, {cache:"force-cache", next:{revalidate:60}});
-    return data;
+    try {
+      const data = await graphQLClient.query<ArticleEdge>(home_query, undefined, {cache:"force-cache", next:{revalidate:60}});
+      return data;
+    } catch {
+      logWarn("article_home_fetch_failed");
+      return {} as ArticleEdge;
+    }
   }
 
   static async getArticle(category?:string, after?:string, ) {
-    const data = await graphQLClient.query<ArticleReturn>(load_article_set(after, category), undefined, {cache:"no-store"})
-    return data
+    try {
+      const data = await graphQLClient.query<ArticleReturn>(load_article_set(after, category), undefined, {cache:"no-store"})
+      return data
+    } catch {
+      logWarn("article_list_fetch_failed", { category, hasCursor: Boolean(after) });
+      return {
+        articles: {
+          edges: [],
+          pageInfo: { hasNextPage: false, endCursor: "" },
+        },
+      };
+    }
   }
 
-  static async fetchSearch(value:string):Promise<[{ node: Article; }]> {
-    const data = await graphQLClient.query<ArticleReturn>(search_query(value), undefined, {cache:"no-store"})
-    return data.articles.edges
+  static async fetchSearch(value:string):Promise<Array<{ node: Article }>> {
+    try {
+      const data = await graphQLClient.query<ArticleReturn>(search_query(value), undefined, {cache:"no-store"})
+      return data.articles.edges;
+    } catch {
+      logWarn("article_search_fetch_failed");
+      return [];
+    }
   }
 
   static fetchDetailsMeta = unstable_cache(
     async (id:string)=>{
-      const data = await graphQLClient.query<GraphQLArticleResponse>(article_detail_metaData(id));
-      return data.articles.edges[0].node ?? null
+      try {
+        const data = await graphQLClient.query<GraphQLArticleResponse>(article_detail_metaData(id));
+        return data.articles.edges[0]?.node ?? null
+      } catch {
+        logWarn("article_detail_metadata_fetch_failed", { articleId: id });
+        return null;
+      }
     },
     ["article-metadata"],
     { revalidate: 1, tags:["article-metadata"]}
   )
   
   static fetchDetailsBundle = async (id:string) => {
-    const articleData = await graphQLClient.query<GraphQLArticleResponse>(
-      article_detail_query(id),
-      undefined,
-      { cache: "no-store" }
-    );
-    const article = articleData.articles.edges[0]?.node ?? null;
-
-    if(!article) return null
-
-    const [commentData, relatedData] = await Promise.all([
-      graphQLClient.query<GraphQLCommentsResponse>(
-        article_comment_query(id,10),
+    try {
+      const articleData = await graphQLClient.query<GraphQLArticleResponse>(
+        article_detail_query(id),
         undefined,
         { cache: "no-store" }
-      ),
-      graphQLClient.query<GraphQLRelatedArticleResponse>(
-        article_related_query(article.category,id),
-        undefined,
-        { cache: "no-store" }
+      );
+      const article = articleData.articles.edges[0]?.node ?? null;
+
+      if(!article) return null
+
+      const [commentData, relatedData] = await Promise.all([
+        graphQLClient.query<GraphQLCommentsResponse>(
+          article_comment_query(id,10),
+          undefined,
+          { cache: "no-store" }
+        ),
+        graphQLClient.query<GraphQLRelatedArticleResponse>(
+          article_related_query(article.category,id),
+          undefined,
+          { cache: "no-store" }
+        )
+      ])
+
+      const related = (relatedData.categoryArticles.edges ?? []).filter(
+        (item) => item.node.title != article.title
       )
-    ])
+      const relatedPageInfo = relatedData.categoryArticles.pageInfo
 
-    const related = (relatedData.categoryArticles.edges ?? []).filter(
-      (item) => item.node.title != article.title
-    )
-    const relatedPageInfo = relatedData.categoryArticles.pageInfo
-
-    return {
-      article,
-      comments: commentData,
-      related,
-      relatedPageInfo
+      return {
+        article,
+        comments: commentData,
+        related,
+        relatedPageInfo
+      }
+    } catch {
+      logWarn("article_detail_bundle_fetch_failed", { articleId: id });
+      return null;
     }
   }
 
@@ -205,12 +236,32 @@ export class ArticleService {
   }
 
   static fetchMore = async (category: string, id:string, first:number, after:string) => {
-    const res = await graphQLClient.query<GraphQLRelatedArticleResponse>(article_related_query(category,id,first,after));
-    return res
+    try {
+      const res = await graphQLClient.query<GraphQLRelatedArticleResponse>(article_related_query(category,id,first,after));
+      return res
+    } catch {
+      logWarn("article_related_fetch_more_failed", { category, articleId: id });
+      return {
+        categoryArticles: {
+          edges: [],
+          pageInfo: { hasNextPage: false, endCursor: "" },
+        },
+      };
+    }
   }
 
   static fetchMoreComments = async (id:string, after?:string) => {
-    const data = await graphQLClient.query<GraphQLCommentsResponse>(article_comment_query(id,10,after))
-    return data
+    try {
+      const data = await graphQLClient.query<GraphQLCommentsResponse>(article_comment_query(id,10,after))
+      return data
+    } catch {
+      logWarn("article_comments_fetch_more_failed", { articleId: id });
+      return {
+        comments: {
+          edges: [],
+          pageInfo: { hasNextPage: false, endCursor: "" },
+        },
+      };
+    }
   }
 }

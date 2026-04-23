@@ -10,7 +10,7 @@ import { Article } from "@/_types/articles/article.types";
 
 interface HeaderSectionProps {
   featured: {node:Article};
-  secondary: [{node:Article}];
+  secondary: Array<{ node: Article }>;
 }
 
 export default function HeaderSection({
