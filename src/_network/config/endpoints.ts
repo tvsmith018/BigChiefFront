@@ -15,12 +15,18 @@ function normalizeOriginCandidate(value?: string) {
 function resolveInternalAppOrigin(
   env: Record<string, string | undefined> = process.env
 ) {
+  const productionDefaultSiteOrigin =
+    env.NODE_ENV === "production"
+      ? normalizeOriginCandidate("https://www.bigchiefnewz.com")
+      : undefined;
+
   return (
     normalizeOriginCandidate(env.INTERNAL_APP_ORIGIN) ??
     normalizeOriginCandidate(env.NEXT_INTERNAL_APP_ORIGIN) ??
     normalizeOriginCandidate(env.VERCEL_URL) ??
     normalizeOriginCandidate(env.NEXT_PUBLIC_SITE_URL) ??
-    normalizeOriginCandidate(env.NEXT_PUBLIC_VERCEL_URL)
+    normalizeOriginCandidate(env.NEXT_PUBLIC_VERCEL_URL) ??
+    productionDefaultSiteOrigin
   );
 }
 

@@ -77,6 +77,43 @@ describe("endpoints", () => {
     ).toBe("https://www.bigchiefnewz.com/api/backend");
   });
 
+  it("uses production site default when no internal origin env exists", () => {
+    const env = process.env as Record<string, string | undefined>;
+    const nodeEnvPrevious = env.NODE_ENV;
+    const internalPrevious = env.INTERNAL_APP_ORIGIN;
+    const nextInternalPrevious = env.NEXT_INTERNAL_APP_ORIGIN;
+    const vercelPrevious = env.VERCEL_URL;
+    const sitePrevious = env.NEXT_PUBLIC_SITE_URL;
+    const nextPublicVercelPrevious = env.NEXT_PUBLIC_VERCEL_URL;
+
+    env.NODE_ENV = "production";
+    delete env.INTERNAL_APP_ORIGIN;
+    delete env.NEXT_INTERNAL_APP_ORIGIN;
+    delete env.VERCEL_URL;
+    delete env.NEXT_PUBLIC_SITE_URL;
+    delete env.NEXT_PUBLIC_VERCEL_URL;
+
+    expect(resolveGraphQLEndpoint("https://api.example.com", false)).toBe(
+      "https://www.bigchiefnewz.com/api/graphql"
+    );
+    expect(resolveHttpBaseUrl("https://api.example.com", false)).toBe(
+      "https://www.bigchiefnewz.com/api/backend"
+    );
+
+    if (nodeEnvPrevious === undefined) delete env.NODE_ENV;
+    else env.NODE_ENV = nodeEnvPrevious;
+    if (internalPrevious === undefined) delete env.INTERNAL_APP_ORIGIN;
+    else env.INTERNAL_APP_ORIGIN = internalPrevious;
+    if (nextInternalPrevious === undefined) delete env.NEXT_INTERNAL_APP_ORIGIN;
+    else env.NEXT_INTERNAL_APP_ORIGIN = nextInternalPrevious;
+    if (vercelPrevious === undefined) delete env.VERCEL_URL;
+    else env.VERCEL_URL = vercelPrevious;
+    if (sitePrevious === undefined) delete env.NEXT_PUBLIC_SITE_URL;
+    else env.NEXT_PUBLIC_SITE_URL = sitePrevious;
+    if (nextPublicVercelPrevious === undefined) delete env.NEXT_PUBLIC_VERCEL_URL;
+    else env.NEXT_PUBLIC_VERCEL_URL = nextPublicVercelPrevious;
+  });
+
   it("AUTH_ENDPOINTS has stable paths", () => {
     expect(AUTH_ENDPOINTS.refreshToken).toBe("/authorized/token/refresh/");
     expect(AUTH_ENDPOINTS.signup).toBe("/authorized/signup/");

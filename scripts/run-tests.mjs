@@ -91,6 +91,37 @@ async function testEndpoints() {
   } else {
     process.env.NEXT_PUBLIC_SITE_URL = originalSiteUrl;
   }
+  const originalNodeEnv = process.env.NODE_ENV;
+  const originalInternalAppOrigin = process.env.INTERNAL_APP_ORIGIN;
+  const originalNextInternalAppOrigin = process.env.NEXT_INTERNAL_APP_ORIGIN;
+  const originalVercelUrl = process.env.VERCEL_URL;
+  const originalNextPublicVercelUrl = process.env.NEXT_PUBLIC_VERCEL_URL;
+  process.env.NODE_ENV = "production";
+  delete process.env.INTERNAL_APP_ORIGIN;
+  delete process.env.NEXT_INTERNAL_APP_ORIGIN;
+  delete process.env.VERCEL_URL;
+  delete process.env.NEXT_PUBLIC_SITE_URL;
+  delete process.env.NEXT_PUBLIC_VERCEL_URL;
+  assert.equal(
+    resolveGraphQLEndpoint("https://api.example.com", false),
+    "https://www.bigchiefnewz.com/api/graphql"
+  );
+  assert.equal(
+    resolveHttpBaseUrl("https://api.example.com", false),
+    "https://www.bigchiefnewz.com/api/backend"
+  );
+  if (originalNodeEnv === undefined) delete process.env.NODE_ENV;
+  else process.env.NODE_ENV = originalNodeEnv;
+  if (originalInternalAppOrigin === undefined) delete process.env.INTERNAL_APP_ORIGIN;
+  else process.env.INTERNAL_APP_ORIGIN = originalInternalAppOrigin;
+  if (originalNextInternalAppOrigin === undefined) delete process.env.NEXT_INTERNAL_APP_ORIGIN;
+  else process.env.NEXT_INTERNAL_APP_ORIGIN = originalNextInternalAppOrigin;
+  if (originalVercelUrl === undefined) delete process.env.VERCEL_URL;
+  else process.env.VERCEL_URL = originalVercelUrl;
+  if (originalSiteUrl === undefined) delete process.env.NEXT_PUBLIC_SITE_URL;
+  else process.env.NEXT_PUBLIC_SITE_URL = originalSiteUrl;
+  if (originalNextPublicVercelUrl === undefined) delete process.env.NEXT_PUBLIC_VERCEL_URL;
+  else process.env.NEXT_PUBLIC_VERCEL_URL = originalNextPublicVercelUrl;
   assert.equal(AUTH_ENDPOINTS.refreshToken, "/authorized/token/refresh/");
   assert.equal(
     resolveApiBaseUrl({ NEXT_PUBLIC_API_URL: "https://only-api.example.com" }),
