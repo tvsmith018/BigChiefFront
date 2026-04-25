@@ -32,9 +32,19 @@ export class HttpClient {
         typeof FormData !== "undefined" && body instanceof FormData;
 
       const extraHeaders = (config.headers ?? {}) as Record<string, string>;
-      const headers: HeadersInit = isFormData
-        ? { ...extraHeaders }
-        : { "Content-Type": "application/json", ...extraHeaders };
+      const headers = new Headers(options?.headers);
+
+      Object.entries(extraHeaders).forEach(([key, value]) => {
+        headers.set(key, value);
+      });
+
+      if (!isFormData && !headers.has("Content-Type")) {
+        headers.set("Content-Type", "application/json");
+      }
+
+      if (typeof window === "undefined") {
+        headers.set("x-bff-internal-request", "1");
+      }
 
       const fetchBody =
         body === undefined || body === null

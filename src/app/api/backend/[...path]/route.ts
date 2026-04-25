@@ -107,12 +107,14 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
   const requestId = request.headers.get("x-request-id") ?? crypto.randomUUID();
   const startedAt = Date.now();
   const clientIp = getClientIp(request);
+  const isInternalServerRequest =
+    request.headers.get("x-bff-internal-request") === "1";
   const hasAuthContext = Boolean(
     request.headers.get("authorization") ||
       request.cookies.get("access")?.value ||
       request.cookies.get("session")?.value
   );
-  const limit = clientIp
+  const limit = !isInternalServerRequest && clientIp
     ? consumeRateLimit(`backend:${clientIp}`)
     : {
         allowed: true,
@@ -216,6 +218,7 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
       latency_ms: Date.now() - startedAt,
       hasAuthContext,
       rateRemaining: limit.remaining,
+      isInternalServerRequest,
     });
     return response;
   } catch {

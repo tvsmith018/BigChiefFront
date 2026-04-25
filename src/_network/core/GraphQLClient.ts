@@ -24,9 +24,20 @@ export class GraphQLClient {
     );
 
     try {
+      const optionHeaders = new Headers(options?.headers);
+      const headers = new Headers({ "Content-Type": "application/json" });
+
+      optionHeaders.forEach((value, key) => {
+        headers.set(key, value);
+      });
+
+      if (typeof window === "undefined") {
+        headers.set("x-bff-internal-request", "1");
+      }
+
       const res = await fetch(this.getEndpoint(), {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         credentials: "include",
         body: JSON.stringify({ query, variables }),
         signal: options?.signal ?? controller.signal,

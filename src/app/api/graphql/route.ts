@@ -93,7 +93,9 @@ export async function POST(request: NextRequest) {
   const requestId = request.headers.get("x-request-id") ?? crypto.randomUUID();
   const startedAt = Date.now();
   const clientIp = getClientIp(request);
-  const limit = clientIp
+  const isInternalServerRequest =
+    request.headers.get("x-bff-internal-request") === "1";
+  const limit = !isInternalServerRequest && clientIp
     ? consumeRateLimit(`graphql:${clientIp}`)
     : {
         allowed: true,
@@ -191,6 +193,7 @@ export async function POST(request: NextRequest) {
       hasAuthContext,
       upstream: GRAPHQL_UPSTREAM_URL,
       rateRemaining: limit.remaining,
+      isInternalServerRequest,
     });
   }
 }

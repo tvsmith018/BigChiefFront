@@ -47,7 +47,9 @@ export async function GET(request: Request) {
   const startedAt = Date.now();
   const requestId = request.headers.get("x-request-id") ?? crypto.randomUUID();
   const clientIp = getClientIp(request);
-  const limit = clientIp
+  const isInternalServerRequest =
+    request.headers.get("x-bff-internal-request") === "1";
+  const limit = !isInternalServerRequest && clientIp
     ? consumeRateLimit(`session:${clientIp}`)
     : {
         allowed: true,
@@ -90,6 +92,7 @@ export async function GET(request: Request) {
     authenticated: Boolean(user),
     latency_ms: Date.now() - startedAt,
     rateRemaining: limit.remaining,
+    isInternalServerRequest,
   });
   return response;
 }
