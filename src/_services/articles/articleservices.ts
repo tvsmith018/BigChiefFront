@@ -3,7 +3,7 @@ import { API_BASE_URL } from "@/_network/config/endpoints";
 import { home_query, load_article_set, search_query, article_detail_metaData, article_detail_query, article_comment_query, article_related_query} from "@/_queries";
 
 import { ArticleEdge, Article } from "@/_types/articles/article.types";
-import { logWarn } from "@/_utilities/observability/logger";
+import { logInfo, logWarn } from "@/_utilities/observability/logger";
 import { unstable_cache } from "next/cache";
 
 interface ArticleReturn {
@@ -162,7 +162,7 @@ export class ArticleService {
         { cache: "no-store" }
       );
       if (ArticleService.hasHomeContent(retry)) {
-        logWarn("article_home_fetch_recovered_uncached");
+        logInfo("article_home_fetch_recovered_uncached");
         return retry;
       }
     } catch (error: unknown) {
@@ -174,7 +174,7 @@ export class ArticleService {
     try {
       const upstreamData = await ArticleService.fetchHomePageUpstreamFallback();
       if (ArticleService.hasHomeContent(upstreamData)) {
-        logWarn("article_home_fetch_recovered_upstream_fallback");
+        logInfo("article_home_fetch_recovered_upstream_fallback");
         return upstreamData as ArticleEdge;
       }
     } catch (error: unknown) {
