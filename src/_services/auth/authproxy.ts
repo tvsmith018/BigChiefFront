@@ -19,6 +19,10 @@ const COOKIE_REFRESH = "session";
 const COOKIE_ACCESS = "access";
 const ACCESS_MAX_AGE_SECONDS = 60 * 60 * 24;
 const REFRESH_MAX_AGE_SECONDS = 60 * 60 * 24 * 14;
+type RefreshSessionResult = {
+  access: string | null;
+  shouldClearCookies: boolean;
+};
 
 function getErrorName(error: unknown): string {
   if (error instanceof Error) return error.name;
@@ -84,8 +88,10 @@ async function fetchMe(access?: string): Promise<User | null> {
 async function refreshSession(
   refreshToken: string,
   cookieStore: Awaited<ReturnType<typeof cookies>>
-): Promise<string | null> {
-  const res = await httpClient.request<JWTToken>(
+): Promise<RefreshSessionResult> {
+  const res = await httpClient.request<
+    JWTToken & { code?: string; detail?: string; messages?: unknown[] }
+  >(
     auth_end.refreshToken,
     {
       method: "POST",
@@ -94,7 +100,14 @@ async function refreshSession(
     { cache: "no-store" }
   );
 
-  if (!res?.access) return null;
+  if (!res?.access) {
+    const hasInvalidTokenSignal =
+      res?.code === "token_not_valid" || Array.isArray(res?.messages);
+    return {
+      access: null,
+      shouldClearCookies: hasInvalidTokenSignal,
+    };
+  }
 
   cookieStore.set(
     COOKIE_ACCESS,
@@ -110,7 +123,10 @@ async function refreshSession(
     );
   }
 
-  return res.access;
+  return {
+    access: res.access,
+    shouldClearCookies: false,
+  };
 }
 
 /**
@@ -160,27 +176,35 @@ export const authProxyRoute = cache(async function authProxyRoute(): Promise<Use
       if (user) return user;
     }
 
-    const newAccess = await refreshSession(refresh, cookieStore);
-    if (!newAccess) {
-      clearAuthCookies(cookieStore);
-      logWarn("auth_proxy_refresh_failed");
+    const refreshed = await refreshSession(refresh, cookieStore);
+    if (!refreshed.access) {
+      if (refreshed.shouldClearCookies) {
+        clearAuthCookies(cookieStore);
+      }
+      logWarn("auth_proxy_refresh_failed", {
+        shouldClearCookies: refreshed.shouldClearCookies,
+      });
       return null;
     }
 
-    let user = await fetchMe(newAccess);
+    let user = await fetchMe(refreshed.access);
     if (user) return user;
 
-    const retryAccess = await refreshSession(
+    const retryRefreshed = await refreshSession(
       cookieStore.get(COOKIE_REFRESH)?.value ?? refresh,
       cookieStore
     );
-    if (!retryAccess) {
-      clearAuthCookies(cookieStore);
-      logWarn("auth_proxy_retry_refresh_failed");
+    if (!retryRefreshed.access) {
+      if (retryRefreshed.shouldClearCookies) {
+        clearAuthCookies(cookieStore);
+      }
+      logWarn("auth_proxy_retry_refresh_failed", {
+        shouldClearCookies: retryRefreshed.shouldClearCookies,
+      });
       return null;
     }
 
-    user = await fetchMe(retryAccess);
+    user = await fetchMe(retryRefreshed.access);
     if (user) return user;
 
     clearAuthCookies(cookieStore);

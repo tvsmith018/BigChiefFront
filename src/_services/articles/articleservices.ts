@@ -237,18 +237,43 @@ export class ArticleService {
 
       if(!article) return null
 
-      const [commentData, relatedData] = await Promise.all([
-        graphQLClient.query<GraphQLCommentsResponse>(
+      let commentData: GraphQLCommentsResponse = {
+        comments: {
+          edges: [],
+          pageInfo: { hasNextPage: false, endCursor: "" },
+        },
+      };
+      let relatedData: GraphQLRelatedArticleResponse = {
+        categoryArticles: {
+          edges: [],
+          pageInfo: { hasNextPage: false, endCursor: "" },
+        },
+      };
+
+      try {
+        const comments = await graphQLClient.query<GraphQLCommentsResponse>(
           article_comment_query(id,10),
           undefined,
           { cache: "no-store" }
-        ),
-        graphQLClient.query<GraphQLRelatedArticleResponse>(
+        );
+        commentData = comments;
+      } catch {
+        logWarn("article_detail_comments_fetch_failed", { articleId: id });
+      }
+
+      try {
+        const related = await graphQLClient.query<GraphQLRelatedArticleResponse>(
           article_related_query(article.category,id),
           undefined,
           { cache: "no-store" }
-        )
-      ])
+        );
+        relatedData = related;
+      } catch {
+        logWarn("article_detail_related_fetch_failed", {
+          articleId: id,
+          category: article.category,
+        });
+      }
 
       const related = (relatedData.categoryArticles.edges ?? []).filter(
         (item) => item.node.title != article.title
