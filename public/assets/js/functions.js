@@ -37,7 +37,7 @@ Table Of Content
     window.Element.prototype.removeClass = function () {
         let className = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "",
             selectors = this;
-        if (!(selectors instanceof HTMLElement) && selectors !== null) {
+        if (!(selectors instanceof HTMLElement)) {
             selectors = document.querySelector(selectors);
         }
         if (this.isVariableDefined(selectors) && className) {
@@ -47,7 +47,7 @@ Table Of Content
     }, window.Element.prototype.addClass = function () {
         let className = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "",
             selectors = this;
-        if (!(selectors instanceof HTMLElement) && selectors !== null) {
+        if (!(selectors instanceof HTMLElement)) {
             selectors = document.querySelector(selectors);
         }
         if (this.isVariableDefined(selectors) && className) {
@@ -57,7 +57,7 @@ Table Of Content
     }, window.Element.prototype.toggleClass = function () {
         let className = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "",
             selectors = this;
-        if (!(selectors instanceof HTMLElement) && selectors !== null) {
+        if (!(selectors instanceof HTMLElement)) {
             selectors = document.querySelector(selectors);
         }
         if (this.isVariableDefined(selectors) && className) {
