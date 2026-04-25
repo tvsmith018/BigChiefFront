@@ -62,6 +62,17 @@ async function testEndpoints() {
     resolveGraphQLEndpoint("https://api.example.com", false),
     "https://api.example.com/graphql/"
   );
+  const originalSiteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  process.env.NEXT_PUBLIC_SITE_URL = "https://www.bigchiefnewz.com";
+  assert.equal(
+    resolveGraphQLEndpoint("https://api.example.com", false),
+    "https://www.bigchiefnewz.com/api/graphql"
+  );
+  if (originalSiteUrl === undefined) {
+    delete process.env.NEXT_PUBLIC_SITE_URL;
+  } else {
+    process.env.NEXT_PUBLIC_SITE_URL = originalSiteUrl;
+  }
   assert.equal(
     resolveHttpBaseUrl("https://api.example.com", true),
     API_BROWSER_BASE_PATH
@@ -70,6 +81,16 @@ async function testEndpoints() {
     resolveHttpBaseUrl("https://api.example.com", false),
     "https://api.example.com"
   );
+  process.env.NEXT_PUBLIC_SITE_URL = "www.bigchiefnewz.com";
+  assert.equal(
+    resolveHttpBaseUrl("https://api.example.com", false),
+    "https://www.bigchiefnewz.com/api/backend"
+  );
+  if (originalSiteUrl === undefined) {
+    delete process.env.NEXT_PUBLIC_SITE_URL;
+  } else {
+    process.env.NEXT_PUBLIC_SITE_URL = originalSiteUrl;
+  }
   assert.equal(AUTH_ENDPOINTS.refreshToken, "/authorized/token/refresh/");
   assert.equal(
     resolveApiBaseUrl({ NEXT_PUBLIC_API_URL: "https://only-api.example.com" }),

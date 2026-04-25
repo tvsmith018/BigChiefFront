@@ -12,6 +12,20 @@ import {
 } from "./endpoints";
 
 describe("endpoints", () => {
+  function withEnv<T>(key: string, value: string, run: () => T): T {
+    const previous = process.env[key];
+    process.env[key] = value;
+    try {
+      return run();
+    } finally {
+      if (previous === undefined) {
+        delete process.env[key];
+      } else {
+        process.env[key] = previous;
+      }
+    }
+  }
+
   it("normalizeApiBaseUrl strips graphql suffix and trailing slashes", () => {
     expect(normalizeApiBaseUrl("https://example.com/graphql/")).toBe("https://example.com");
     expect(normalizeApiBaseUrl("https://example.com/api///")).toBe("https://example.com/api");
@@ -46,11 +60,21 @@ describe("endpoints", () => {
     expect(resolveGraphQLEndpoint("https://api.example.com", false)).toBe(
       "https://api.example.com/graphql/"
     );
+    expect(
+      withEnv("NEXT_PUBLIC_SITE_URL", "https://www.bigchiefnewz.com", () =>
+        resolveGraphQLEndpoint("https://api.example.com", false)
+      )
+    ).toBe("https://www.bigchiefnewz.com/api/graphql");
   });
 
   it("resolveHttpBaseUrl uses browser proxy path when isBrowser", () => {
     expect(resolveHttpBaseUrl("https://api.example.com", true)).toBe(API_BROWSER_BASE_PATH);
     expect(resolveHttpBaseUrl("https://api.example.com", false)).toBe("https://api.example.com");
+    expect(
+      withEnv("NEXT_PUBLIC_SITE_URL", "www.bigchiefnewz.com", () =>
+        resolveHttpBaseUrl("https://api.example.com", false)
+      )
+    ).toBe("https://www.bigchiefnewz.com/api/backend");
   });
 
   it("AUTH_ENDPOINTS has stable paths", () => {

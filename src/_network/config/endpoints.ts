@@ -2,18 +2,26 @@ const DEFAULT_API_BASE_URL = "https://bigchiefnewz-a2e8434d1e6d.herokuapp.com";
 export const GRAPHQL_BROWSER_PATH = "/api/graphql";
 export const API_BROWSER_BASE_PATH = "/api/backend";
 
+function normalizeOriginCandidate(value?: string) {
+  if (!value) return undefined;
+  const trimmed = value.trim().replace(/\/+$/, "");
+  if (!trimmed) return undefined;
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+  return `https://${trimmed}`;
+}
+
 function resolveInternalAppOrigin(
   env: Record<string, string | undefined> = process.env
 ) {
-  const explicit =
-    env.INTERNAL_APP_ORIGIN ??
-    env.NEXT_INTERNAL_APP_ORIGIN ??
-    (env.VERCEL_URL ? `https://${env.VERCEL_URL}` : undefined);
-
-  if (explicit) {
-    return explicit.replace(/\/+$/, "");
-  }
-  return undefined;
+  return (
+    normalizeOriginCandidate(env.INTERNAL_APP_ORIGIN) ??
+    normalizeOriginCandidate(env.NEXT_INTERNAL_APP_ORIGIN) ??
+    normalizeOriginCandidate(env.VERCEL_URL) ??
+    normalizeOriginCandidate(env.NEXT_PUBLIC_SITE_URL) ??
+    normalizeOriginCandidate(env.NEXT_PUBLIC_VERCEL_URL)
+  );
 }
 
 export function normalizeApiBaseUrl(value: string) {
