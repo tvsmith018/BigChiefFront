@@ -23,7 +23,7 @@ const DateScrollPicker = ({ itemHeight = ITEM_HEIGHT, visibleRows = ROWS, startY
     const monthRef = useRef(null);
     const yearRef = useRef(null);
     const getDaysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
-    const rawRows = visibleRows !== null && visibleRows !== void 0 ? visibleRows : 5;
+    const rawRows = visibleRows ?? 5;
     const rows = rawRows % 2 === 0 ? rawRows + 1 : rawRows;
     const scrollToIndex = (ref, index) => {
         if (ref.current) {
