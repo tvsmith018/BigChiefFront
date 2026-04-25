@@ -14,8 +14,9 @@ const rateLimitState = new Map<string, { count: number; resetAt: number }>();
 
 function getClientIp(request: NextRequest) {
   const forwarded = request.headers.get("x-forwarded-for");
-  if (!forwarded) return "unknown";
-  return forwarded.split(",")[0]?.trim() || "unknown";
+  const realIp = request.headers.get("x-real-ip");
+  const ip = forwarded?.split(",")[0]?.trim() || realIp?.trim();
+  return ip || null;
 }
 
 function consumeRateLimit(key: string) {
@@ -92,7 +93,13 @@ export async function POST(request: NextRequest) {
   const requestId = request.headers.get("x-request-id") ?? crypto.randomUUID();
   const startedAt = Date.now();
   const clientIp = getClientIp(request);
-  const limit = consumeRateLimit(`graphql:${clientIp}`);
+  const limit = clientIp
+    ? consumeRateLimit(`graphql:${clientIp}`)
+    : {
+        allowed: true,
+        remaining: GRAPHQL_RATE_LIMIT_MAX,
+        resetAt: Date.now() + RATE_LIMIT_WINDOW_MS,
+      };
   const hasAuthContext = Boolean(
     request.headers.get("authorization") ||
       request.cookies.get("access")?.value ||

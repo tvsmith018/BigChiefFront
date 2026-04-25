@@ -21,8 +21,9 @@ const rateLimitState = new Map<string, { count: number; resetAt: number }>();
 
 function getClientIp(request: NextRequest) {
   const forwarded = request.headers.get("x-forwarded-for");
-  if (!forwarded) return "unknown";
-  return forwarded.split(",")[0]?.trim() || "unknown";
+  const realIp = request.headers.get("x-real-ip");
+  const ip = forwarded?.split(",")[0]?.trim() || realIp?.trim();
+  return ip || null;
 }
 
 function consumeRateLimit(key: string) {
@@ -111,7 +112,13 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
       request.cookies.get("access")?.value ||
       request.cookies.get("session")?.value
   );
-  const limit = consumeRateLimit(`backend:${clientIp}`);
+  const limit = clientIp
+    ? consumeRateLimit(`backend:${clientIp}`)
+    : {
+        allowed: true,
+        remaining: BACKEND_RATE_LIMIT_MAX,
+        resetAt: Date.now() + RATE_LIMIT_WINDOW_MS,
+      };
 
   if (!limit.allowed) {
     logWarn("bff_backend_rate_limited", {
