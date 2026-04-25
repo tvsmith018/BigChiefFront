@@ -19,6 +19,16 @@ export const metadata: Metadata = {
   creator: "Terrance V. Smith",
   publisher: "Software Innovation LLC",
   category: "Hip-hop Blog",
+  icons: {
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+      {
+        url: "/apple-touch-icon-precomposed.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
+    ],
+  },
   keywords: [
     "hip-hop",
     "big chief",
