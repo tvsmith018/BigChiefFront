@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 import { logError } from "@/_utilities/observability/logger";
 
-export default function Error({
+export default function AppErrorPage({
   error,
   reset,
 }: {

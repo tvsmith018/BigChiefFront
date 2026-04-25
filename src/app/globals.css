@@ -14636,7 +14636,8 @@ textarea.form-control-lg {
 }
 
 .btn-link {
-  padding-bottom: 0px;
+  padding: 0;
+  padding-bottom: 0;
   background: -webkit-gradient(linear, left top, right top, from(currentColor), to(currentColor));
   background: linear-gradient(to right, currentColor 0%, currentColor 100%);
   background-size: 0px 6%;
@@ -14645,7 +14646,6 @@ textarea.form-control-lg {
   -webkit-transition-duration: 0.5s;
           transition-duration: 0.5s;
   font-weight: inherit;
-  padding: 0;
 }
 
 .btn-link:hover {
@@ -15105,7 +15105,7 @@ textarea.form-control-lg {
 
 .dropdown-toggle:after {
   content: "\f078";
-  font-family: "Font Awesome 5 Free";
+  font-family: "Font Awesome 5 Free", sans-serif;
   font-size: 0.5rem;
   margin-left: 0.35rem;
   font-weight: 900;
@@ -15115,7 +15115,7 @@ textarea.form-control-lg {
 
 .dropup .dropdown-toggle:after {
   content: "\f077";
-  font-family: "Font Awesome 5 Free";
+  font-family: "Font Awesome 5 Free", sans-serif;
   font-size: 0.5rem;
   margin-left: 0.35rem;
   font-weight: 900;
@@ -15541,7 +15541,7 @@ header .navbar-nav .nav-link.active:before {
 
 .navbar .dropdown-menu .dropdown-submenu.dropend .dropdown-toggle:after {
   content: "\f00d";
-  font-family: "Font Awesome 5 Free";
+  font-family: "Font Awesome 5 Free", sans-serif;
   font-size: 10px;
   top: 10px;
   -webkit-transform: rotate(45deg);
@@ -15565,7 +15565,7 @@ header .navbar-nav .nav-link.active:before {
 
 .navbar .dropdown-menu .dropdown-submenu.dropstart .dropdown-toggle:before {
   content: "\f00d";
-  font-family: "Font Awesome 5 Free";
+  font-family: "Font Awesome 5 Free", sans-serif;
   font-size: 10px;
   top: 8px;
   -webkit-transform: rotate(45deg);
