@@ -185,7 +185,7 @@ New engineers should read **one full route** end-to-end: e.g. `src/app/page.tsx`
 `src/_network/config/endpoints.ts` centralizes:
 
 - Default and environment-based **API base URL** (`NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_ARTICLEURL`, etc.).
-- **Browser vs server** URL shapes (e.g. `/api/graphql` in the browser vs full upstream URL on the server).
+- **Browser and server** URL resolution to the same internal BFF routes (`/api/graphql`, `/api/backend`) for consistent auth/retry/error behavior.
 - **Auth endpoint paths** (OTP, signup, refresh token, etc.).
 
 ### HTTP client
@@ -199,10 +199,22 @@ The route handler:
 - Builds an **upstream URL** from the incoming path and query string.
 - For mutating methods, reads the body as **raw bytes** (`arrayBuffer()`) so **multipart file uploads** are not corrupted by UTF-8 text decoding.
 - Forwards **cookies** and **Authorization**, and can **refresh access tokens** when responses are `401`, depending on the implementation in the file.
+- Applies per-route **rate limits** and emits `429` with retry hints when limits are exceeded.
+- Adds a route-aware **cache policy split** (`public, s-maxage` for safe unauthenticated reads; `no-store` for auth/personalized traffic).
+- Emits structured proxy completion logs (`request_id`, route, status, latency) for operational tracing.
 
 ### GraphQL proxy (`/api/graphql`)
 
-Forwards POST bodies to the upstream GraphQL endpoint with selected headers. Behavior is intentionally slimmer than the REST proxy; teams should confirm it matches their **auth model** (header-only vs cookie).
+Forwards POST bodies to the upstream GraphQL endpoint with selected headers. This proxy now follows the same auth-forwarding and retry posture as REST so GraphQL/REST behavior stays aligned, including rate limiting, cache policy split, and structured request metrics.
+
+### CSP reporting endpoint (`/api/security/csp-report`)
+
+The frontend now includes a CSP report collection route:
+
+- Path: `src/app/api/security/csp-report/route.ts`
+- Purpose: receive CSP violation reports in **report-only rollout** mode without impacting user traffic.
+- Input support: legacy `csp-report` payloads and Reporting API payload arrays.
+- Logging behavior: emits sanitized structured events (`security_csp_violation_reported`) for analysis and policy tightening.
 
 ---
 
@@ -217,7 +229,9 @@ Forwards POST bodies to the upstream GraphQL endpoint with selected headers. Beh
 
 ### Server-side auth
 
-`authProxy` / related server-only code (`src/_services/auth/authproxy.ts` and similar) uses **`next/headers` cookies** to obtain refresh/access tokens, refresh when needed, and load the current user. Cookie options use **`getCookieSettings`** (httpOnly, secure in production, SameSite, path, maxAge).
+`authProxy` / related server-only code (`src/_services/auth/authproxy.ts` and similar) is split by responsibility: read-only server-render checks are safe for layouts/server components, while mutable refresh/cookie-write behavior runs in route-handler contexts (for example `/api/session`). Cookie options use **`getCookieSettings`** (httpOnly, secure in production, SameSite, path, maxAge).
+
+Client session reconciliation (`SessionSync`) now includes a lighter background policy for guests plus jittered startup checks to reduce synchronized heartbeat spikes under high concurrency.
 
 ### Client signup / login flows
 
@@ -293,6 +307,7 @@ The project uses **three complementary layers**:
 - **Directory:** `frontend/app/e2e/`
 - **Config:** `playwright.config.ts` — base URL **`http://127.0.0.1:3002`**, **`next start`** as `webServer` so tests hit a **production build** locally.
 - **CI:** `CI=true` disables reusing an existing server so runs are deterministic.
+- **Coverage focus:** includes auth-route visibility checks, profile route health/auth outcome checks, and article detail route resilience (no hard 5xx on transient upstream issues).
 
 **Command:** `npm run test:e2e` (requires **build** first unless a server is already running on 3002 in non-CI mode)
 
@@ -374,10 +389,11 @@ This section translates an **internal engineering review** into **clear expectat
 | Type safety | Strict TypeScript + lint reduce entire bug classes. |
 | Proxy parity | GraphQL and REST proxy handlers both support cookie/header auth forwarding plus 401 refresh+retry flow. |
 | Response hardening | Security headers are applied on proxy responses and globally (`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`). |
+| Abuse control baseline | BFF route handlers now apply per-route rate limits and explicit 429 responses with retry hints. |
 
 | Gap | What to do |
 |-----|------------|
-| CSP hardening | Move from baseline headers to route-aware Content-Security-Policy once third-party/script inventory is finalized. |
+| CSP hardening | A baseline `Content-Security-Policy-Report-Only` header is now active, including `report-uri/report-to` wiring into `/api/security/csp-report`; next step is tightening directives and moving high-confidence routes to enforced `Content-Security-Policy`. |
 | Security telemetry | Add centralized client/server security event reporting to improve incident response speed. |
 | Ongoing review | Keep GraphQL and REST proxy forwarding rules reviewed whenever auth/session logic changes. |
 
@@ -390,6 +406,7 @@ This section translates an **internal engineering review** into **clear expectat
 | Pagination / core | Shared `_core/pagination` patterns improve consistency. |
 | Import boundaries | ESLint boundaries rules now enforce critical layer constraints (network/store isolated from route/view layer). |
 | Global request policy | `src/proxy.ts` now documents and enforces a clear minimal policy (no auth redirects there, request correlation ID propagation). |
+| Runtime consistency | Browser and server service traffic resolves through the same BFF route layer, reducing environment drift. |
 
 | Gap | What to do |
 |-----|------------|
@@ -420,7 +437,7 @@ Strict lint and TypeScript help. Architecture guardrails are stronger through bo
 
 | Observation | Detail |
 |-------------|--------|
-| Current state | Baseline observability is now in place: global + route error boundaries, structured application logging primitives, request correlation IDs on proxy responses, and Web Vitals reporting hooks. |
+| Current state | Baseline observability is now in place: global + route error boundaries, structured application logging primitives, request correlation IDs on proxy responses, Web Vitals reporting hooks, and route-level latency/status logs in BFF handlers. |
 | Enterprise expectation | Keep this baseline and add sink integrations (APM/RUM, alerting, and long-term dashboards) so client + server error/event signals are queryable and actionable at scale. |
 
 ### 16.8 Accessibility — **B**
@@ -446,6 +463,7 @@ Before tagging a release or merging to production:
 3. Remove or **feature-flag** debug logging in sensitive paths.  
 4. Smoke-test **auth** and **primary content** paths manually after deploy.  
 5. Plan **error reporting** (even a minimal integration) if not yet deployed.
+6. Review CSP report-only violations collected at `/api/security/csp-report` and resolve new blocked sources before enforcing CSP.
 
 ---
 
@@ -471,3 +489,7 @@ Before tagging a release or merging to production:
 | 1.0 | 2026-04 | Initial enterprise-style guide: stack, structure, testing, CI, quality assessment. |
 | 1.1 | 2026-04-16 | Security hardening update: auth log cleanup, proxy parity improvements, baseline security headers, revised security grade. |
 | 1.2 | 2026-04-16 | Observability baseline update: error boundaries, Web Vitals reporter, request correlation IDs, structured logger guidance. |
+| 1.3 | 2026-04-23 | Networking policy clarification: browser + server service calls resolve through internal BFF routes; auth proxy responsibility split documented (read-only render checks vs route-handler cookie mutation). |
+| 1.4 | 2026-04-24 | Scale-hardening update: session heartbeat load controls, BFF route rate limiting, cache-policy split (public vs private), and structured proxy latency/status logging documented. |
+| 1.5 | 2026-04-24 | Security hardening follow-up: report-only CSP baseline enabled in frontend headers and dependency audit gate added to frontend CI workflow. |
+| 1.6 | 2026-04-24 | CSP report pipeline documented: `/api/security/csp-report` collection route, payload support, and rollout validation step added. |

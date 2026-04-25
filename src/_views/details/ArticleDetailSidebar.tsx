@@ -19,6 +19,7 @@ import {
   usePaginatedCollection,
   relatedPaginationAdapter
 } from "@/_core/pagination";
+import { toHttpsUrl } from "@/_utilities/url/toHttpsUrl";
 
 type DetailTab = "comment" | "stat" | "author" | "related" | "article";
 
@@ -248,7 +249,7 @@ export default function ArticleDetailSidebar({
               }}
             >
               <Image
-                src={author.avatarUrl}
+                src={toHttpsUrl(author.avatarUrl) ?? "/images/1x1placeholder.png"}
                 alt={`Image of ${author.firstname} ${author.lastname}`}
                 width={150}
                 height={150}
@@ -325,7 +326,7 @@ export default function ArticleDetailSidebar({
                       <Col xs={12}>
                         <div className="ratio ratio-16x9">
                           <Image
-                            src={article.image4x3Url ?? "/images/4x3placeholder.png"}
+                            src={toHttpsUrl(article.image4x3Url) ?? "/images/4x3placeholder.png"}
                             alt={article.altImage ?? ""}
                             className="card-img"
                             loading="eager"
@@ -359,7 +360,7 @@ export default function ArticleDetailSidebar({
                               <div className="d-flex align-items-center position-relative">
                                 <div className="avatar avatar-sm">
                                   <Image
-                                    src={article.author?.avatarUrl ?? "/images/1x1placeholder.png"}
+                                    src={toHttpsUrl(article.author?.avatarUrl) ?? "/images/1x1placeholder.png"}
                                     alt={`Picture of ${article.author?.firstname} ${article.author?.lastname}`}
                                     className="avatar-img rounded-circle"
                                     loading="eager"
@@ -469,7 +470,7 @@ export default function ArticleDetailSidebar({
                         {commentNode.user.avatarUrl ? (
                           <Image
                             className="rounded-circle"
-                            src={commentNode.user.avatarUrl}
+                            src={toHttpsUrl(commentNode.user.avatarUrl) ?? "/images/1x1placeholder.png"}
                             alt={`Image of ${commentNode.user.firstname} ${commentNode.user.lastname}`}
                             width={40}
                             height={40}

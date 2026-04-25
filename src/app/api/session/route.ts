@@ -1,9 +1,33 @@
 import { NextResponse } from "next/server";
 
 import { authProxyRoute } from "@/_services/auth/authproxy";
+import { logInfo, logWarn } from "@/_utilities/observability/logger";
 
 export const dynamic = "force-dynamic";
 const SESSION_AUTH_TIMEOUT_MS = 5_000;
+const RATE_LIMIT_WINDOW_MS = Number(process.env.BFF_RATE_LIMIT_WINDOW_MS ?? 60_000);
+const SESSION_RATE_LIMIT_MAX = Number(process.env.BFF_SESSION_RATE_LIMIT_MAX ?? 90);
+const rateLimitState = new Map<string, { count: number; resetAt: number }>();
+
+function getClientIp(request: Request) {
+  const forwarded = request.headers.get("x-forwarded-for");
+  if (!forwarded) return "unknown";
+  return forwarded.split(",")[0]?.trim() || "unknown";
+}
+
+function consumeRateLimit(key: string) {
+  const now = Date.now();
+  const existing = rateLimitState.get(key);
+  if (!existing || existing.resetAt <= now) {
+    rateLimitState.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return { allowed: true, remaining: SESSION_RATE_LIMIT_MAX - 1, resetAt: now + RATE_LIMIT_WINDOW_MS };
+  }
+
+  existing.count += 1;
+  const remaining = Math.max(SESSION_RATE_LIMIT_MAX - existing.count, 0);
+  const allowed = existing.count <= SESSION_RATE_LIMIT_MAX;
+  return { allowed, remaining, resetAt: existing.resetAt };
+}
 
 async function resolveSessionUser() {
   try {
@@ -18,10 +42,30 @@ async function resolveSessionUser() {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const startedAt = Date.now();
+  const requestId = request.headers.get("x-request-id") ?? crypto.randomUUID();
+  const clientIp = getClientIp(request);
+  const limit = consumeRateLimit(`session:${clientIp}`);
+
+  if (!limit.allowed) {
+    logWarn("bff_session_rate_limited", { requestId, clientIp });
+    return NextResponse.json(
+      { detail: "Rate limit exceeded." },
+      {
+        status: 429,
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+          "x-request-id": requestId,
+          "retry-after": String(Math.ceil((limit.resetAt - Date.now()) / 1000)),
+        },
+      }
+    );
+  }
+
   const user = await resolveSessionUser();
 
-  return NextResponse.json(
+  const response = NextResponse.json(
     {
       authenticated: Boolean(user),
       user: user ?? null,
@@ -29,7 +73,16 @@ export async function GET() {
     {
       headers: {
         "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        "x-request-id": requestId,
       },
     }
   );
+  logInfo("bff_session_completed", {
+    requestId,
+    clientIp,
+    authenticated: Boolean(user),
+    latency_ms: Date.now() - startedAt,
+    rateRemaining: limit.remaining,
+  });
+  return response;
 }

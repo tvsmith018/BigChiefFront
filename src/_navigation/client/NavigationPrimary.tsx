@@ -24,7 +24,8 @@ export default function NavigationPrimary({
             src={logo}
             alt="Big Chief Ent Logo"
             width={65}
-            height={65 }
+            height={65}
+            style={{ height: "auto" }}
             priority
           />
         </NavbarBrand>

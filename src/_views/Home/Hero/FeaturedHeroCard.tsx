@@ -6,6 +6,7 @@ import Link from "next/link";
 
 import { RelativeTime } from "@/_core/date/RelativeTime";
 import { Article } from "@/_types/articles/article.types";
+import { toHttpsUrl } from "@/_utilities/url/toHttpsUrl";
 
 interface FeaturedHeroCardProps {
   articleNode: {node:Article};
@@ -17,7 +18,7 @@ export function FeaturedHeroCard({ articleNode }: FeaturedHeroCardProps) {
     <Card
       className="card-overlay-bottom h-400 h-lg-560 rounded-3"
       style={{
-        backgroundImage: `url(${article.image16x9Url})`,
+        backgroundImage: `url(${toHttpsUrl(article.image16x9Url) ?? "/images/4x3placeholder.png"})`,
         backgroundPosition: "center left",
         backgroundSize: "cover",
       }}
@@ -50,7 +51,7 @@ export function FeaturedHeroCard({ articleNode }: FeaturedHeroCardProps) {
                   <div className="d-flex align-items-center position-relative">
                     <div className="avatar avatar-sm">
                       <Image
-                        src={article.author?.avatarUrl ?? ""}
+                        src={toHttpsUrl(article.author?.avatarUrl) ?? "/images/1x1placeholder.png"}
                         alt={`${article.author?.firstname} ${article.author?.lastname}`}
                         className="avatar-img rounded-circle"
                         width={100}

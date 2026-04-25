@@ -10,6 +10,7 @@ import Image from "next/image";
 import { useNavigationSearch } from "../hooks/UseNavigationSearch";
 import { fadeSlide } from "../animations/navigation.motion";
 import { ArticleType } from "@/_utilities/datatype/types";
+import { toHttpsUrl } from "@/_utilities/url/toHttpsUrl";
 
 export default function NavigationSearchPanel() {
   const {
@@ -64,7 +65,7 @@ export default function NavigationSearchPanel() {
             <Row className="g-3 mt-2">
               <Col xs={3}>
                 <Image
-                  src={article.image1x1Url ?? "/images/1x1placeholder.png"}
+                  src={toHttpsUrl(article.image1x1Url) ?? "/images/1x1placeholder.png"}
                   alt={article.altImage ?? ""}
                   width={100}
                   height={100}

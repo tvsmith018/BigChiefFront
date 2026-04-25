@@ -7,6 +7,7 @@ import Link from "next/link";
 
 import { RelativeTime } from "@/_core/date/RelativeTime";
 import { Article } from "@/_types/articles/article.types";
+import { toHttpsUrl } from "@/_utilities/url/toHttpsUrl";
 
 interface SecondaryArticleListProps {
   articles: Array<{ node: Article }>;
@@ -24,7 +25,7 @@ export function SecondaryArticleList({
           <Row className="g-3 mb-3">
             <Col xs={4}>
               <Image
-                src={node.image4x3Url ?? ""}
+                src={toHttpsUrl(node.image4x3Url) ?? "/images/4x3placeholder.png"}
                 alt={node.altImage ?? ""}
                 className="rounded-3"
                 width={1000}
@@ -60,7 +61,7 @@ export function SecondaryArticleList({
                     <div className="d-flex align-items-center position-relative">
                       <div className="avatar avatar-sm">
                         <Image
-                          src={node.author?.avatarUrl ?? ""}
+                          src={toHttpsUrl(node.author?.avatarUrl) ?? "/images/1x1placeholder.png"}
                           alt={`${node.author?.firstname} ${node.author?.lastname}`}
                           className="avatar-img rounded-circle"
                           width={100}

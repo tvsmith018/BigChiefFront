@@ -15,6 +15,7 @@ import {
   useInfiniteObserver,
   usePaginatedCollection,
 } from "@/_core/pagination";
+import { toHttpsUrl } from "@/_utilities/url/toHttpsUrl";
 
 
 interface Props {
@@ -64,7 +65,7 @@ export default function CardListView({ list, title, pageInfo ,category }: Props)
               <Card>
                 <div className="ratio ratio-16x9">
                   <Image
-                    src={node.image4x3Url ?? "/images/4x3placeholder.png"}
+                    src={toHttpsUrl(node.image4x3Url) ?? "/images/4x3placeholder.png"}
                     alt={node.altImage ?? ""}
                     className="card-img"
                     fill
@@ -94,7 +95,7 @@ export default function CardListView({ list, title, pageInfo ,category }: Props)
                         <div className="d-flex align-items-center position-relative">
                           <div className="avatar avatar-sm">
                             <Image
-                              src={node.author?.avatarUrl ?? ""}
+                              src={toHttpsUrl(node.author?.avatarUrl) ?? "/images/1x1placeholder.png"}
                               alt={`${node.author?.firstname} ${node.author?.lastname}`}
                               className="avatar-img rounded-circle"
                               width={100}

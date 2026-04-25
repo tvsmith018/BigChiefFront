@@ -5,10 +5,39 @@ import {
   API_BROWSER_BASE_PATH,
   AUTH_ENDPOINTS,
 } from "@/_network/config/endpoints";
+import { logInfo, logWarn } from "@/_utilities/observability/logger";
 
 type RouteContext = {
   params: Promise<unknown>;
 };
+
+const RATE_LIMIT_WINDOW_MS = Number(process.env.BFF_RATE_LIMIT_WINDOW_MS ?? 60_000);
+const BACKEND_RATE_LIMIT_MAX = Number(
+  process.env.BFF_BACKEND_RATE_LIMIT_MAX ?? 240
+);
+const CACHE_CONTROL_PUBLIC = "public, s-maxage=30, stale-while-revalidate=120";
+const CACHE_CONTROL_PRIVATE = "no-store";
+const rateLimitState = new Map<string, { count: number; resetAt: number }>();
+
+function getClientIp(request: NextRequest) {
+  const forwarded = request.headers.get("x-forwarded-for");
+  if (!forwarded) return "unknown";
+  return forwarded.split(",")[0]?.trim() || "unknown";
+}
+
+function consumeRateLimit(key: string) {
+  const now = Date.now();
+  const existing = rateLimitState.get(key);
+  if (!existing || existing.resetAt <= now) {
+    rateLimitState.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return { allowed: true, remaining: BACKEND_RATE_LIMIT_MAX - 1, resetAt: now + RATE_LIMIT_WINDOW_MS };
+  }
+
+  existing.count += 1;
+  const remaining = Math.max(BACKEND_RATE_LIMIT_MAX - existing.count, 0);
+  const allowed = existing.count <= BACKEND_RATE_LIMIT_MAX;
+  return { allowed, remaining, resetAt: existing.resetAt };
+}
 
 function buildUpstreamUrl(request: NextRequest) {
   let upstreamPath = request.nextUrl.pathname.replace(
@@ -75,6 +104,37 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
   await context.params;
   const upstreamUrl = buildUpstreamUrl(request);
   const requestId = request.headers.get("x-request-id") ?? crypto.randomUUID();
+  const startedAt = Date.now();
+  const clientIp = getClientIp(request);
+  const hasAuthContext = Boolean(
+    request.headers.get("authorization") ||
+      request.cookies.get("access")?.value ||
+      request.cookies.get("session")?.value
+  );
+  const limit = consumeRateLimit(`backend:${clientIp}`);
+
+  if (!limit.allowed) {
+    logWarn("bff_backend_rate_limited", {
+      requestId,
+      clientIp,
+      method: request.method,
+      path: request.nextUrl.pathname,
+    });
+    return NextResponse.json(
+      { detail: "Rate limit exceeded." },
+      {
+        status: 429,
+        headers: {
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY",
+          "referrer-policy": "strict-origin-when-cross-origin",
+          "x-request-id": requestId,
+          "cache-control": CACHE_CONTROL_PRIVATE,
+          "retry-after": String(Math.ceil((limit.resetAt - Date.now()) / 1000)),
+        },
+      }
+    );
+  }
 
   try {
     // Read body as raw bytes. request.text() UTF-8-decodes the whole body and destroys
@@ -128,12 +188,38 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
     outHeaders.set("x-frame-options", "DENY");
     outHeaders.set("referrer-policy", "strict-origin-when-cross-origin");
     outHeaders.set("x-request-id", requestId);
+    outHeaders.set(
+      "cache-control",
+      request.method === "GET" && !hasAuthContext
+        ? CACHE_CONTROL_PUBLIC
+        : CACHE_CONTROL_PRIVATE
+    );
 
-    return new NextResponse(responseBuf.byteLength ? responseBuf : null, {
+    const response = new NextResponse(responseBuf.byteLength ? responseBuf : null, {
       status: upstreamResponse.status,
       headers: outHeaders,
     });
+    logInfo("bff_backend_proxy_completed", {
+      requestId,
+      clientIp,
+      method: request.method,
+      path: request.nextUrl.pathname,
+      upstream: upstreamUrl,
+      status: upstreamResponse.status,
+      latency_ms: Date.now() - startedAt,
+      hasAuthContext,
+      rateRemaining: limit.remaining,
+    });
+    return response;
   } catch {
+    logWarn("bff_backend_upstream_unreachable", {
+      requestId,
+      clientIp,
+      method: request.method,
+      path: request.nextUrl.pathname,
+      upstream: upstreamUrl,
+      latency_ms: Date.now() - startedAt,
+    });
     return NextResponse.json(
       { detail: "Upstream API unreachable." },
       {
@@ -143,6 +229,7 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
           "x-frame-options": "DENY",
           "referrer-policy": "strict-origin-when-cross-origin",
           "x-request-id": requestId,
+          "cache-control": CACHE_CONTROL_PRIVATE,
         },
       }
     );

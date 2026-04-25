@@ -45,7 +45,7 @@ npm run ci
 | **Smoke** | `npm run test:smoke` | Node + `scripts/run-tests.mjs` | Fast checks: URL helpers, `HttpClient` with mocked `fetch`, auth helpers, signup validation wiring. |
 | **Unit / module** | `npm run test:unit` | Vitest + happy-dom + v8 coverage | Deeper tests in `src/**/*.test.ts(x)`; **fails** if coverage on allowlisted files drops below thresholds in `vitest.config.ts`. |
 | **Combined** | `npm run test` | Smoke **+** Vitest | What CI runs before build. |
-| **E2E** | `npm run test:e2e` | Playwright | Real browser: home, auth tabs, article routes (see `e2e/*.spec.ts`). |
+| **E2E** | `npm run test:e2e` | Playwright | Real browser: home, auth tabs, profile route auth/health behavior, and article route resilience checks (see `e2e/*.spec.ts`). |
 
 ---
 
@@ -70,6 +70,14 @@ Thresholds (lines, branches, functions, statements) are defined in that config f
 npm run lint
 npm run typecheck
 ```
+
+For local dev stability triage, run:
+
+```bash
+npm run dev:webpack
+```
+
+This bypasses Turbopack and helps isolate environment/network issues from bundler-specific behavior.
 
 **Before opening a PR:**
 
@@ -104,6 +112,7 @@ $env:CI='1'; npm run test:e2e
 | Port 3002 in use | Previous `next start` or Playwright | Stop the process or set `CI=true` so Playwright does not reuse a stale server. |
 | Vitest coverage failure | New code in allowlisted files without tests | Add tests or adjust coverage config with team agreement. |
 | E2E passes locally, fails in CI | Flaky timing or missing `CI=true` | Use traces (`playwright.config.ts`: `trace: on-first-retry`) and retry settings in CI. |
+| Frequent `429` from `/api/session` or `/api/graphql` in load tests | BFF rate limits too low for current test profile | Tune `BFF_RATE_LIMIT_WINDOW_MS`, `BFF_SESSION_RATE_LIMIT_MAX`, `BFF_GRAPHQL_RATE_LIMIT_MAX`, `BFF_BACKEND_RATE_LIMIT_MAX` for expected traffic pattern. |
 
 ---
 

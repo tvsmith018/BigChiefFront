@@ -10,6 +10,7 @@ import Link from "next/link";
 import { ContentCarousel } from "@/_utilities/carousel/ContentCarousel";
 import { RelativeTime } from "@/_core/date/RelativeTime";
 import { Article } from "@/_types/articles/article.types";
+import { toHttpsUrl } from "@/_utilities/url/toHttpsUrl";
 
 export default function FeaturedArticlesCarousel({
   articles,
@@ -28,7 +29,7 @@ export default function FeaturedArticlesCarousel({
             <Row className="g-2">
               <Col xs={3}>
                 <Image
-                  src={article.image1x1Url ?? "/images/1x1placeholder.png"}
+                  src={toHttpsUrl(article.image1x1Url) ?? "/images/1x1placeholder.png"}
                   alt={article.altImage ?? ""}
                   className="img-fluid rounded-3"
                   width={100}

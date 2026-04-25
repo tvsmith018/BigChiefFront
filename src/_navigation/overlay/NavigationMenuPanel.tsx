@@ -4,6 +4,7 @@ import Nav from "react-bootstrap/Nav";
 import Dropdown from "react-bootstrap/Dropdown";
 import Logo from "../../../public/images/newlogo.jpg";
 import localizationData from "@/_utilities/localization/en.json";
+import { toHttpsUrl } from "@/_utilities/url/toHttpsUrl";
 import { NavigationLink } from "../../_types/navigation/navigation.types";
 import { scaleFade } from "../animations/navigation.motion";
 import { useAppSelector} from '@/_store/hooks/UseAppSelector';
@@ -36,7 +37,7 @@ export default function NavigationMenuPanel({
             }}
           >
             <Image
-              src={data.avatar}
+              src={toHttpsUrl(data.avatar) ?? "/images/1x1placeholder.png"}
               alt="User Avatar"
               width={200}
               height={200}

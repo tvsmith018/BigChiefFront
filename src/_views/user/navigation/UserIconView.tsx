@@ -12,6 +12,7 @@ import { useAppDispatch } from "@/_store/hooks/UseAppDispatch";
 import { useAppSelector } from "@/_store/hooks/UseAppSelector";
 import { setAuthTransitioning } from "@/_store/reducers/app/appSlice";
 import { removeUser } from "@/_store/reducers/user/userSlice";
+import { toHttpsUrl } from "@/_utilities/url/toHttpsUrl";
 
 export default function UserIconView() {
   const data = useAppSelector((state) => state.user.data);
@@ -81,7 +82,7 @@ export default function UserIconView() {
             }}
           >
             <Image
-              src={data.avatar}
+              src={toHttpsUrl(data.avatar) ?? "/images/1x1placeholder.png"}
               alt={`Image of ${data.firstname ?? ""} ${data.lastname ?? ""}`}
               width={35}
               height={35}

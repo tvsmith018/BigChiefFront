@@ -1,5 +1,5 @@
 "use client"
-import { useRef } from "react";
+import { useId, useRef } from "react";
 import Script from 'next/script';
 import { useNavigationUI } from "@/_navigation";
 
@@ -11,6 +11,10 @@ type YouTubePlayerConstructor = new (
     height: string;
     width: string;
     videoId: string;
+    playerVars?: {
+      origin?: string;
+      enablejsapi?: number;
+    };
     events: {
       onReady: () => void;
     };
@@ -26,10 +30,40 @@ declare global {
   }
 }
 
+function normalizeYouTubeVideoId(input: string) {
+  const value = input.trim();
+  if (!value) return "";
+
+  // already an 11-char youtube id
+  if (/^[a-zA-Z0-9_-]{11}$/.test(value)) return value;
+
+  try {
+    const parsed = new URL(value);
+    const hostname = parsed.hostname.toLowerCase();
+
+    if (hostname.includes("youtu.be")) {
+      return parsed.pathname.replace(/^\/+/, "").slice(0, 11);
+    }
+
+    if (hostname.includes("youtube.com")) {
+      const fromQuery = parsed.searchParams.get("v");
+      if (fromQuery) return fromQuery.slice(0, 11);
+
+      const embedded = parsed.pathname.match(/\/embed\/([a-zA-Z0-9_-]{11})/);
+      if (embedded?.[1]) return embedded[1];
+    }
+  } catch {
+    // Fallback below
+  }
+
+  return value.slice(0, 11);
+}
+
 export default function VideoView({videoLink}:{videoLink:string, videoType:"youtube"|"facebook", title:string}){
 
     const {isMenuOpen, isSearchOpen} = useNavigationUI()
 
+    const playerElementId = useId().replace(/:/g, "_");
     const playerRef = useRef<YouTubePlayerInstance | null>(null);
 
     const handleScriptLoad = () => {
@@ -46,10 +80,17 @@ export default function VideoView({videoLink}:{videoLink:string, videoType:"yout
   const initializePlayer = () => {
     if (playerRef.current || !window.YT.Player) return; // Prevent double initialization
 
-    playerRef.current = new window.YT.Player("youtube-player", {
+    const normalizedVideoId = normalizeYouTubeVideoId(videoLink);
+    if (!normalizedVideoId) return;
+
+    playerRef.current = new window.YT.Player(playerElementId, {
       height: "100%",
       width: "100%",
-      videoId: videoLink,
+      videoId: normalizedVideoId,
+      playerVars: {
+        origin: window.location.origin,
+        enablejsapi: 1,
+      },
       events: { onReady: () => undefined },
     });
   };
@@ -68,7 +109,7 @@ export default function VideoView({videoLink}:{videoLink:string, videoType:"yout
           pointerEvents: isMenuOpen || isSearchOpen ? "none" : "auto",
         }}
       >
-        <div id="youtube-player" className="p-0 m-0" />
+        <div id={playerElementId} className="p-0 m-0" />
       </div>
     </div>
   );

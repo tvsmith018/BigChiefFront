@@ -14,6 +14,7 @@ type SessionResponse = {
 };
 
 const HEARTBEAT_MS = 60_000;
+const GUEST_HEARTBEAT_MS = 300_000;
 const UNAUTH_STREAK_REQUIRED = 2;
 const PROTECT_WINDOW_AFTER_AUTH_MS = 12_000;
 
@@ -91,19 +92,24 @@ export function SessionSync() {
       }
     };
 
-    void sync();
+    const initialDelayMs = Math.floor(Math.random() * 3000);
+    const initialTimer = window.setTimeout(() => {
+      void sync();
+    }, initialDelayMs);
 
+    const heartbeatMs = isAuthenticated ? HEARTBEAT_MS : GUEST_HEARTBEAT_MS;
     const timer = window.setInterval(() => {
       if (document.visibilityState === "visible") {
         void sync();
       }
-    }, HEARTBEAT_MS);
+    }, heartbeatMs);
 
     window.addEventListener("focus", onFocus);
     document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
       active = false;
+      window.clearTimeout(initialTimer);
       window.clearInterval(timer);
       window.removeEventListener("focus", onFocus);
       document.removeEventListener("visibilitychange", onVisibilityChange);

@@ -1,8 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { API_BASE_URL, AUTH_ENDPOINTS } from "@/_network/config/endpoints";
+import { logInfo, logWarn } from "@/_utilities/observability/logger";
 
 const GRAPHQL_UPSTREAM_URL = `${API_BASE_URL}/graphql/`;
+const RATE_LIMIT_WINDOW_MS = Number(process.env.BFF_RATE_LIMIT_WINDOW_MS ?? 60_000);
+const GRAPHQL_RATE_LIMIT_MAX = Number(
+  process.env.BFF_GRAPHQL_RATE_LIMIT_MAX ?? 180
+);
+const CACHE_CONTROL_PUBLIC = "public, s-maxage=30, stale-while-revalidate=120";
+const CACHE_CONTROL_PRIVATE = "no-store";
+const rateLimitState = new Map<string, { count: number; resetAt: number }>();
+
+function getClientIp(request: NextRequest) {
+  const forwarded = request.headers.get("x-forwarded-for");
+  if (!forwarded) return "unknown";
+  return forwarded.split(",")[0]?.trim() || "unknown";
+}
+
+function consumeRateLimit(key: string) {
+  const now = Date.now();
+  const existing = rateLimitState.get(key);
+  if (!existing || existing.resetAt <= now) {
+    rateLimitState.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return { allowed: true, remaining: GRAPHQL_RATE_LIMIT_MAX - 1, resetAt: now + RATE_LIMIT_WINDOW_MS };
+  }
+
+  existing.count += 1;
+  const remaining = Math.max(GRAPHQL_RATE_LIMIT_MAX - existing.count, 0);
+  const allowed = existing.count <= GRAPHQL_RATE_LIMIT_MAX;
+  return { allowed, remaining, resetAt: existing.resetAt };
+}
 
 async function refreshAccessToken(refreshToken: string) {
   const refreshResponse = await fetch(`${API_BASE_URL}${AUTH_ENDPOINTS.refreshToken}`, {
@@ -62,6 +90,30 @@ function buildSecurityHeaders(contentType: string) {
 
 export async function POST(request: NextRequest) {
   const requestId = request.headers.get("x-request-id") ?? crypto.randomUUID();
+  const startedAt = Date.now();
+  const clientIp = getClientIp(request);
+  const limit = consumeRateLimit(`graphql:${clientIp}`);
+  const hasAuthContext = Boolean(
+    request.headers.get("authorization") ||
+      request.cookies.get("access")?.value ||
+      request.cookies.get("session")?.value
+  );
+
+  if (!limit.allowed) {
+    logWarn("bff_graphql_rate_limited", { requestId, clientIp });
+    return NextResponse.json(
+      { detail: "Rate limit exceeded." },
+      {
+        status: 429,
+        headers: {
+          ...buildSecurityHeaders("application/json"),
+          "x-request-id": requestId,
+          "cache-control": CACHE_CONTROL_PRIVATE,
+          "retry-after": String(Math.ceil((limit.resetAt - Date.now()) / 1000)),
+        },
+      }
+    );
+  }
 
   try {
     const body = await request.text();
@@ -102,9 +154,17 @@ export async function POST(request: NextRequest) {
       headers: {
         ...buildSecurityHeaders(contentType),
         "x-request-id": requestId,
+        "cache-control": hasAuthContext
+          ? CACHE_CONTROL_PRIVATE
+          : CACHE_CONTROL_PUBLIC,
       },
     });
   } catch {
+    logWarn("bff_graphql_upstream_unreachable", {
+      requestId,
+      clientIp,
+      latency_ms: Date.now() - startedAt,
+    });
     return NextResponse.json(
       { detail: "GraphQL upstream unreachable." },
       {
@@ -112,8 +172,18 @@ export async function POST(request: NextRequest) {
         headers: {
           ...buildSecurityHeaders("application/json"),
           "x-request-id": requestId,
+          "cache-control": CACHE_CONTROL_PRIVATE,
         },
       }
     );
+  } finally {
+    logInfo("bff_graphql_proxy_completed", {
+      requestId,
+      clientIp,
+      latency_ms: Date.now() - startedAt,
+      hasAuthContext,
+      upstream: GRAPHQL_UPSTREAM_URL,
+      rateRemaining: limit.remaining,
+    });
   }
 }
