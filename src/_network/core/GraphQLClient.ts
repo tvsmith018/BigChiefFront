@@ -53,7 +53,11 @@ export class GraphQLClient {
         errors?: Array<{ message?: string }>;
       };
 
-      if (Array.isArray(json.errors) && json.errors.length > 0) {
+      if (
+        Array.isArray(json.errors) &&
+        json.errors.length > 0 &&
+        json.data === undefined
+      ) {
         const firstError = json.errors[0]?.message ?? "Unknown GraphQL error";
         throw new Error(firstError);
       }
