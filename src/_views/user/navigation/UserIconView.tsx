@@ -44,11 +44,13 @@ export default function UserIconView() {
     <>
       <Dropdown.Item href="/auth">
         <i className="bi bi-box-arrow-in-right me-2"></i>
+        {" "}
         Login
       </Dropdown.Item>
       <div className="border-bottom border-2 border-primary opacity-1 mx-4 my-1"></div>
       <Dropdown.Item href="/auth">
         <i className="bi bi-door-open-fill me-2"></i>
+        {" "}
         Create Profile
       </Dropdown.Item>
     </>
@@ -58,6 +60,7 @@ export default function UserIconView() {
     <>
       <Dropdown.Item href="/profile" role="button">
         <i className="bi bi-box-arrow-in-left me-2"></i>
+        {" "}
         Profile
       </Dropdown.Item>
       <Dropdown.Item as="button" role="button" onClick={handleLogout} disabled={isLoggingOut}>

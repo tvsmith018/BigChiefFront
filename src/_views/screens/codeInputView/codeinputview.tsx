@@ -5,7 +5,7 @@ import Button from "react-bootstrap/Button";
 
 export default function CodeInputView({prompt, onComplete, onResendClick}:{prompt:string, onComplete:()=>void, onResendClick:()=>void}){
   
-  const [otp, setOtp] = useState(Array(6).fill(''));
+  const [otp, setOtp] = useState(new Array(6).fill(''));
   const inputRefs = useRef<HTMLInputElement[]>([]);
   const [disabled, setDisabled] = useState<boolean>(true)
 
