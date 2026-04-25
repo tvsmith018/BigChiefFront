@@ -1,7 +1,6 @@
 "use client";
 
 import { useActionState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 import { loginAction } from "@/_services/auth/authactions";
 import type { User } from "@/_types/auth/user";
@@ -29,7 +28,6 @@ function extractLoggedInUser(state: unknown): User | null {
 
 export function useLogin() {
   const dispatch = useAppDispatch();
-  const router = useRouter();
 
   const [state, action, pending] = useActionState(loginAction, undefined);
 
@@ -40,13 +38,13 @@ export function useLogin() {
     dispatch(setAuthTransitioning(true));
     dispatch(storeUser(user));
 
-    // Move immediately, then refresh server components/cookies-backed state.
-    router.replace("/profile");
-    router.refresh();
+    // Force full document navigation so server-side cookies/session state are
+    // guaranteed to be applied before profile guard checks run.
+    window.location.assign("/profile");
     window.setTimeout(() => {
       dispatch(setAuthTransitioning(false));
     }, 1500);
-  }, [dispatch, router, state]);
+  }, [dispatch, state]);
 
   return {
     state,
