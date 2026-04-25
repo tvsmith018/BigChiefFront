@@ -63,7 +63,22 @@ export class HttpClient {
       });
 
       const rawBody = await res.text();
-      const parsedBody = rawBody ? JSON.parse(rawBody) : null;
+      const contentType = res.headers.get("content-type") ?? "";
+      const isJsonResponse =
+        contentType.includes("application/json") || contentType.includes("+json");
+
+      let parsedBody: unknown = null;
+      if (rawBody) {
+        if (isJsonResponse) {
+          try {
+            parsedBody = JSON.parse(rawBody);
+          } catch {
+            parsedBody = { detail: "Invalid JSON response from upstream." };
+          }
+        } else {
+          parsedBody = { detail: rawBody };
+        }
+      }
 
       if (!res.ok) {
         if (parsedBody && typeof parsedBody === "object") {

@@ -11,17 +11,33 @@ export class ProfileService {
     headers?: Record<string, string>;
     credentials?: RequestCredentials;
   }): Promise<ProfileMeApiResponse> {
-    return httpClient.request<ProfileMeApiResponse>(
-      PROFILE_ENDPOINTS.me,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          ...options?.headers,
+    try {
+      const response = await httpClient.request<unknown>(
+        PROFILE_ENDPOINTS.me,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            ...options?.headers,
+          },
+          credentials: options?.credentials ?? "include",
         },
-        credentials: options?.credentials ?? "include",
-      },
-      { cache: "no-store" }
-    );
+        { cache: "no-store" }
+      );
+
+      if (response && typeof response === "object" && "success" in response) {
+        return response as ProfileMeApiResponse;
+      }
+
+      return {
+        success: false,
+        message: "Profile response format was invalid.",
+      };
+    } catch {
+      return {
+        success: false,
+        message: "Unable to load profile right now.",
+      };
+    }
   }
 }
