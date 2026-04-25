@@ -17,7 +17,11 @@ async function HomeDataLoader() {
   const data = await ArticleService.fetchHomePage();
 
   const slides = data.slide?.edges ?? [];
-  const featured = data.main?.edges?.[0];
+  const featured =
+    data.main?.edges?.[0] ??
+    slides[0] ??
+    data.side?.edges?.[0] ??
+    data.list?.edges?.[0];
   const secondary = data.side?.edges ?? [];
   const list = data.list?.edges ?? [];
   const list_page_info = data.list?.pageInfo ?? {
@@ -25,7 +29,7 @@ async function HomeDataLoader() {
     endCursor: "",
   };
 
-  if (!featured) {
+  if (!featured && slides.length === 0 && secondary.length === 0 && list.length === 0) {
     return (
       <section className="pt-4 pb-2">
         <div className="container">
@@ -39,17 +43,23 @@ async function HomeDataLoader() {
 
   return (
     <>
-      <Suspense fallback={<div className="skeleton-carousel" />}>
-        <CarouselView articles={slides} />
-      </Suspense>
+      {slides.length > 0 ? (
+        <Suspense fallback={<div className="skeleton-carousel" />}>
+          <CarouselView articles={slides} />
+        </Suspense>
+      ) : null}
 
-      <Suspense fallback={<div className="skeleton-hero" />}>
-        <HeaderView featured={featured} secondary={secondary} />
-      </Suspense>
+      {featured ? (
+        <Suspense fallback={<div className="skeleton-hero" />}>
+          <HeaderView featured={featured} secondary={secondary} />
+        </Suspense>
+      ) : null}
 
-      <Suspense fallback={<div className="skeleton-list" />}>
-        <CardListView list={list} title="All Articles" pageInfo={list_page_info}/>
-      </Suspense>
+      {list.length > 0 ? (
+        <Suspense fallback={<div className="skeleton-list" />}>
+          <CardListView list={list} title="All Articles" pageInfo={list_page_info}/>
+        </Suspense>
+      ) : null}
     </>
   );
 }
