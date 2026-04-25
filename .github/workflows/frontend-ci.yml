@@ -31,7 +31,7 @@ jobs:
         run: npm run test:unit
 
       - name: SonarQube Cloud Scan
-        uses: SonarSource/sonarqube-scan-action@v7
+        uses: SonarSource/sonarqube-scan-action@299e4b793aaa83bf2aba7c9c14bedbb485688ec4 # v7
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN || secrets.SONARCLOUD_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
