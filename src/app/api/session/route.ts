@@ -73,10 +73,13 @@ export async function GET(request: Request) {
   }
 
   const user = await resolveSessionUser();
+  const cookieHeader = request.headers.get("cookie") ?? "";
+  const hasAuthCookies =
+    cookieHeader.includes("access=") || cookieHeader.includes("session=");
 
   const response = NextResponse.json(
     {
-      authenticated: Boolean(user),
+      authenticated: Boolean(user) || hasAuthCookies,
       user: user ?? null,
     },
     {
@@ -89,10 +92,11 @@ export async function GET(request: Request) {
   logInfo("bff_session_completed", {
     requestId,
     clientIp,
-    authenticated: Boolean(user),
+    authenticated: Boolean(user) || hasAuthCookies,
     latency_ms: Date.now() - startedAt,
     rateRemaining: limit.remaining,
     isInternalServerRequest,
+    hasAuthCookies,
   });
   return response;
 }

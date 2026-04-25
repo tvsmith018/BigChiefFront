@@ -23,9 +23,9 @@ function resolveInternalAppOrigin(
   return (
     normalizeOriginCandidate(env.INTERNAL_APP_ORIGIN) ??
     normalizeOriginCandidate(env.NEXT_INTERNAL_APP_ORIGIN) ??
-    normalizeOriginCandidate(env.VERCEL_URL) ??
     normalizeOriginCandidate(env.NEXT_PUBLIC_SITE_URL) ??
     normalizeOriginCandidate(env.NEXT_PUBLIC_VERCEL_URL) ??
+    normalizeOriginCandidate(env.VERCEL_URL) ??
     productionDefaultSiteOrigin
   );
 }

@@ -20,8 +20,26 @@ export function isApiAuthFailure(payload: unknown): boolean {
   const p = payload as Record<string, unknown>;
   if (p.success === true) return false;
   if (p.code === "token_not_valid") return true;
-  if (Array.isArray(p.messages)) return true;
-  if (p.detail !== undefined && p.success !== true) {
+  if (Array.isArray(p.messages)) {
+    // JWT libraries usually emit auth metadata in `messages[]`.
+    const first = p.messages[0];
+    if (first && typeof first === "object") {
+      const msg = first as Record<string, unknown>;
+      if (msg.token_type || msg.token_class || msg.message) return true;
+    }
+  }
+  if (typeof p.detail === "string") {
+    const detail = p.detail.toLowerCase();
+    if (
+      detail.includes("token") ||
+      detail.includes("not authenticated") ||
+      detail.includes("authentication credentials") ||
+      detail.includes("invalid credentials")
+    ) {
+      return true;
+    }
+  }
+  if (p.status === 401 || p.status_code === 401) {
     return true;
   }
   return false;

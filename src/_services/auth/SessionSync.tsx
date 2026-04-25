@@ -65,6 +65,12 @@ export function SessionSync() {
           return;
         }
 
+        // Server can signal authenticated via cookies while user payload is still resolving.
+        // Avoid forcing logout in this transient state.
+        if (payload.authenticated && !payload.user) {
+          return;
+        }
+
         if (!isAuthenticated) return;
 
         const withinProtectedWindow =
