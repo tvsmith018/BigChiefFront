@@ -17,6 +17,7 @@ const HEARTBEAT_MS = 60_000;
 const GUEST_HEARTBEAT_MS = 300_000;
 const UNAUTH_STREAK_REQUIRED = 2;
 const PROTECT_WINDOW_AFTER_AUTH_MS = 12_000;
+const SESSION_SYNC_MIN_GAP_MS = 4_000;
 
 function sameUser(a?: User, b?: User | null) {
   if (!a && !b) return true;
@@ -37,12 +38,19 @@ export function SessionSync() {
 
   const unauthStreakRef = useRef(0);
   const lastAuthSuccessAtRef = useRef(Date.now());
+  const lastSyncAtRef = useRef(0);
+  const syncInFlightRef = useRef(false);
 
   useEffect(() => {
     let active = true;
 
     const sync = async () => {
       if (authTransitioning) return;
+      if (syncInFlightRef.current) return;
+      if (Date.now() - lastSyncAtRef.current < SESSION_SYNC_MIN_GAP_MS) return;
+
+      syncInFlightRef.current = true;
+      lastSyncAtRef.current = Date.now();
 
       try {
         const res = await fetch("/api/session", {
@@ -85,6 +93,8 @@ export function SessionSync() {
       } catch {
         // Ignore transient network issues; next heartbeat/focus will reconcile.
         logWarn("session_sync_fetch_failed");
+      } finally {
+        syncInFlightRef.current = false;
       }
     };
 
