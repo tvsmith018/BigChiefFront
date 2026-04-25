@@ -60,7 +60,7 @@ async function testEndpoints() {
   );
   assert.equal(
     resolveGraphQLEndpoint("https://api.example.com", false),
-    "http://127.0.0.1:3000/api/graphql"
+    "https://api.example.com/graphql/"
   );
   assert.equal(
     resolveHttpBaseUrl("https://api.example.com", true),
@@ -68,7 +68,7 @@ async function testEndpoints() {
   );
   assert.equal(
     resolveHttpBaseUrl("https://api.example.com", false),
-    "http://127.0.0.1:3000/api/backend"
+    "https://api.example.com"
   );
   assert.equal(AUTH_ENDPOINTS.refreshToken, "/authorized/token/refresh/");
   assert.equal(

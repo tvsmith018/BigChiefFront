@@ -13,9 +13,7 @@ function resolveInternalAppOrigin(
   if (explicit) {
     return explicit.replace(/\/+$/, "");
   }
-
-  const port = env.PORT ?? "3000";
-  return `http://127.0.0.1:${port}`;
+  return undefined;
 }
 
 export function normalizeApiBaseUrl(value: string) {
@@ -40,12 +38,14 @@ export function resolveGraphQLEndpoint(
   apiBaseUrl: string,
   isBrowser: boolean = typeof window !== "undefined"
 ) {
-  void apiBaseUrl;
   if (isBrowser) {
     return GRAPHQL_BROWSER_PATH;
   }
 
   const origin = resolveInternalAppOrigin();
+  if (!origin) {
+    return `${normalizeApiBaseUrl(apiBaseUrl)}/graphql/`;
+  }
   return `${origin}${GRAPHQL_BROWSER_PATH}`;
 }
 
@@ -53,12 +53,14 @@ export function resolveHttpBaseUrl(
   apiBaseUrl: string,
   isBrowser: boolean = typeof window !== "undefined"
 ) {
-  void apiBaseUrl;
   if (isBrowser) {
     return API_BROWSER_BASE_PATH;
   }
 
   const origin = resolveInternalAppOrigin();
+  if (!origin) {
+    return normalizeApiBaseUrl(apiBaseUrl);
+  }
   return `${origin}${API_BROWSER_BASE_PATH}`;
 }
 
