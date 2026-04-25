@@ -149,7 +149,13 @@ export class ArticleService {
       if (ArticleService.hasHomeContent(data)) {
         return data;
       }
+    } catch (error: unknown) {
+      logWarn("article_home_fetch_cached_failed", {
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
 
+    try {
       const retry = await graphQLClient.query<ArticleEdge>(
         home_query,
         undefined,
@@ -159,19 +165,26 @@ export class ArticleService {
         logWarn("article_home_fetch_recovered_uncached");
         return retry;
       }
+    } catch (error: unknown) {
+      logWarn("article_home_fetch_uncached_failed", {
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
 
+    try {
       const upstreamData = await ArticleService.fetchHomePageUpstreamFallback();
       if (ArticleService.hasHomeContent(upstreamData)) {
         logWarn("article_home_fetch_recovered_upstream_fallback");
         return upstreamData as ArticleEdge;
       }
-
-      logWarn("article_home_fetch_empty_after_retries");
-      return {} as ArticleEdge;
-    } catch {
-      logWarn("article_home_fetch_failed");
-      return {} as ArticleEdge;
+    } catch (error: unknown) {
+      logWarn("article_home_fetch_upstream_failed", {
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
+
+    logWarn("article_home_fetch_empty_after_retries");
+    return {} as ArticleEdge;
   }
 
   static async getArticle(category?:string, after?:string, ) {
