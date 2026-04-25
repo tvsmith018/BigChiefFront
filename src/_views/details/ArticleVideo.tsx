@@ -63,7 +63,7 @@ export default function VideoView({videoLink}:{videoLink:string, videoType:"yout
 
     const {isMenuOpen, isSearchOpen} = useNavigationUI()
 
-    const playerElementId = useId().replace(/:/g, "_");
+    const playerElementId = useId().replaceAll(":", "_");
     const playerRef = useRef<YouTubePlayerInstance | null>(null);
 
     const handleScriptLoad = () => {

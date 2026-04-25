@@ -76,6 +76,7 @@ export default function ProfilePageContent({ profile }: { profile: ProfileMePayl
                                     <p className="bc-profile-status mb-3">The Insider</p>
                                     <Button variant="light" className="bc-profile-btn bc-profile-btn--soft">
                                         <i className="bi bi-pencil-fill me-2" />
+                                        {" "}
                                         Edit Profile
                                     </Button>
                                 </Card.Body>

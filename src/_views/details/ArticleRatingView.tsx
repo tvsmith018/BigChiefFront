@@ -15,7 +15,7 @@ export default function ArticleRatingView({ articleId }: { articleId: string }) 
 
   return (
     <>
-      {[...Array(5)].map((_, index) => {
+      {[...new Array(5)].map((_, index) => {
         const currentRate = index + 1;
 
         return (
