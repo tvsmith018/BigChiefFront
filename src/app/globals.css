@@ -16583,7 +16583,7 @@ html[data-theme=dark] .light-mode-item {
 }
 .modeswitch:before {
   content: "\f042";
-  font-family: "Font Awesome 5 Free";
+  font-family: "Font Awesome 5 Free", sans-serif;
   font-weight: 900;
   border: none;
   height: 26px;
