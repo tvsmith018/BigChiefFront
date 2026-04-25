@@ -1,4 +1,5 @@
 import { graphQLClient,  httpClient} from "@/_network";
+import { API_BASE_URL } from "@/_network/config/endpoints";
 import { home_query, load_article_set, search_query, article_detail_metaData, article_detail_query, article_comment_query, article_related_query} from "@/_queries";
 
 import { ArticleEdge, Article } from "@/_types/articles/article.types";
@@ -111,10 +112,62 @@ interface GraphQLCommentsResponse {
 }
 
 export class ArticleService {
+  private static hasHomeContent(data: ArticleEdge | null | undefined) {
+    const slideCount = data?.slide?.edges?.length ?? 0;
+    const mainCount = data?.main?.edges?.length ?? 0;
+    const sideCount = data?.side?.edges?.length ?? 0;
+    const listCount = data?.list?.edges?.length ?? 0;
+    return slideCount > 0 || mainCount > 0 || sideCount > 0 || listCount > 0;
+  }
+
+  private static async fetchHomePageUpstreamFallback() {
+    const response = await fetch(`${API_BASE_URL}/graphql/`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ query: home_query }),
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`home_upstream_status_${response.status}`);
+    }
+
+    const payload = (await response.json()) as { data?: ArticleEdge };
+    return payload.data;
+  }
+
   static async fetchHomePage():Promise<ArticleEdge> {
     try {
-      const data = await graphQLClient.query<ArticleEdge>(home_query, undefined, {cache:"force-cache", next:{revalidate:60}});
-      return data;
+      const data = await graphQLClient.query<ArticleEdge>(
+        home_query,
+        undefined,
+        {cache:"force-cache", next:{revalidate:60}}
+      );
+
+      if (ArticleService.hasHomeContent(data)) {
+        return data;
+      }
+
+      const retry = await graphQLClient.query<ArticleEdge>(
+        home_query,
+        undefined,
+        { cache: "no-store" }
+      );
+      if (ArticleService.hasHomeContent(retry)) {
+        logWarn("article_home_fetch_recovered_uncached");
+        return retry;
+      }
+
+      const upstreamData = await ArticleService.fetchHomePageUpstreamFallback();
+      if (ArticleService.hasHomeContent(upstreamData)) {
+        logWarn("article_home_fetch_recovered_upstream_fallback");
+        return upstreamData as ArticleEdge;
+      }
+
+      logWarn("article_home_fetch_empty_after_retries");
+      return {} as ArticleEdge;
     } catch {
       logWarn("article_home_fetch_failed");
       return {} as ArticleEdge;
