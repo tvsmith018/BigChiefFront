@@ -1,11 +1,13 @@
-import dynamic from "next/dynamic";
+import dynamicImport from "next/dynamic";
 import type { Metadata } from "next";
 import { ArticleService } from "@/_services/articles/articleservices";
 import { Suspense } from "react";
 
-const CarouselView = dynamic(async ()=>import('@/_views/Home/Carousel/ArticleSlidesView'));
-const HeaderView = dynamic(async ()=>import('@/_views/Home/Hero/HeaderSection'));
-const CardListView = dynamic(async ()=>import('@/_views/Home/CardList/cardlistview'));
+export const dynamic = "force-dynamic";
+
+const CarouselView = dynamicImport(async ()=>import('@/_views/Home/Carousel/ArticleSlidesView'));
+const HeaderView = dynamicImport(async ()=>import('@/_views/Home/Hero/HeaderSection'));
+const CardListView = dynamicImport(async ()=>import('@/_views/Home/CardList/cardlistview'));
 
 export const metadata: Metadata = {
   title: "Welcome to Big Chief Ent",
