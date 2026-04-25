@@ -14,7 +14,9 @@ export default defineConfig({
     include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
     coverage: {
       provider: "v8",
-      reporter: ["text", "json-summary"],
+      reporter: ["text", "json-summary", "lcov"],
+      reportsDirectory: "coverage",
+      reportOnFailure: true,
       include: [
         "src/_services/auth/signup/signupValidation.ts",
         "src/_services/auth/auth.helpers.ts",
