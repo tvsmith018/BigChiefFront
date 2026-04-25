@@ -81,29 +81,29 @@ var ThemeColor = function () {
 
 var e = {
     init: function () {
-        e.preLoader(),
-        e.megaMenu(),
-        e.stickyHeader(),
-        e.tinySlider(),
-        e.parallaxBG(),
-        e.stickyBar(),
-        e.toolTipFunc(),
-        e.popOverFunc(),
-        e.backTotop(),
-        e.stickyPost(),
-        e.stickyFooter(),
-        e.lightBox(),
-        e.enableIsotope(),
-        e.zooming(),
-        e.lazyLoading(),
-        e.quill(),
-        e.videoPlyr()
-        e.overlayScrollbars(),
-        e.trafficsourcesChart(),
+        e.preLoader();
+        e.megaMenu();
+        e.stickyHeader();
+        e.tinySlider();
+        e.parallaxBG();
+        e.stickyBar();
+        e.toolTipFunc();
+        e.popOverFunc();
+        e.backTotop();
+        e.stickyPost();
+        e.stickyFooter();
+        e.lightBox();
+        e.enableIsotope();
+        e.zooming();
+        e.lazyLoading();
+        e.quill();
+        e.videoPlyr();
+        e.overlayScrollbars();
+        e.trafficsourcesChart();
         e.trafficstatsChart();
     },
     isVariableDefined: function (el) {
-        return typeof !!el && (el) != 'undefined' && el != null;
+        return typeof el !== 'undefined' && el != null;
     },
     getParents: function (el, selector, filter) {
         const result = [];
