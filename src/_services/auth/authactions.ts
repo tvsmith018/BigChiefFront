@@ -1,3 +1,5 @@
+"use server";
+
 import { LoginSchema, EmailSchema, PasswordSchema, FirstnameSchema, LastnameSchema, DOBSchema } from "@/_utilities/datatype/Auth/Schemas/loginFormSchema";
 import { createSession, deleteSession } from "@/_navigation";
 import { User } from "@/_types/auth/user";
@@ -139,10 +141,8 @@ export async function loginAction(
       access: JWTDATA.access ?? "",
     };
 
-    const [userResponse] = await Promise.all([
-      LoginService.getUser(token),
-      createSession(token)
-    ]);
+    await createSession(token);
+    const userResponse = await LoginService.getUser(token);
 
     return (
       extractUser(userResponse as User | { data?: User }) ?? {

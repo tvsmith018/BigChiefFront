@@ -235,10 +235,32 @@ export async function getSessionAccessToken(): Promise<string | null> {
 
 export async function requireAuth(redirectTo: string = "/auth"): Promise<void> {
   const user = await authProxy();
-  if (!user) redirect(redirectTo);
+  if (user) return;
+
+  // Guard against transient upstream/auth-proxy failures: if auth cookies
+  // still exist, allow request flow and let route handlers/session sync reconcile.
+  const cookieStore = await cookies();
+  const hasAuthCookies = Boolean(
+    cookieStore.get(COOKIE_ACCESS)?.value || cookieStore.get(COOKIE_REFRESH)?.value
+  );
+  if (!hasAuthCookies) {
+    redirect(redirectTo);
+  }
 }
 
 export async function requireGuest(redirectTo: string = "/"): Promise<void> {
   const user = await authProxy();
-  if (user) redirect(redirectTo);
+  if (user) {
+    redirect(redirectTo);
+  }
+
+  // If refresh/access cookie exists but authProxy returned null (usually transient),
+  // keep guests out of auth pages to avoid login bounce loops.
+  const cookieStore = await cookies();
+  const hasAuthCookies = Boolean(
+    cookieStore.get(COOKIE_ACCESS)?.value || cookieStore.get(COOKIE_REFRESH)?.value
+  );
+  if (hasAuthCookies) {
+    redirect(redirectTo);
+  }
 }
