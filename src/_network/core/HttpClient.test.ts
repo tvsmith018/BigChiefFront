@@ -1,6 +1,10 @@
 import { describe, expect, it, vi, afterEach } from "vitest";
 import { HttpClient } from "./HttpClient";
 
+function asHeaders(input: RequestInit["headers"]): Headers {
+  return input instanceof Headers ? input : new Headers(input);
+}
+
 describe("HttpClient", () => {
   const originalFetch = globalThis.fetch;
 
@@ -29,8 +33,8 @@ describe("HttpClient", () => {
     expect(init?.method).toBe("POST");
     expect(init?.credentials).toBe("include");
     expect(init?.body).toBe(JSON.stringify({ hello: "world" }));
-    const headers = init?.headers as Record<string, string>;
-    expect(headers["Content-Type"]).toBe("application/json");
+    const headers = asHeaders(init?.headers);
+    expect(headers.get("Content-Type")).toBe("application/json");
   });
 
   it("FormData sends raw body and does not force application/json", async () => {
@@ -53,9 +57,9 @@ describe("HttpClient", () => {
     });
 
     expect(init?.body).toBe(fd);
-    const headers = init?.headers as Record<string, string>;
-    expect(headers["Content-Type"]).toBeUndefined();
-    expect(headers["X-Client"]).toBe("web");
+    const headers = asHeaders(init?.headers);
+    expect(headers.get("Content-Type")).toBeNull();
+    expect(headers.get("X-Client")).toBe("web");
   });
 
   it("returns parsed error body on non-ok JSON responses", async () => {
@@ -89,7 +93,10 @@ describe("HttpClient", () => {
   it("uses dynamic baseUrl when constructor receives a function", async () => {
     globalThis.fetch = vi.fn(async (input: RequestInfo | URL) => {
       expect(String(input)).toContain("https://dynamic.example.com");
-      return new Response(JSON.stringify({ ok: 1 }), { status: 200 });
+      return new Response(JSON.stringify({ ok: 1 }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
     }) as typeof fetch;
 
     const client = new HttpClient(() => "https://dynamic.example.com");
