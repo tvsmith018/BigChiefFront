@@ -25,7 +25,7 @@ export default function ProfilePageContent({ profile }: { profile: ProfileMePayl
 
     return <main className="bc-profile-page">
         <Container className="pt-0 pb-4 pb-lg-5">
-            <Row className="g-4 align-items-start">
+            <Row className="g-4 align-items-stretch bc-profile-scroll-row">
                 <Col xl={3} lg={4} className="d-none d-lg-block">
                     <aside className="bc-profile-sidebar"> 
                     <div className="d-grid gap-3">
@@ -57,10 +57,24 @@ export default function ProfilePageContent({ profile }: { profile: ProfileMePayl
                         </div>
                     </aside>
                 </Col>
-                <Col xl={6} lg={8} style={{height:"5000px"}}>
-                I want this portion to scroll only
+                <Col xl={6} lg={8} className="bc-profile-center-scroll">
+                <section className="bc-profile-main">
+                <ProfileListCard title="Choose Destiny" items={accountCenterItems} />
+                <ProfileListCard title="Choose Destiny" items={accountCenterItems} />
+                <ProfileListCard title="Choose Destiny" items={accountCenterItems} />
+                <ProfileListCard title="Choose Destiny" items={accountCenterItems} />
+                <ProfileListCard title="Choose Destiny" items={accountCenterItems} />
+                <ProfileListCard title="Choose Destiny" items={accountCenterItems} />
+                <ProfileListCard title="Choose Destiny" items={accountCenterItems} />
+                <ProfileListCard title="Choose Destiny" items={accountCenterItems} />
+                <ProfileListCard title="Choose Destiny" items={accountCenterItems} />
+                <ProfileListCard title="Choose Destiny" items={accountCenterItems} />
+                <ProfileListCard title="Choose Destiny" items={accountCenterItems} />
+                <ProfileListCard title="Choose Destiny" items={accountCenterItems} />
+                <ProfileListCard title="Choose Destiny" items={accountCenterItems} />
+                </section>
                 </Col>
-                <Col xl={3} lg={12}>
+                <Col xl={3} lg={12} className="d-none d-lg-block">
                     <aside className="bc-profile-right">
                         <div className="d-grid gap-3">
                             <Card className="bc-profile-panel-card mt-3">

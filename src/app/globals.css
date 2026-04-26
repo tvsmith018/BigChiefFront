@@ -18946,6 +18946,53 @@ div.nav.nav-pills div.nav-item a.nav-link.active{
   z-index: 1;
 }
 
+/* Keep profile chrome fixed; only center column scrolls. */
+@media (min-width: 1200px) {
+  .bc-profile-layout {
+    --bc-profile-nav-offset: 120px;
+    height: calc(100dvh - var(--bc-profile-nav-offset));
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  .bc-profile-page,
+  .bc-profile-page .container,
+  .bc-profile-scroll-row {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .bc-profile-page,
+  .bc-profile-page .container {
+    overflow: hidden;
+  }
+
+  .bc-profile-scroll-row {
+    overflow: hidden;
+    --bs-gutter-y: 0;
+    align-items: stretch;
+  }
+
+  .bc-profile-scroll-row > [class*="col-"] {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .bc-profile-center-scroll {
+    height: 100%;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .bc-profile-sidebar,
+  .bc-profile-right {
+    top: 0;
+    max-height: 100%;
+  }
+}
+
 .bc-profile-sidebar,
 .bc-profile-right {
   position: sticky;
