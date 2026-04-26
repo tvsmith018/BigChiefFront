@@ -11,12 +11,12 @@ import {
 import { ProfileMePayload } from "@/_types/profile/profileMePayload";
 const postImage = "/images/about/group.jpeg";
 
-const activityTabs = [{icon: "bi-newspaper", label:"The Feed"}, {icon: "bi-newspaper", label:"Messages", badge:"0"}, {icon: "bi-newspaper", label:"Notification", badge:"0"},{icon: "bi-eye", label:"Watch History"}, {icon: "bi-graph-up", label:"My Stats"}, {icon: "bi-images", label:"Photos"}, { icon: "bi-gear-fill", label: "Account Settings" },];
+const activityTabs = [{icon: "bi-newspaper", label:"The Feed"}, {icon: "bi-chat-right-dots-fill", label:"Messages", badge:"0"}, {icon: "bi-bell", label:"Notification", badge:"0"},{icon: "bi-eye", label:"Watch History"}, {icon: "bi-graph-up", label:"My Stats"}, {icon: "bi-images", label:"Photos"}, { icon: "bi-gear-fill", label: "Account Settings" },];
 
-// const accountCenterItems = [
-//   { icon: "bi-gear-fill", label: "Account Settings" },
-//   { icon: "bi-credit-card-2-front-fill", label: "Subscription & Billing" },
-// ];
+const accountCenterItems = [
+  { icon: "bi-gear-fill", label: "Creator Account" },
+  { icon: "bi-credit-card-2-front-fill", label: "Advertising Account" },
+];
 
 export default function ProfilePageContent({ profile }: { profile: ProfileMePayload }) {
     const avatarSrc = profile.user.avatar
@@ -36,7 +36,7 @@ export default function ProfilePageContent({ profile }: { profile: ProfileMePayl
                                 </div>
                                 <div className="bc-profile-side-nav mt-3">
                                     {activityTabs.map((item) => (
-                                        <div className="bc-profile-side-nav__item" key={item.label}>
+                                        item.label != "Notification" && <div className="bc-profile-side-nav__item" key={item.label}>
                                             <div className="d-flex align-items-center gap-2">
                                                 <i className={`bi ${item.icon}`} />
                                                 <span>{item.label}</span>
@@ -50,14 +50,16 @@ export default function ProfilePageContent({ profile }: { profile: ProfileMePayl
                             </Card.Body>
                         </Card>
                         <ProfileMiniInfoCard
-                            icon="bi-clock-history"
+                            icon="bi-bell"
                             title="Notifications"
                             value="Whats his name responded to Comment"
                         />
                         </div>
                     </aside>
                 </Col>
-                <Col xl={6} lg={8}></Col>
+                <Col xl={6} lg={8} style={{height:"5000px"}}>
+                I want this portion to scroll only
+                </Col>
                 <Col xl={3} lg={12}>
                     <aside className="bc-profile-right">
                         <div className="d-grid gap-3">
@@ -81,6 +83,7 @@ export default function ProfilePageContent({ profile }: { profile: ProfileMePayl
                                     </Button>
                                 </Card.Body>
                             </Card>
+                            <ProfileListCard title="Choose Destiny" items={accountCenterItems} />
                         </div>
                     </aside>
                 </Col>
