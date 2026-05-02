@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useRef } from "react";
+import { FormEvent, useEffect, useMemo, useState, useRef } from "react";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import Nav from "react-bootstrap/Nav";
@@ -52,6 +52,14 @@ interface ArticleComment{
     }
 }
 
+type CommentReply = {
+  id: number;
+  author: string;
+  body: string;
+  postedAt: string;
+  mine?: boolean;
+};
+
 interface PageInfo{
     hasNextPage: boolean,
     endCursor: string
@@ -92,6 +100,11 @@ export default function ArticleDetailSidebar({
 
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const commentsScrollRef = useRef<HTMLDivElement | null>(null);
+  const [openReplyForComment, setOpenReplyForComment] = useState<string | null>(null);
+  const [replyDraftByComment, setReplyDraftByComment] = useState<Record<string, string>>({});
+  const [repliesByComment, setRepliesByComment] = useState<Record<string, CommentReply[]>>({});
+  const [likedByComment, setLikedByComment] = useState<Record<string, boolean>>({});
+  const [sharedCommentKey, setSharedCommentKey] = useState<string | null>(null);
 
   const {
     items: relatedArticlesList,
@@ -167,6 +180,53 @@ export default function ArticleDetailSidebar({
   const renderTooltip = (label: string) => (
     <Tooltip id={`tooltip-${label}`}>{label}</Tooltip>
   );
+
+  const toggleReplyBox = (commentKey: string) => {
+    setOpenReplyForComment((current) => (current === commentKey ? null : commentKey));
+  };
+
+  const toggleLike = (commentKey: string) => {
+    setLikedByComment((current) => ({
+      ...current,
+      [commentKey]: !current[commentKey],
+    }));
+  };
+
+  const handleShare = (commentKey: string) => {
+    setSharedCommentKey(commentKey);
+    window.setTimeout(() => setSharedCommentKey((current) => (current === commentKey ? null : current)), 1600);
+  };
+
+  const handleReplyDraftChange = (commentKey: string, value: string) => {
+    setReplyDraftByComment((current) => ({
+      ...current,
+      [commentKey]: value,
+    }));
+  };
+
+  const submitReply = (event: FormEvent<HTMLFormElement>, commentKey: string) => {
+    event.preventDefault();
+    const draft = (replyDraftByComment[commentKey] ?? "").trim();
+    if (!draft) return;
+
+    const newReply: CommentReply = {
+      id: Date.now(),
+      author: "You",
+      body: draft,
+      postedAt: "Just now",
+      mine: true,
+    };
+
+    setRepliesByComment((current) => ({
+      ...current,
+      [commentKey]: [...(current[commentKey] ?? []), newReply],
+    }));
+
+    setReplyDraftByComment((current) => ({
+      ...current,
+      [commentKey]: "",
+    }));
+  };
 
   return (
     <Col lg={4} className="containerDesktop bc-article-detail-sidebar">
@@ -459,11 +519,15 @@ export default function ArticleDetailSidebar({
 
               {commentState.map((comment, index) => {
                 const commentNode = comment.node;
+                const commentKey = `${commentNode.created}-${commentNode.user.firstname}-${commentNode.user.lastname}-${index}`;
+                const commentReplies = repliesByComment[commentKey] ?? [];
+                const isReplyOpen = openReplyForComment === commentKey;
+                const isLiked = Boolean(likedByComment[commentKey]);
 
                 return (
                   <div
                     className={`comment-box ${index > 0 ? "mt-2" : ""}`}
-                    key={`${commentNode.created}-${commentNode.user.firstname}-${commentNode.user.lastname}-${index}`}
+                    key={commentKey}
                   >
                     <Row className="g-0">
                       <Col xs={2}>
@@ -495,6 +559,89 @@ export default function ArticleDetailSidebar({
                         </div>
 
                         <p className="mb-2">{commentNode.body}</p>
+
+                        <div className="comment-actions d-flex align-items-center flex-wrap gap-2 mt-2">
+                          <button
+                            type="button"
+                            className={`comment-action-btn ${isLiked ? "is-active" : ""}`}
+                            onClick={() => toggleLike(commentKey)}
+                          >
+                            <i className={`bi ${isLiked ? "bi-hand-thumbs-up-fill" : "bi-hand-thumbs-up"}`}></i>
+                            <span>{isLiked ? "Liked" : "Like"}</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            className={`comment-action-btn ${isReplyOpen ? "is-active" : ""}`}
+                            onClick={() => toggleReplyBox(commentKey)}
+                            aria-expanded={isReplyOpen}
+                            aria-controls={`comment-replies-${index}`}
+                          >
+                            <i className="bi bi-chat-right-text"></i>
+                            <span>Reply</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            className={`comment-action-btn ${sharedCommentKey === commentKey ? "is-active" : ""}`}
+                            onClick={() => handleShare(commentKey)}
+                          >
+                            <i className="bi bi-send"></i>
+                            <span>{sharedCommentKey === commentKey ? "Shared" : "Share"}</span>
+                          </button>
+                        </div>
+
+                        {isReplyOpen && (
+                          <div className="comment-replies mt-2" id={`comment-replies-${index}`}>
+                            <div className="comment-replies__list">
+                              {commentReplies.length > 0 ? (
+                                commentReplies.map((reply) => (
+                                  <article className="comment-reply" key={reply.id}>
+                                    <span className={`comment-reply__avatar ${reply.mine ? "is-mine" : ""}`}>
+                                      {reply.author
+                                        .split(" ")
+                                        .filter(Boolean)
+                                        .slice(0, 2)
+                                        .map((part) => part.slice(0, 1).toUpperCase())
+                                        .join("")}
+                                    </span>
+                                    <div className="comment-reply__body">
+                                      <p className="mb-1">
+                                        <strong>{reply.author}</strong> <span>{reply.postedAt}</span>
+                                      </p>
+                                      <p className="mb-0">{reply.body}</p>
+                                    </div>
+                                  </article>
+                                ))
+                              ) : (
+                                <p className="comment-replies__empty mb-0">
+                                  No replies yet. Start the conversation.
+                                </p>
+                              )}
+                            </div>
+
+                            {isAuthenticated && (
+                              <Form
+                                onSubmit={(event) => submitReply(event, commentKey)}
+                                className="comment-reply__form mt-2"
+                              >
+                                <Form.Control
+                                  type="text"
+                                  placeholder="Write a reply..."
+                                  value={replyDraftByComment[commentKey] ?? ""}
+                                  onChange={(event) => handleReplyDraftChange(commentKey, event.target.value)}
+                                />
+                                <Button
+                                  type="submit"
+                                  disabled={!(replyDraftByComment[commentKey] ?? "").trim()}
+                                  className="comment-reply__submit"
+                                >
+                                  Reply
+                                </Button>
+                              </Form>
+                            )}
+                          </div>
+                        )}
                       </Col>
                     </Row>
                   </div>
