@@ -77,8 +77,12 @@ function ProfileSidebarNavCard<T extends string>({
       <Card.Body className="p-3">
         {sidebarNavPrefix}
         <div className="bc-profile-side-nav mt-3">
-          {activityTabs.map((item) =>
-            item.label !== "Notification" ? (
+          {activityTabs.map((item) => {
+            if (item.label === "Notification") {
+              return null;
+            }
+
+            return (
               <button
                 type="button"
                 key={item.label}
@@ -92,8 +96,8 @@ function ProfileSidebarNavCard<T extends string>({
                 </span>
                 {item.badge ? <span className="bc-profile-side-nav__badge">{item.badge}</span> : null}
               </button>
-            ) : null,
-          )}
+            );
+          })}
         </div>
       </Card.Body>
     </Card>
