@@ -2,9 +2,17 @@ const DEFAULT_API_BASE_URL = "https://bigchiefnewz-a2e8434d1e6d.herokuapp.com";
 export const GRAPHQL_BROWSER_PATH = "/api/graphql";
 export const API_BROWSER_BASE_PATH = "/api/backend";
 
+function stripTrailingSlashes(value: string) {
+  let end = value.length;
+  while (end > 0 && value.charCodeAt(end - 1) === 47) {
+    end -= 1;
+  }
+  return end === value.length ? value : value.slice(0, end);
+}
+
 function normalizeOriginCandidate(value?: string) {
   if (!value) return undefined;
-  const trimmed = value.trim().replace(/\/+$/, "");
+  const trimmed = stripTrailingSlashes(value.trim());
   if (!trimmed) return undefined;
   if (/^https?:\/\//i.test(trimmed)) {
     return trimmed;
@@ -39,7 +47,13 @@ function resolveInternalAppOrigin(
 }
 
 export function normalizeApiBaseUrl(value: string) {
-  return value.replace(/\/graphql\/?$/, "").replace(/\/+$/, "");
+  let normalized = value;
+  if (normalized.endsWith("/graphql/")) {
+    normalized = normalized.slice(0, -"/graphql/".length);
+  } else if (normalized.endsWith("/graphql")) {
+    normalized = normalized.slice(0, -"/graphql".length);
+  }
+  return stripTrailingSlashes(normalized);
 }
 
 export function resolveWebSocketBaseUrl(apiBaseUrl: string) {
