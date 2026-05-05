@@ -2,6 +2,9 @@
 
 This document is a **focused runbook** for automated testing and CI. For architecture and quality assessment, see [**FRONTEND_ENGINEERING_GUIDE.md**](./FRONTEND_ENGINEERING_GUIDE.md).
 
+Latest verification snapshot: [**FRONTEND_VERIFICATION_2026-05-05.md**](./FRONTEND_VERIFICATION_2026-05-05.md).
+Official SonarCloud testing report: [**SONARCLOUD_REPORT_2026-05-05.md**](./SONARCLOUD_REPORT_2026-05-05.md).
+
 ---
 
 ## Where to run commands

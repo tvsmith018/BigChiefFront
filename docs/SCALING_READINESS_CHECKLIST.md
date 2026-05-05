@@ -1,5 +1,7 @@
 # Scaling Readiness Checklist (No Behavior Change)
 
+Last reviewed: 2026-05-05
+
 This checklist is a practical execution plan to improve capacity and stability without changing user-facing functionality.
 
 Scope:

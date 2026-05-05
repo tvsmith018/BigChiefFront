@@ -1,5 +1,7 @@
 # Frontend/Backend Alignment
 
+Last reviewed: 2026-05-05
+
 ## Current Screen to Backend Map
 
 ### Home page
