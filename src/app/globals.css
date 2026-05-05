@@ -19204,8 +19204,8 @@ div.nav.nav-pills div.nav-item a.nav-link.active{
   min-width: 180px;
   min-height: 48px;
   border-radius: 0.8rem;
-  background: linear-gradient(180deg, #c98238 0%, #b66f2f 100%);
-  border-color: rgba(182, 111, 47, 0.9);
+  background: linear-gradient(180deg, #8f551f 0%, #6b3810 100%);
+  border-color: rgba(107, 56, 16, 0.95);
   color: #fff;
   font-weight: 700;
   letter-spacing: 0.01em;
@@ -19219,8 +19219,8 @@ div.nav.nav-pills div.nav-item a.nav-link.active{
 .bc-profile-btn:hover,
 .bc-profile-btn:focus,
 .bc-profile-btn:active {
-  background-color: #a96b2c !important;
-  border-color: #a96b2c !important;
+  background-color: #7a4a16 !important;
+  border-color: #7a4a16 !important;
   color: #fff !important;
   transform: translateY(-1px);
   box-shadow: 0 16px 28px rgba(169, 107, 44, 0.24) !important;
@@ -19756,7 +19756,7 @@ button.bc-profile-side-nav__item {
 .bc-history-overview__total {
   border-radius: 999px;
   background: rgba(181, 83, 51, 0.12);
-  color: #8d3f26;
+  color: #5a2612;
   font-size: 0.75rem;
   font-weight: 800;
   padding: 0.24rem 0.65rem;
@@ -19890,7 +19890,7 @@ button.bc-profile-side-nav__item {
 .bc-history-pill.is-on {
   background: rgba(181, 83, 51, 0.12);
   border-color: rgba(181, 83, 51, 0.4);
-  color: #8d3f26;
+  color: #5a2612;
 }
 
 .bc-history-card__actions {
@@ -19947,7 +19947,7 @@ button.bc-profile-side-nav__item {
 .bc-photo-upload__count {
   border-radius: 999px;
   background: rgba(181, 83, 51, 0.12);
-  color: #8d3f26;
+  color: #5a2612;
   font-size: 0.76rem;
   font-weight: 800;
   padding: 0.25rem 0.62rem;
@@ -20164,7 +20164,7 @@ button.bc-profile-side-nav__item {
 .bc-settings-pill.is-on {
   background: rgba(181, 83, 51, 0.12);
   border-color: rgba(181, 83, 51, 0.4);
-  color: #8d3f26;
+  color: #5a2612;
 }
 
 .bc-settings-preview__sections {
@@ -20210,7 +20210,7 @@ button.bc-profile-side-nav__item {
 .bc-stats-hero__badge {
   border-radius: 999px;
   background: rgba(181, 83, 51, 0.12);
-  color: #8d3f26;
+  color: #5a2612;
   font-size: 0.76rem;
   font-weight: 800;
   padding: 0.24rem 0.65rem;
@@ -20502,7 +20502,7 @@ button.bc-profile-side-nav__item {
 .bc-followers-header__badge {
   border-radius: 999px;
   background: rgba(181, 83, 51, 0.12);
-  color: #8d3f26;
+  color: #5a2612;
   font-size: 0.76rem;
   font-weight: 800;
   padding: 0.24rem 0.62rem;
@@ -20599,17 +20599,17 @@ button.bc-profile-side-nav__item {
 
 .bc-followers-pill.is-active {
   background: rgba(55, 139, 84, 0.14);
-  color: #2d6f44;
+  color: #1a4d2f;
 }
 
 .bc-followers-pill.is-muted {
   background: rgba(120, 120, 120, 0.14);
-  color: #5f5f5f;
+  color: #3d3d3d;
 }
 
 .bc-followers-pill.is-blocked {
   background: rgba(176, 67, 37, 0.16);
-  color: #9f3720;
+  color: #6b2418;
 }
 
 .bc-followers-item__btn {
@@ -20665,7 +20665,7 @@ button.bc-profile-side-nav__item {
 
 .bc-message-shell__unread {
   background: rgba(181, 83, 51, 0.12);
-  color: #8d3f26;
+  color: #5a2612;
   border-radius: 999px;
   padding: 0.24rem 0.68rem;
   font-size: 0.76rem;

@@ -18,7 +18,6 @@ import PhotoView from "./tabmenus/photosview";
 import SettingsView from "./tabmenus/settingsview";
 import StatsView from "./tabmenus/statview";
 import FollowersView from "./tabmenus/followersview";
-// const postImage = "/images/about/group.jpeg";
 
 type ProfileTab = "Feed" | "Messages" | "Notifications" | "History" | "Stats" | "Photos" | "Settings" | "Followers"
 const activityTabs = [{icon: "bi-newspaper", label:"The Feed", tab:"Feed"}, {icon: "bi-chat-right-dots-fill", label:"Messages", badge:"0", tab:"Messages"}, {icon: "bi bi-person-arms-up", label:"Followers", badge:"0", tab:"Followers"},{icon: "bi-eye", label:"Watch History", tab:"History"}, {icon: "bi-graph-up", label:"My Stats", tab:"Stats"}, {icon: "bi-images", label:"Photos", tab:"Photos"}, { icon: "bi-gear-fill", label: "Account Settings", tab:"Settings" },];
