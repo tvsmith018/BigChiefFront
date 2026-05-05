@@ -19756,7 +19756,7 @@ button.bc-profile-side-nav__item {
 .bc-history-overview__total {
   border-radius: 999px;
   background: rgba(181, 83, 51, 0.12);
-  color: #5a2612;
+  color: #2a0e05;
   font-size: 0.75rem;
   font-weight: 800;
   padding: 0.24rem 0.65rem;
@@ -19890,7 +19890,7 @@ button.bc-profile-side-nav__item {
 .bc-history-pill.is-on {
   background: rgba(181, 83, 51, 0.12);
   border-color: rgba(181, 83, 51, 0.4);
-  color: #5a2612;
+  color: #2a0e05;
 }
 
 .bc-history-card__actions {
@@ -19947,7 +19947,7 @@ button.bc-profile-side-nav__item {
 .bc-photo-upload__count {
   border-radius: 999px;
   background: rgba(181, 83, 51, 0.12);
-  color: #5a2612;
+  color: #2a0e05;
   font-size: 0.76rem;
   font-weight: 800;
   padding: 0.25rem 0.62rem;
@@ -20164,7 +20164,7 @@ button.bc-profile-side-nav__item {
 .bc-settings-pill.is-on {
   background: rgba(181, 83, 51, 0.12);
   border-color: rgba(181, 83, 51, 0.4);
-  color: #5a2612;
+  color: #2a0e05;
 }
 
 .bc-settings-preview__sections {
@@ -20210,7 +20210,7 @@ button.bc-profile-side-nav__item {
 .bc-stats-hero__badge {
   border-radius: 999px;
   background: rgba(181, 83, 51, 0.12);
-  color: #5a2612;
+  color: #2a0e05;
   font-size: 0.76rem;
   font-weight: 800;
   padding: 0.24rem 0.65rem;
@@ -20502,7 +20502,7 @@ button.bc-profile-side-nav__item {
 .bc-followers-header__badge {
   border-radius: 999px;
   background: rgba(181, 83, 51, 0.12);
-  color: #5a2612;
+  color: #2a0e05;
   font-size: 0.76rem;
   font-weight: 800;
   padding: 0.24rem 0.62rem;
@@ -20599,17 +20599,17 @@ button.bc-profile-side-nav__item {
 
 .bc-followers-pill.is-active {
   background: rgba(55, 139, 84, 0.14);
-  color: #1a4d2f;
+  color: #0a2618;
 }
 
 .bc-followers-pill.is-muted {
   background: rgba(120, 120, 120, 0.14);
-  color: #3d3d3d;
+  color: #1c1c1c;
 }
 
 .bc-followers-pill.is-blocked {
   background: rgba(176, 67, 37, 0.16);
-  color: #6b2418;
+  color: #3d0f07;
 }
 
 .bc-followers-item__btn {
@@ -20665,7 +20665,7 @@ button.bc-profile-side-nav__item {
 
 .bc-message-shell__unread {
   background: rgba(181, 83, 51, 0.12);
-  color: #5a2612;
+  color: #2a0e05;
   border-radius: 999px;
   padding: 0.24rem 0.68rem;
   font-size: 0.76rem;
