@@ -281,7 +281,7 @@ export class ArticleService {
     }
   }
 
-  static fetchDetailsMeta = unstable_cache(
+  static readonly fetchDetailsMeta = unstable_cache(
     async (id:string)=>{
       try {
         const data = await graphQLClient.query<GraphQLArticleResponse>(article_detail_metaData(id));
@@ -295,7 +295,7 @@ export class ArticleService {
     { revalidate: 1, tags:["article-metadata"]}
   )
   
-  static fetchDetailsBundle = async (id:string) => {
+  static readonly fetchDetailsBundle = async (id:string) => {
     try {
       const articleData = await graphQLClient.query<GraphQLArticleResponse>(
         article_detail_query(id),
@@ -361,7 +361,7 @@ export class ArticleService {
     }
   }
 
-  static canRate = async (articleId:string)=>{
+  static readonly canRate = async (articleId:string)=>{
     const hasRating = await httpClient.request<RatingResponse>(
       `/articles/rating/${articleId}/`,
       {
@@ -375,7 +375,7 @@ export class ArticleService {
     return hasRating
   }
 
-  static submitRate = async (articleId:string, rate:number) => {
+  static readonly submitRate = async (articleId:string, rate:number) => {
     
     const setRating = await httpClient.request<SetRatingResponse>(
       `/articles/rating/${articleId}/set/`,
@@ -392,7 +392,7 @@ export class ArticleService {
     return setRating
   }
 
-  static fetchMore = async (category: string, id:string, first:number, after:string) => {
+  static readonly fetchMore = async (category: string, id:string, first:number, after:string) => {
     try {
       const res = await graphQLClient.query<GraphQLRelatedArticleResponse>(article_related_query(category,id,first,after));
       return res
@@ -407,7 +407,7 @@ export class ArticleService {
     }
   }
 
-  static fetchMoreComments = async (id:string, after?:string) => {
+  static readonly fetchMoreComments = async (id:string, after?:string) => {
     try {
       const data = await graphQLClient.query<GraphQLCommentsResponse>(article_comment_query(id,10,after))
       return data

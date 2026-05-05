@@ -21,12 +21,12 @@ export function DashboardSidebar({
   brand,
   items,
   footer,
-}: {
+}: Readonly<{
   pageClass: string;
   brand: string;
   items: SharedNavItem[];
   footer?: ReactNode;
-}) {
+}>) {
   return (
     <div className={`${pageClass}-shell ${pageClass}-shell--dark`}>
       <div className={`${pageClass}-brand`}>{brand}</div>
@@ -53,11 +53,11 @@ export function DashboardWidgetTitle({
   pageClass,
   title,
   action,
-}: {
+}: Readonly<{
   pageClass: string;
   title: string;
   action?: string;
-}) {
+}>) {
   return (
     <div className={`${pageClass}-widget-title`}>
       <h3>{title}</h3>
@@ -73,10 +73,10 @@ export function DashboardWidgetTitle({
 export function DashboardTabs({
   pageClass,
   tabs,
-}: {
+}: Readonly<{
   pageClass: string;
   tabs: Array<{ label: string; active?: boolean }>;
-}) {
+}>) {
   return (
     <section className={`${pageClass}-tabs ${pageClass}-shell`}>
       {tabs.map((tab) => (
@@ -98,13 +98,13 @@ export function DashboardMetricCard({
   value,
   delta,
   className,
-}: {
+}: Readonly<{
   pageClass: string;
   label: string;
   value: string;
   delta?: string;
   className?: string;
-}) {
+}>) {
   return (
     <div className={cx(`${pageClass}-shell`, `${pageClass}-stat-card`, className)}>
       <span>{label}</span>
@@ -119,12 +119,12 @@ export function DashboardActionCard({
   icon,
   label,
   sublabel,
-}: {
+}: Readonly<{
   pageClass: string;
   icon: string;
   label: string;
   sublabel?: string;
-}) {
+}>) {
   return (
     <button type="button" className={`${pageClass}-tool-card`}>
       <i className={`bi ${icon}`} />
@@ -137,10 +137,10 @@ export function DashboardActionCard({
 export function ProfileRibbonTitle({
   title,
   variant = "primary",
-}: {
+}: Readonly<{
   title: string;
   variant?: "primary" | "danger";
-}) {
+}>) {
   return (
     <div
       className={`bc-profile-ribbon ${
@@ -156,11 +156,11 @@ export function ProfileMiniInfoCard({
   icon,
   title,
   value,
-}: {
+}: Readonly<{
   icon: string;
   title: string;
   value: string;
-}) {
+}>) {
   return (
     <div className="card bc-profile-mini-card">
       <div className="card-body">
@@ -180,10 +180,10 @@ export function ProfileMiniInfoCard({
 export function ProfileListCard({
   title,
   items,
-}: {
+}: Readonly<{
   title: string;
   items: SharedListItem[];
-}) {
+}>) {
   return (
     <div className="card bc-profile-panel-card">
       <div className="card-body p-0">

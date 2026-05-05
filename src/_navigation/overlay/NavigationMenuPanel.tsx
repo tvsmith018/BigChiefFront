@@ -8,7 +8,7 @@ import { PROFILE_AVATAR_PLACEHOLDER } from "@/_constants/profilePlaceholders";
 import { toHttpsUrl } from "@/_utilities/url/toHttpsUrl";
 import { NavigationLink } from "../../_types/navigation/navigation.types";
 import { scaleFade } from "../animations/navigation.motion";
-import { useAppSelector} from '@/_store/hooks/UseAppSelector';
+import { useAppSelector } from "@/_store/hooks/UseAppSelector";
 
 interface Props {
   sideLinks: NavigationLink[];
@@ -16,9 +16,19 @@ interface Props {
 
 export default function NavigationMenuPanel({
   sideLinks,
-}: Props) {
-  const data = useAppSelector((state) => state.user.data); 
-  const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated); 
+}: Readonly<Props>) {
+  const data = useAppSelector((state) => state.user.data);
+  const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
+
+  const getSideLinkKey = (link: NavigationLink) =>
+    link.id ??
+    link.label ??
+    link.route?.category ??
+    link.route?.label ??
+    JSON.stringify(link);
+
+  const getChildKey = (category: string, label: string) => `${category}-${label}`;
+
   return (
     <motion.div
       initial="hidden"
@@ -62,22 +72,22 @@ export default function NavigationMenuPanel({
       </div>
 
       <Nav as="ul" className="flex-column mt-4">
-        {sideLinks.map((link, idx) =>
+        {sideLinks.map((link) =>
           link.isDropdown ? (
-            <Dropdown as={Nav.Item} key={idx}>
+            <Dropdown as={Nav.Item} key={getSideLinkKey(link)}>
               <Dropdown.Toggle as={Nav.Link}>
                 <span className="h5">{link.label}</span>
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                {link.children?.map((child, i) => (
-                  <Dropdown.Item key={i} href={`/articles/${child.category}`}>
+                {link.children?.map((child) => (
+                  <Dropdown.Item key={getChildKey(child.category, child.label)} href={`/articles/${child.category}`}>
                     {child.label}
                   </Dropdown.Item>
                 ))}
               </Dropdown.Menu>
             </Dropdown>
           ) : (
-            <Nav.Item key={idx}>
+            <Nav.Item key={getSideLinkKey(link)}>
               <Nav.Link href={`/articles/${link.route?.category}`}>
                 <span className="h5">{link.route?.label}</span>
               </Nav.Link>
@@ -86,19 +96,19 @@ export default function NavigationMenuPanel({
         )}
       </Nav>
 
-      <div className="p-4 mt-4 text-center rounded bg-opacity-50" style={{backgroundColor:"#F5deb3cc"}}>
-        {!isAuthenticated ? (
-          <>
-            <h3>{localizationData.sidebar_alert_header}</h3>
-            <p>{localizationData.sidebar_alert_para}</p>
-            <a href="/auth" className="btn btn-primary" style={{backgroundColor:"#8b4513cc"}}>
-              {localizationData.sidebar_alert_button}
-            </a>
-          </>
-        ) : (
+      <div className="p-4 mt-4 text-center rounded bg-opacity-50" style={{ backgroundColor: "#F5deb3cc" }}>
+        {isAuthenticated ? (
           <p>
             Welcome back, {data?.firstname} {data?.lastname}, please continue to check us out as we continue to add features to the site.  This is something legendary we doing.
           </p>
+        ) : (
+          <>
+            <h3>{localizationData.sidebar_alert_header}</h3>
+            <p>{localizationData.sidebar_alert_para}</p>
+            <a href="/auth" className="btn btn-primary" style={{ backgroundColor: "#8b4513cc" }}>
+              {localizationData.sidebar_alert_button}
+            </a>
+          </>
         )}
       </div>
     </motion.div>

@@ -1,6 +1,6 @@
 import Image from "next/image";
-import fs from "fs/promises";
-import path from "path";
+import fs from "node:fs/promises";
+import path from "node:path";
 import { notFound } from "next/navigation";
 
 type PageParams = Promise<{ info: string }>;
@@ -79,7 +79,7 @@ async function readInfoFile(info: string): Promise<InfoPageData> {
   notFound();
 }
 
-function RenderParagraph({ item }: { item: ParagraphContent }) {
+function RenderParagraph({ item }: Readonly<{ item: ParagraphContent }>) {
   if (typeof item === "string") {
     return <p>{item}</p>;
   }
@@ -97,7 +97,7 @@ function RenderParagraph({ item }: { item: ParagraphContent }) {
   return null;
 }
 
-function RenderInfoSections({ sections }: { sections: InfoSection[] }) {
+function RenderInfoSections({ sections }: Readonly<{ sections: InfoSection[] }>) {
   return (
     <>
       {sections.map((section, sectionIndex) => (
@@ -116,7 +116,7 @@ function RenderInfoSections({ sections }: { sections: InfoSection[] }) {
   );
 }
 
-function RenderNestedSections({ sections }: { sections: NestedContentSection[] }) {
+function RenderNestedSections({ sections }: Readonly<{ sections: NestedContentSection[] }>) {
   return (
     <>
       {sections.map((sectionGroup, groupIndex) => (
@@ -136,7 +136,7 @@ function RenderNestedSections({ sections }: { sections: NestedContentSection[] }
   );
 }
 
-function ImageGallery({ data }: { data?: ImageGalleryData }) {
+function ImageGallery({ data }: Readonly<{ data?: ImageGalleryData }>) {
   if (!data || !Array.isArray(data.images) || data.images.length === 0) {
     return null;
   }

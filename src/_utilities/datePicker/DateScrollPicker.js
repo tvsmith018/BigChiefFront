@@ -40,7 +40,6 @@ const DateScrollPicker = ({ itemHeight = ITEM_HEIGHT, visibleRows = ROWS, startY
         }
 
         if (onChange) {
-            const date = new Date(selectedYear, selectedMonth, selectedDay);
             onChange()
         }
     }, [selectedDay, selectedMonth, selectedYear]);
@@ -72,15 +71,12 @@ const DateScrollPicker = ({ itemHeight = ITEM_HEIGHT, visibleRows = ROWS, startY
             item.style.willChange = "transform, opacity";
             // Margin adjustments to fill visible gap without breaking spacing
             // Apply dynamic negative margin based on rotation only (not for flat center)
-            // const isCentered = Math.abs(indexOffset) < 2.5;
             if (!shouldOffset) {
                 const marginAdjustment = -Math.abs(rotateX) * 0.12; // tweak factor
                 if (indexOffset > 5) {
-                    // item.style.fontSize = `${marginAdjustment}px`;
                     item.style.marginTop = `${marginAdjustment}px`;
                 }
                 else {
-                    // item.style.fontSize = `${marginAdjustment}px`;
                     item.style.marginBottom = `${marginAdjustment}px`;
                 }
             }
@@ -125,7 +121,7 @@ const DateScrollPicker = ({ itemHeight = ITEM_HEIGHT, visibleRows = ROWS, startY
     useEffect(() => {
         scrollToIndex(dayRef, selectedDay - 1);
         scrollToIndex(monthRef, selectedMonth);
-        scrollToIndex(yearRef, years.findIndex((y) => y === selectedYear));
+        scrollToIndex(yearRef, years.indexOf(selectedYear));
         update3DEffect(dayRef);
         update3DEffect(monthRef);
         update3DEffect(yearRef);
@@ -186,6 +182,6 @@ const DateScrollPicker = ({ itemHeight = ITEM_HEIGHT, visibleRows = ROWS, startY
             fontWeight: 600,
         },
     };
-    return (_jsx("div", { id: "container", style: styles.container, children: _jsxs("div", { id: "pickerWrapper", style: styles.pickerWrapper, children: [_jsxs("div", { style: styles.pickerColumn, ref: dayRef, onScroll: () => handleScroll(dayRef, days, setSelectedDay), children: [Array.from({ length: paddingCount }).map((_, i) => (_jsx("div", { style: styles.pickerItem }, `pad-day-top-${i}`))), days.map((d) => (_jsx("div", { style: Object.assign(Object.assign({}, styles.pickerItem), { justifyContent: "flex-start", paddingLeft: "45px" }), children: d }, d))), Array.from({ length: paddingCount }).map((_, i) => (_jsx("div", { style: styles.pickerItem }, `pad-day-bottom-${i}`)))] }), _jsxs("div", { style: styles.pickerColumn, ref: monthRef, onScroll: () => handleScroll(monthRef, months.map((_, i) => i), setSelectedMonth), children: [Array.from({ length: paddingCount }).map((_, i) => (_jsx("div", { style: styles.pickerItem }, `pad-month-top-${i}`))), months.map((m, i) => (_jsx("div", { style: Object.assign(Object.assign({}, styles.pickerItem), { justifyContent: "flex-start" }), children: m }, i))), Array.from({ length: paddingCount }).map((_, i) => (_jsx("div", { style: styles.pickerItem }, `pad-month-bottom-${i}`)))] }), _jsxs("div", { style: styles.pickerColumn, ref: yearRef, onScroll: () => handleScroll(yearRef, years, setSelectedYear), children: [Array.from({ length: paddingCount }).map((_, i) => (_jsx("div", { style: styles.pickerItem }, `pad-year-top-${i}`))), years.map((y) => (_jsx("div", { style: styles.pickerItem, children: y }, y))), Array.from({ length: paddingCount }).map((_, i) => (_jsx("div", { style: styles.pickerItem }, `pad-year-bottom-${i}`)))] }), _jsx("div", { id: "highlightOverlay", style: Object.assign(Object.assign({}, styles.highlightOverlay), highlightOverlayStyle) })] }) }));
+    return (_jsx("div", { id: "container", style: styles.container, children: _jsxs("div", { id: "pickerWrapper", style: styles.pickerWrapper, children: [_jsxs("div", { style: styles.pickerColumn, ref: dayRef, onScroll: () => handleScroll(dayRef, days, setSelectedDay), children: [Array.from({ length: paddingCount }).map((_, i) => (_jsx("div", { style: styles.pickerItem }, `pad-day-top-${i}`))), days.map((d) => (_jsx("div", { style: { ...styles.pickerItem, justifyContent: "flex-start", paddingLeft: "45px" }, children: d }, d))), Array.from({ length: paddingCount }).map((_, i) => (_jsx("div", { style: styles.pickerItem }, `pad-day-bottom-${i}`)))] }), _jsxs("div", { style: styles.pickerColumn, ref: monthRef, onScroll: () => handleScroll(monthRef, months.map((_, i) => i), setSelectedMonth), children: [Array.from({ length: paddingCount }).map((_, i) => (_jsx("div", { style: styles.pickerItem }, `pad-month-top-${i}`))), months.map((m, i) => (_jsx("div", { style: { ...styles.pickerItem, justifyContent: "flex-start" }, children: m }, i))), Array.from({ length: paddingCount }).map((_, i) => (_jsx("div", { style: styles.pickerItem }, `pad-month-bottom-${i}`)))] }), _jsxs("div", { style: styles.pickerColumn, ref: yearRef, onScroll: () => handleScroll(yearRef, years, setSelectedYear), children: [Array.from({ length: paddingCount }).map((_, i) => (_jsx("div", { style: styles.pickerItem }, `pad-year-top-${i}`))), years.map((y) => (_jsx("div", { style: styles.pickerItem, children: y }, y))), Array.from({ length: paddingCount }).map((_, i) => (_jsx("div", { style: styles.pickerItem }, `pad-year-bottom-${i}`)))] }), _jsx("div", { id: "highlightOverlay", style: { ...styles.highlightOverlay, ...highlightOverlayStyle } })] }) }));
 };
 export default DateScrollPicker;

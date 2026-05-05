@@ -1,19 +1,9 @@
-import {
-  HOME_PAGE_QUERY,
-  LOAD_ARTICLE_SET,
-  SEARCH_ARTICLE,
-  ARTICLE_COMMENTS_QUERY,
-  ARTICLE_DETAIL_QUERY,
-  ARTICLE_METADATA_QUERY,
-  RELATED_ARTICLES_QUERY,
-} from './Articles/articles';
-
-export const home_query =  HOME_PAGE_QUERY
-export const load_article_set = LOAD_ARTICLE_SET
-export const search_query = SEARCH_ARTICLE
-export const article_detail_metaData = ARTICLE_METADATA_QUERY
-export const article_comment_query = ARTICLE_COMMENTS_QUERY
-export const article_detail_query = ARTICLE_DETAIL_QUERY
-export const article_related_query = RELATED_ARTICLES_QUERY
-export { NAVIGATION_SEARCH_QUERY as navigation_search_query } from './Articles/articles';
+export { HOME_PAGE_QUERY as home_query } from "./Articles/articles";
+export { LOAD_ARTICLE_SET as load_article_set } from "./Articles/articles";
+export { SEARCH_ARTICLE as search_query } from "./Articles/articles";
+export { ARTICLE_METADATA_QUERY as article_detail_metaData } from "./Articles/articles";
+export { ARTICLE_COMMENTS_QUERY as article_comment_query } from "./Articles/articles";
+export { ARTICLE_DETAIL_QUERY as article_detail_query } from "./Articles/articles";
+export { RELATED_ARTICLES_QUERY as article_related_query } from "./Articles/articles";
+export { NAVIGATION_SEARCH_QUERY as navigation_search_query } from "./Articles/articles";
 export { MEMBER_PROFILE_QUERY as member_profile_query } from "./Profiles/memberProfile";

@@ -82,15 +82,15 @@ export default function VideoView({ videoLink }: Readonly<VideoViewProps>) {
   const playerRef = useRef<YouTubePlayerInstance | null>(null);
 
   const initializePlayer = () => {
-    if (playerRef.current || !window.YT?.Player) return; // Prevent double initialization
+    if (playerRef.current || !globalThis.window.YT?.Player) return; // Prevent double initialization
     const normalizedVideoId = normalizeYouTubeVideoId(videoLink);
     if (!normalizedVideoId) return;
-    playerRef.current = new window.YT.Player(playerElementId, {
+    playerRef.current = new globalThis.window.YT.Player(playerElementId, {
       height: "100%",
       width: "100%",
       videoId: normalizedVideoId,
       playerVars: {
-        origin: window.location.origin,
+        origin: globalThis.window.location.origin,
         enablejsapi: 1,
       },
       events: { onReady: () => undefined },
@@ -98,11 +98,11 @@ export default function VideoView({ videoLink }: Readonly<VideoViewProps>) {
   };
 
   const handleScriptLoad = () => {
-    if (window.YT?.Player) {
+    if (globalThis.window.YT?.Player) {
       initializePlayer();
     } else {
       // Fallback: If YT exists but Player doesn't, wait for the global callback
-      window.onYouTubeIframeAPIReady = () => {
+      globalThis.window.onYouTubeIframeAPIReady = () => {
         initializePlayer();
       };
     }

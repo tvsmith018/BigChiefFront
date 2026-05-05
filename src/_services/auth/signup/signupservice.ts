@@ -1,6 +1,5 @@
-import { httpClient } from "@/_network";
+import { auth_end, httpClient } from "@/_network";
 import { OTPResponse } from "@/_types/auth/otp/otpresponse";
-import { auth_end } from "@/_network";
 import { normalizeOtp } from "../auth.helpers";
 import { SignupResponse } from "@/_types/auth/signup/signupresponse";
 
@@ -15,7 +14,7 @@ export class SignupService {
       { cache: "no-store" }
     );
 
-    return normalizeOtp(res as OTPResponse);
+    return normalizeOtp(res);
   }
 
   static async submitSignup(form: FormData) {
@@ -24,13 +23,13 @@ export class SignupService {
       body: form,
       headers: {
         "X-Signup-Client":
-          typeof window === "undefined"
+          typeof globalThis.window === "undefined"
             ? "next-server-multipart-v1"
             : "browser-multipart-v1",
       },
     }, { cache: "no-store" });
 
-    return res as SignupResponse;
+    return res;
   }
 }
 
