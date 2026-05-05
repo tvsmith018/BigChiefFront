@@ -82,18 +82,20 @@ function buildJsonErrorResponse(
   requestId: string,
   retryAfterSeconds?: number
 ) {
+  const headers: Record<string, string> = {
+    ...buildSecurityHeaders("application/json"),
+    "x-request-id": requestId,
+    "cache-control": CACHE_CONTROL_PRIVATE,
+  };
+  if (retryAfterSeconds !== undefined) {
+    headers["retry-after"] = String(retryAfterSeconds);
+  }
+
   return NextResponse.json(
     { detail },
     {
       status,
-      headers: {
-        ...buildSecurityHeaders("application/json"),
-        "x-request-id": requestId,
-        "cache-control": CACHE_CONTROL_PRIVATE,
-        ...(retryAfterSeconds !== undefined
-          ? { "retry-after": String(retryAfterSeconds) }
-          : {}),
-      },
+      headers,
     }
   );
 }
