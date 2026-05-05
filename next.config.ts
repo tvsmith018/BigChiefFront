@@ -21,6 +21,19 @@ const cspReportToHeader = JSON.stringify({
   endpoints: [{ url: "/api/security/csp-report" }],
 });
 
+function parseAllowedDevOrigins(value?: string) {
+  if (!value) return [];
+  return value
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+}
+
+const allowedDevOrigins = Array.from(new Set([
+  ...parseAllowedDevOrigins(process.env.ALLOWED_DEV_ORIGINS),
+  "bigchiefdev.ngrok.app",
+]));
+
 const nextConfig: NextConfig = {
   images: {
     // Avoid Next image optimizer upstream timeouts in local dev by fetching
@@ -34,7 +47,7 @@ const nextConfig: NextConfig = {
     ]
   },
   devIndicators: false,
-  allowedDevOrigins: ["192.168.1.141", "bigchiefdev.ngrok.app"],
+  allowedDevOrigins,
   async headers() {
     return [
       {
