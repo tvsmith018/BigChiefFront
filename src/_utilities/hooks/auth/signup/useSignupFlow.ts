@@ -189,56 +189,74 @@ export function useSignupFlow() {
   };
 
   const applySignupScreenTransition = (state: NonNullable<typeof signupState>) => {
-    switch (state.screen) {
-      case "code-screen":
-        if (!state.errors) {
-          setGeneratedID(state.gen_code);
-          setEmail(state.payload?.email);
+    const transitions: Record<
+      string,
+      {
+        canAdvance: (value: NonNullable<typeof signupState>) => boolean;
+        advance: (value: NonNullable<typeof signupState>) => void;
+      }
+    > = {
+      "code-screen": {
+        canAdvance: (value) => !value.errors,
+        advance: (value) => {
+          setGeneratedID(value.gen_code);
+          setEmail(value.payload?.email);
           setScreen(ScreenNames.code_screen);
-        }
-        break;
-      case "firstname-screen":
-        if (!state.codeError) {
+        },
+      },
+      "firstname-screen": {
+        canAdvance: (value) => !value.codeError,
+        advance: () => {
           setScreen(ScreenNames.firstname_screen);
-        }
-        break;
-      case "lastname-screen":
-        if (!state.errors) {
-          setFirstname(state.payload?.firstname);
+        },
+      },
+      "lastname-screen": {
+        canAdvance: (value) => !value.errors,
+        advance: (value) => {
+          setFirstname(value.payload?.firstname);
           setScreen(ScreenNames.lastname_screen);
-        }
-        break;
-      case "dob-screen":
-        if (!state.errors) {
-          setLastname(state.payload?.lastname);
+        },
+      },
+      "dob-screen": {
+        canAdvance: (value) => !value.errors,
+        advance: (value) => {
+          setLastname(value.payload?.lastname);
           setScreen(ScreenNames.dob_screen);
-        }
-        break;
-      case "image-screen":
-        if (!state.errors) {
+        },
+      },
+      "image-screen": {
+        canAdvance: (value) => !value.errors,
+        advance: () => {
           setScreen(ScreenNames.image_screen);
-        }
-        break;
-      case "new-password-screen":
-        if (!state.passwordError) {
+        },
+      },
+      "new-password-screen": {
+        canAdvance: (value) => !value.passwordError,
+        advance: () => {
           setScreen(ScreenNames.new_password_screen);
-        }
-        break;
-      case "confirm-password-screen":
-        if (!state.confirmError) {
-          setPassword(state.payload?.password);
+        },
+      },
+      "confirm-password-screen": {
+        canAdvance: (value) => !value.confirmError,
+        advance: (value) => {
+          setPassword(value.payload?.password);
           setScreen(ScreenNames.confirm_password_screen);
-        }
-        break;
-      case "success-screen":
-        if (!state.networkError) {
+        },
+      },
+      "success-screen": {
+        canAdvance: (value) => !value.networkError,
+        advance: () => {
           setScreen(ScreenNames.success_screen);
           setError(undefined);
-        }
-        break;
-      default:
-        break;
+        },
+      },
+    };
+
+    const transition = transitions[state.screen];
+    if (!transition || !transition.canAdvance(state)) {
+      return;
     }
+    transition.advance(state);
   };
 
   useEffect(() => {
