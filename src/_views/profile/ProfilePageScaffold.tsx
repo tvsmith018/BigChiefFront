@@ -46,8 +46,8 @@ function ProfileAvatarCard({
           <Image
             src={avatarSrc}
             alt={`${firstName} ${lastName} profile picture`}
-            width={120}
-            height={120}
+            width={300}
+            height={300}
             priority
           />
         </div>

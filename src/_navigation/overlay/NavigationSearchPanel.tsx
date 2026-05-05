@@ -197,7 +197,7 @@ export default function NavigationSearchPanel() {
                             alt={`${profile.firstname} ${profile.lastname}`}
                             fill
                             sizes="48px"
-                            style={{ objectFit: "cover" }}
+                            style={{ objectFit: "cover", objectPosition: "center" }}
                           />
                         </div>
                         <div className="overflow-hidden" style={{ minWidth: 0 }}>

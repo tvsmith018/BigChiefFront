@@ -46,6 +46,7 @@ export default function NavigationMenuPanel({
                 width: "100%",
                 height: "100%",
                 objectFit: "cover",
+                objectPosition: "center",
               }}
             />
           </span>

@@ -94,6 +94,7 @@ export default function UserIconView() {
                 width: "100%",
                 height: "100%",
                 objectFit: "cover",
+                objectPosition: "center",
               }}
             />
           </span>

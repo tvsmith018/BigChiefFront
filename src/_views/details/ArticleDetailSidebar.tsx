@@ -318,6 +318,7 @@ export default function ArticleDetailSidebar({
                   width: "100%",
                   height: "100%",
                   objectFit: "cover",
+                  objectPosition: "center",
                 }}
               />
             </span>
@@ -533,13 +534,29 @@ export default function ArticleDetailSidebar({
                     <Row className="g-0">
                       <Col xs={2}>
                         {commentNode.user.avatarUrl ? (
-                          <Image
-                            className="rounded-circle"
-                            src={toHttpsUrl(commentNode.user.avatarUrl) ?? PROFILE_AVATAR_PLACEHOLDER}
-                            alt={`Image of ${commentNode.user.firstname} ${commentNode.user.lastname}`}
-                            width={40}
-                            height={40}
-                          />
+                          <span
+                            style={{
+                              width: 40,
+                              height: 40,
+                              display: "inline-flex",
+                              borderRadius: "50%",
+                              overflow: "hidden",
+                              verticalAlign: "middle",
+                            }}
+                          >
+                            <Image
+                              src={toHttpsUrl(commentNode.user.avatarUrl) ?? PROFILE_AVATAR_PLACEHOLDER}
+                              alt={`Image of ${commentNode.user.firstname} ${commentNode.user.lastname}`}
+                              width={40}
+                              height={40}
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                                objectPosition: "center 22%",
+                              }}
+                            />
+                          </span>
                         ) : (
                           <i
                             className="bi bi-person-circle"
