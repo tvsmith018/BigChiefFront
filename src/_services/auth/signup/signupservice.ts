@@ -23,7 +23,7 @@ export class SignupService {
       body: form,
       headers: {
         "X-Signup-Client":
-          typeof globalThis.window === "undefined"
+          globalThis.window === undefined
             ? "next-server-multipart-v1"
             : "browser-multipart-v1",
       },
