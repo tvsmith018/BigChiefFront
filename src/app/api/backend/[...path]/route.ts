@@ -40,6 +40,24 @@ function consumeRateLimit(key: string) {
   return { allowed, remaining, resetAt: existing.resetAt };
 }
 
+function getDefaultLimitState() {
+  return {
+    allowed: true,
+    remaining: BACKEND_RATE_LIMIT_MAX,
+    resetAt: Date.now() + RATE_LIMIT_WINDOW_MS,
+  };
+}
+
+function getLimitState(
+  isInternalServerRequest: boolean,
+  clientIp: string | null
+) {
+  if (isInternalServerRequest || !clientIp) {
+    return getDefaultLimitState();
+  }
+  return consumeRateLimit(`backend:${clientIp}`);
+}
+
 function buildUpstreamUrl(request: NextRequest) {
   let upstreamPath = request.nextUrl.pathname.replace(
     new RegExp(`^${API_BROWSER_BASE_PATH}`),
@@ -101,6 +119,60 @@ async function buildProxyHeaders(request: NextRequest) {
   return headers;
 }
 
+async function getRequestBody(request: NextRequest) {
+  if (request.method === "GET" || request.method === "HEAD") {
+    return undefined;
+  }
+
+  // Read body as raw bytes. request.text() UTF-8-decodes the whole body and destroys
+  // multipart binary (file parts), which shows up as repeated EF BF BD on the server.
+  const bodyBytes = await request.arrayBuffer();
+  return bodyBytes.byteLength > 0 ? bodyBytes : undefined;
+}
+
+async function fetchUpstream(
+  upstreamUrl: string,
+  request: NextRequest,
+  headers: Headers,
+  body: BodyInit | undefined
+) {
+  return fetch(upstreamUrl, {
+    method: request.method,
+    headers,
+    body,
+    cache: "no-store",
+  });
+}
+
+async function retryUnauthorizedRequest(
+  request: NextRequest,
+  requestId: string,
+  upstreamUrl: string,
+  response: Response,
+  proxyHeaders: Headers,
+  requestBody: BodyInit | undefined
+) {
+  if (response.status !== 401) {
+    return response;
+  }
+
+  const refreshToken = request.cookies.get("session")?.value;
+  if (!refreshToken) {
+    return response;
+  }
+
+  const refreshedAccessToken = await refreshAccessToken(refreshToken);
+  if (!refreshedAccessToken) {
+    return response;
+  }
+
+  const retryHeaders = new Headers(proxyHeaders);
+  retryHeaders.set("authorization", `Bearer ${refreshedAccessToken}`);
+  retryHeaders.set("x-request-id", requestId);
+
+  return fetchUpstream(upstreamUrl, request, retryHeaders, requestBody);
+}
+
 async function proxyRequest(request: NextRequest, context: RouteContext) {
   await context.params;
   const upstreamUrl = buildUpstreamUrl(request);
@@ -114,13 +186,7 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
       request.cookies.get("access")?.value ||
       request.cookies.get("session")?.value
   );
-  const limit = !isInternalServerRequest && clientIp
-    ? consumeRateLimit(`backend:${clientIp}`)
-    : {
-        allowed: true,
-        remaining: BACKEND_RATE_LIMIT_MAX,
-        resetAt: Date.now() + RATE_LIMIT_WINDOW_MS,
-      };
+  const limit = getLimitState(isInternalServerRequest, clientIp);
 
   if (!limit.allowed) {
     logWarn("bff_backend_rate_limited", {
@@ -146,50 +212,29 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
   }
 
   try {
-    // Read body as raw bytes. request.text() UTF-8-decodes the whole body and destroys
-    // multipart binary (file parts), which shows up as repeated EF BF BD on the server.
-    let bodyBytes: ArrayBuffer | null = null;
-    if (request.method !== "GET" && request.method !== "HEAD") {
-      bodyBytes = await request.arrayBuffer();
-    }
+    const requestBody = await getRequestBody(request);
 
-    const requestBody: BodyInit | undefined =
-      bodyBytes && bodyBytes.byteLength > 0 ? bodyBytes : undefined;
-
-    let proxyHeaders = await buildProxyHeaders(request);
+    const proxyHeaders = await buildProxyHeaders(request);
     proxyHeaders.set("x-request-id", requestId);
 
-    let upstreamResponse = await fetch(upstreamUrl, {
-      method: request.method,
-      headers: proxyHeaders,
-      body: requestBody,
-      cache: "no-store",
-    });
+    const upstreamResponse = await fetchUpstream(
+      upstreamUrl,
+      request,
+      proxyHeaders,
+      requestBody
+    );
+    const finalResponse = await retryUnauthorizedRequest(
+      request,
+      requestId,
+      upstreamUrl,
+      upstreamResponse,
+      proxyHeaders,
+      requestBody
+    );
 
-    if (upstreamResponse.status === 401) {
-      const refreshToken = request.cookies.get("session")?.value;
-
-      if (refreshToken) {
-        const refreshedAccessToken = await refreshAccessToken(refreshToken);
-
-        if (refreshedAccessToken) {
-          proxyHeaders = new Headers(proxyHeaders);
-          proxyHeaders.set("authorization", `Bearer ${refreshedAccessToken}`);
-          proxyHeaders.set("x-request-id", requestId);
-
-          upstreamResponse = await fetch(upstreamUrl, {
-            method: request.method,
-            headers: proxyHeaders,
-            body: requestBody,
-            cache: "no-store",
-          });
-        }
-      }
-    }
-
-    const responseBuf = await upstreamResponse.arrayBuffer();
+    const responseBuf = await finalResponse.arrayBuffer();
     const outHeaders = new Headers();
-    const ct = upstreamResponse.headers.get("content-type");
+    const ct = finalResponse.headers.get("content-type");
     if (ct) {
       outHeaders.set("content-type", ct);
     }
@@ -205,7 +250,7 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
     );
 
     const response = new NextResponse(responseBuf.byteLength ? responseBuf : null, {
-      status: upstreamResponse.status,
+      status: finalResponse.status,
       headers: outHeaders,
     });
     logInfo("bff_backend_proxy_completed", {
@@ -214,7 +259,7 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
       method: request.method,
       path: request.nextUrl.pathname,
       upstream: upstreamUrl,
-      status: upstreamResponse.status,
+      status: finalResponse.status,
       latency_ms: Date.now() - startedAt,
       hasAuthContext,
       rateRemaining: limit.remaining,

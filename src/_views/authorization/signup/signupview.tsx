@@ -72,7 +72,7 @@ export default function SignupView() {
             onSubmit={(e) => {
               if (screen === ScreenNames.confirm_password_screen) {
                 e.preventDefault();
-                void handleConfirmSignup(new FormData(e.currentTarget));
+                handleConfirmSignup(new FormData(e.currentTarget));
               }
             }}
           >

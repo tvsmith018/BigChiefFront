@@ -20,7 +20,7 @@ export function usePasswordResetFlow() {
   }, [email, flowVersion, generatedID, password, screen]);
 
   const [passwordState, passwordresetaction, passwordpending] = useActionState(boundAction, undefined);
-  const lastStateRef = useRef<typeof passwordState>(undefined)
+  const lastStateRef = useRef<typeof passwordState>(undefined);
 
   const open = () => setShow(true);
 
@@ -70,6 +70,38 @@ export function usePasswordResetFlow() {
     if (data.code) setGeneratedID(data.code.code);
   };
 
+  const applyPasswordResetErrors = (state: NonNullable<typeof passwordState>) => {
+    if (state.errors && screen === ScreenNames.email_screen) setError(state.errors.email);
+    if (state.networkError) setError(state.networkError);
+    if (state.codeError) setError(state.codeError);
+    if (state.passwordError) setError(state.passwordError.password);
+    if (state.confirmError) setError(state.confirmError);
+  };
+
+  const applyPasswordResetScreenTransition = (state: NonNullable<typeof passwordState>) => {
+    if (state.screen === "code-screen" && !state.errors) {
+      if (state.payload?.email) setEmail(state.payload.email);
+      setGeneratedID(state.code?.code);
+      setScreen(ScreenNames.code_screen);
+      return;
+    }
+
+    if (state.screen === "new-password-screen" && !state.codeError) {
+      setScreen(ScreenNames.new_password_screen);
+      return;
+    }
+
+    if (state.screen === "confirm-password-screen" && !state.passwordError) {
+      if (state.payload?.password) setPassword(state.payload.password);
+      setScreen(ScreenNames.confirm_password_screen);
+      return;
+    }
+
+    if (state.screen === "success-screen" && !state.networkError) {
+      setScreen(ScreenNames.success_screen);
+    }
+  };
+
   useEffect(() => {
     if (!passwordState) return;
 
@@ -80,32 +112,8 @@ export function usePasswordResetFlow() {
       return;
     }
 
-    // show errors
-    if (passwordState.errors && screen === ScreenNames.email_screen) setError(passwordState.errors.email);
-    if (passwordState.networkError) setError(passwordState.networkError);
-    if (passwordState.codeError) setError(passwordState.codeError);
-    if (passwordState.passwordError) setError(passwordState.passwordError.password);
-    if (passwordState.confirmError) setError(passwordState.confirmError);
-
-    // advance screens
-    if (passwordState.screen === "code-screen" && !passwordState.errors) {
-      if (passwordState.payload?.email) setEmail(passwordState.payload.email);
-      setGeneratedID(passwordState.code?.code);
-      setScreen(ScreenNames.code_screen);
-    }
-
-    if (passwordState.screen === "new-password-screen" && !passwordState.codeError) {
-      setScreen(ScreenNames.new_password_screen);
-    }
-
-    if (passwordState.screen === "confirm-password-screen" && !passwordState.passwordError) {
-      if (passwordState.payload?.password) setPassword(passwordState.payload.password);
-      setScreen(ScreenNames.confirm_password_screen);
-    }
-
-    if (passwordState.screen === "success-screen" && !passwordState.networkError) {
-      setScreen(ScreenNames.success_screen);
-    }
+    applyPasswordResetErrors(passwordState);
+    applyPasswordResetScreenTransition(passwordState);
   }, [flowVersion, passwordState, screen]);
 
   return {

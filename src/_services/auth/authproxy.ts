@@ -129,6 +129,18 @@ async function refreshSession(
   };
 }
 
+function handleRefreshFailure(
+  cookieStore: Awaited<ReturnType<typeof cookies>>,
+  shouldClearCookies: boolean,
+  event: "auth_proxy_refresh_failed" | "auth_proxy_retry_refresh_failed"
+): null {
+  if (shouldClearCookies) {
+    clearAuthCookies(cookieStore);
+  }
+  logWarn(event, { shouldClearCookies });
+  return null;
+}
+
 /**
  * - Try existing access with `/authorized/me/` first (avoids refresh throttle: backend limits refresh/hour).
  * - Refresh only when access is missing or `/me` fails.
@@ -178,13 +190,11 @@ export const authProxyRoute = cache(async function authProxyRoute(): Promise<Use
 
     const refreshed = await refreshSession(refresh, cookieStore);
     if (!refreshed.access) {
-      if (refreshed.shouldClearCookies) {
-        clearAuthCookies(cookieStore);
-      }
-      logWarn("auth_proxy_refresh_failed", {
-        shouldClearCookies: refreshed.shouldClearCookies,
-      });
-      return null;
+      return handleRefreshFailure(
+        cookieStore,
+        refreshed.shouldClearCookies,
+        "auth_proxy_refresh_failed"
+      );
     }
 
     let user = await fetchMe(refreshed.access);
@@ -195,13 +205,11 @@ export const authProxyRoute = cache(async function authProxyRoute(): Promise<Use
       cookieStore
     );
     if (!retryRefreshed.access) {
-      if (retryRefreshed.shouldClearCookies) {
-        clearAuthCookies(cookieStore);
-      }
-      logWarn("auth_proxy_retry_refresh_failed", {
-        shouldClearCookies: retryRefreshed.shouldClearCookies,
-      });
-      return null;
+      return handleRefreshFailure(
+        cookieStore,
+        retryRefreshed.shouldClearCookies,
+        "auth_proxy_retry_refresh_failed"
+      );
     }
 
     user = await fetchMe(retryRefreshed.access);
