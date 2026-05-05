@@ -14,21 +14,11 @@ type ProfileSettingsDraft = {
   receiveMarketingNotifications: boolean;
 };
 
-const initialSettings: ProfileSettingsDraft = {
-  profileIsPublic: true,
-  allowMessages: true,
-  showActivityFeed: true,
-  showWatchHistory: true,
-  showRatings: true,
-  showUploadedImages: true,
-  receiveNotifications: true,
-  receiveMarketingNotifications: false,
-};
-
 type SettingRow = {
   key: keyof ProfileSettingsDraft;
   title: string;
   description: string;
+  defaultValue: boolean;
 };
 
 const settingsRows: SettingRow[] = [
@@ -36,42 +26,76 @@ const settingsRows: SettingRow[] = [
     key: "profileIsPublic",
     title: "Public profile",
     description: "Let other users discover your profile and view allowed sections.",
+    defaultValue: true,
   },
   {
     key: "allowMessages",
     title: "Allow direct messages",
     description: "Allow users to start new conversations with you.",
+    defaultValue: true,
   },
   {
     key: "showActivityFeed",
     title: "Show activity feed",
     description: "Display your profile feed posts on your public profile.",
+    defaultValue: true,
   },
   {
     key: "showWatchHistory",
     title: "Show watch history",
     description: "Show watched article history to viewers who can access your profile.",
+    defaultValue: true,
   },
   {
     key: "showRatings",
     title: "Show ratings",
     description: "Display article ratings and rating summary activity.",
+    defaultValue: true,
   },
   {
     key: "showUploadedImages",
     title: "Show uploaded images",
     description: "Display your uploaded photos gallery to profile viewers.",
+    defaultValue: true,
   },
   {
     key: "receiveNotifications",
     title: "Receive notifications",
     description: "Get alerts for comments, replies, mentions, and message activity.",
+    defaultValue: true,
   },
   {
     key: "receiveMarketingNotifications",
     title: "Receive marketing notifications",
     description: "Receive platform announcements and campaign opportunities.",
+    defaultValue: false,
   },
+];
+
+const initialSettings = settingsRows.reduce<ProfileSettingsDraft>(
+  (draft, row) => ({ ...draft, [row.key]: row.defaultValue }),
+  {} as ProfileSettingsDraft,
+);
+
+const visibleSectionLabels: Partial<Record<keyof ProfileSettingsDraft, string>> = {
+  showActivityFeed: "Activity feed",
+  showWatchHistory: "Watch history",
+  showRatings: "Ratings",
+  showUploadedImages: "Uploaded images",
+};
+
+type PreviewPill = {
+  key: keyof ProfileSettingsDraft;
+  label: string;
+  onText: string;
+  offText: string;
+};
+
+const previewPills: PreviewPill[] = [
+  { key: "profileIsPublic", label: "Profile", onText: "Public", offText: "Private" },
+  { key: "allowMessages", label: "Messages", onText: "Allowed", offText: "Blocked" },
+  { key: "receiveNotifications", label: "Notifications", onText: "On", offText: "Off" },
+  { key: "receiveMarketingNotifications", label: "Marketing", onText: "On", offText: "Off" },
 ];
 
 export default function SettingsView() {
@@ -86,12 +110,9 @@ export default function SettingsView() {
   }
 
   const visibleSections = useMemo(() => {
-    const sections: string[] = [];
-    if (settings.showActivityFeed) sections.push("Activity feed");
-    if (settings.showWatchHistory) sections.push("Watch history");
-    if (settings.showRatings) sections.push("Ratings");
-    if (settings.showUploadedImages) sections.push("Uploaded images");
-    return sections;
+    return settingsRows
+      .filter((row) => Boolean(visibleSectionLabels[row.key]) && settings[row.key])
+      .map((row) => visibleSectionLabels[row.key] as string);
   }, [settings]);
 
   return (
@@ -134,18 +155,11 @@ export default function SettingsView() {
           <p className="mb-3">This mock view shows what sections would be visible with current toggles.</p>
 
           <div className="bc-settings-preview__status">
-            <span className={`bc-settings-pill ${settings.profileIsPublic ? "is-on" : ""}`}>
-              Profile {settings.profileIsPublic ? "Public" : "Private"}
-            </span>
-            <span className={`bc-settings-pill ${settings.allowMessages ? "is-on" : ""}`}>
-              Messages {settings.allowMessages ? "Allowed" : "Blocked"}
-            </span>
-            <span className={`bc-settings-pill ${settings.receiveNotifications ? "is-on" : ""}`}>
-              Notifications {settings.receiveNotifications ? "On" : "Off"}
-            </span>
-            <span className={`bc-settings-pill ${settings.receiveMarketingNotifications ? "is-on" : ""}`}>
-              Marketing {settings.receiveMarketingNotifications ? "On" : "Off"}
-            </span>
+            {previewPills.map((pill) => (
+              <span key={pill.key} className={`bc-settings-pill ${settings[pill.key] ? "is-on" : ""}`}>
+                {pill.label} {settings[pill.key] ? pill.onText : pill.offText}
+              </span>
+            ))}
           </div>
 
           <div className="bc-settings-preview__sections">
