@@ -3,7 +3,7 @@ import type { RequestOptions } from "./types";
 type HttpBaseUrlResolver = string | (() => string);
 
 export class HttpClient {
-  private baseUrl: HttpBaseUrlResolver;
+  private readonly baseUrl: HttpBaseUrlResolver;
 
   constructor(baseUrl: HttpBaseUrlResolver) {
     this.baseUrl = baseUrl;
@@ -42,16 +42,18 @@ export class HttpClient {
         headers.set("Content-Type", "application/json");
       }
 
-      if (typeof window === "undefined") {
+      if (typeof globalThis.window === "undefined") {
         headers.set("x-bff-internal-request", "1");
       }
 
-      const fetchBody =
-        body === undefined || body === null
-          ? undefined
-          : isFormData
-            ? body
-            : JSON.stringify(body);
+      let fetchBody: BodyInit | undefined;
+      if (body === undefined || body === null) {
+        fetchBody = undefined;
+      } else if (isFormData) {
+        fetchBody = body;
+      } else {
+        fetchBody = JSON.stringify(body);
+      }
 
       const res = await fetch(`${this.getBaseUrl()}${endpoint}`, {
         method: config.method ?? "GET",
@@ -62,23 +64,7 @@ export class HttpClient {
         ...options,
       });
 
-      const rawBody = await res.text();
-      const contentType = res.headers.get("content-type") ?? "";
-      const isJsonResponse =
-        contentType.includes("application/json") || contentType.includes("+json");
-
-      let parsedBody: unknown = null;
-      if (rawBody) {
-        if (isJsonResponse) {
-          try {
-            parsedBody = JSON.parse(rawBody);
-          } catch {
-            parsedBody = { detail: "Invalid JSON response from upstream." };
-          }
-        } else {
-          parsedBody = { detail: rawBody };
-        }
-      }
+      const parsedBody = await this.parseResponseBody(res);
 
       if (!res.ok) {
         if (parsedBody && typeof parsedBody === "object") {
@@ -91,6 +77,27 @@ export class HttpClient {
       return parsedBody as T;
     } finally {
       clearTimeout(timeoutId);
+    }
+  }
+
+  private async parseResponseBody(res: Response): Promise<unknown> {
+    const rawBody = await res.text();
+    if (!rawBody) {
+      return null;
+    }
+
+    const contentType = res.headers.get("content-type") ?? "";
+    const isJsonResponse =
+      contentType.includes("application/json") || contentType.includes("+json");
+
+    if (!isJsonResponse) {
+      return { detail: rawBody };
+    }
+
+    try {
+      return JSON.parse(rawBody);
+    } catch {
+      return { detail: "Invalid JSON response from upstream." };
     }
   }
 }

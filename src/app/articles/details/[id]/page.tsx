@@ -21,7 +21,9 @@ function formatPublishedDate(value: string) {
   }).format(date);
 }
 
-export async function generateMetadata({params}:{params:PageParams}) {
+export async function generateMetadata({
+  params,
+}: Readonly<{ params: PageParams }>) {
     const { id } = await params;
     const decodeId = decodeURIComponent(id);
     const article = await ArticleService.fetchDetailsMeta(decodeId);
@@ -39,7 +41,9 @@ export async function generateMetadata({params}:{params:PageParams}) {
     }
 }
 
-export default async function Page({params}:{params:PageParams}) {
+export default async function Page({
+  params,
+}: Readonly<{ params: PageParams }>) {
     const { id } = await params;
     const decodeId = decodeURIComponent(id);
     
@@ -53,7 +57,11 @@ export default async function Page({params}:{params:PageParams}) {
                 <Row className="bc-article-detail-grid">
                     <Col lg={8} className="bc-article-detail-main">
                         <div className="bc-article-video-bleed">
-                            <VideoView videoLink={article.videoLink!} videoType={article.videoType!} title={article.title}/>
+                            <VideoView
+                              videoLink={article.videoLink ?? ""}
+                              videoType={article.videoType ?? "youtube"}
+                              title={article.title}
+                            />
                         </div>
                         
                         <span className={`badge ${article.badgeColor} mt-3 bc-article-detail-badge`}>

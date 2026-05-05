@@ -4,7 +4,11 @@ import FormCheck from "react-bootstrap/FormCheck";
 import FormLabel from "react-bootstrap/FormLabel";
 import { useArticleRating } from "@/_utilities/hooks/article/useArticleRating";
 
-export default function ArticleRatingView({ articleId }: { articleId: string }) {
+const RATING_VALUES = [1, 2, 3, 4, 5] as const;
+
+export default function ArticleRatingView({
+  articleId,
+}: Readonly<{ articleId: string }>) {
   const { isAuthenticated, rating, canRate, submitRating } = useArticleRating({
     articleId,
   });
@@ -15,11 +19,9 @@ export default function ArticleRatingView({ articleId }: { articleId: string }) 
 
   return (
     <>
-      {[...new Array(5)].map((_, index) => {
-        const currentRate = index + 1;
-
+      {RATING_VALUES.map((currentRate) => {
         return (
-          <FormLabel key={index}>
+          <FormLabel key={currentRate}>
             <FormCheck type="radio" name="rate" value={currentRate} disabled/>
             <button
               type="button"

@@ -117,25 +117,25 @@ export function SessionSync() {
     };
 
     const initialDelayMs = randomInt(INITIAL_SYNC_JITTER_MS);
-    const initialTimer = window.setTimeout(() => {
+    const initialTimer = globalThis.window.setTimeout(() => {
       void sync();
     }, initialDelayMs);
 
     const heartbeatMs = isAuthenticated ? HEARTBEAT_MS : GUEST_HEARTBEAT_MS;
-    const timer = window.setInterval(() => {
+    const timer = globalThis.window.setInterval(() => {
       if (document.visibilityState === "visible") {
         void sync();
       }
     }, heartbeatMs);
 
-    window.addEventListener("focus", onFocus);
+    globalThis.window.addEventListener("focus", onFocus);
     document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
       active = false;
-      window.clearTimeout(initialTimer);
-      window.clearInterval(timer);
-      window.removeEventListener("focus", onFocus);
+      globalThis.window.clearTimeout(initialTimer);
+      globalThis.window.clearInterval(timer);
+      globalThis.window.removeEventListener("focus", onFocus);
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
   }, [dispatch, isAuthenticated, currentUser, authTransitioning]);

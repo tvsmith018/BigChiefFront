@@ -5,8 +5,8 @@ import { useAppSelector } from "@/_store/hooks/UseAppSelector";
 import ReconnectingWebSocket from "reconnecting-websocket";
 import { ArticleComment } from "@/_services/articles/articleservices";
 import { WEBSOCKET_BASE_URL } from "@/_network/config/endpoints";
-import { commentsPaginationAdapter } from "@/_core/pagination";
 import {
+  commentsPaginationAdapter,
   useInfiniteObserver,
   usePaginatedCollection,
 } from "@/_core/pagination";
@@ -20,6 +20,24 @@ interface Props {
     endCursor: string
   }
   scrollRootRef?: RefObject<HTMLDivElement | null>;
+}
+
+function isSameComment(left: ArticleComment, right: ArticleComment) {
+  return (
+    left.node.body === right.node.body &&
+    left.node.created === right.node.created &&
+    left.node.user.firstname === right.node.user.firstname &&
+    left.node.user.lastname === right.node.user.lastname
+  );
+}
+
+function upsertComment(
+  current: ArticleComment[],
+  next: ArticleComment,
+) {
+  const exists = current.some((item) => isSameComment(item, next));
+  if (exists) return current;
+  return [next, ...current];
 }
 
 export function useArticleComments({ articleId, initialComments, pageInfo,scrollRootRef }: Props) {
@@ -67,7 +85,6 @@ export function useArticleComments({ articleId, initialComments, pageInfo,scroll
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-
       const nextComment: ArticleComment = {
         node: {
           body: data.body,
@@ -80,18 +97,7 @@ export function useArticleComments({ articleId, initialComments, pageInfo,scroll
         },
       };
 
-    replaceItems((prev) => {
-        const exists = prev.some(
-          (item) =>
-            item.node.body === nextComment.node.body &&
-            item.node.created === nextComment.node.created &&
-            item.node.user.firstname === nextComment.node.user.firstname &&
-            item.node.user.lastname === nextComment.node.user.lastname
-        );
-
-        if (exists) return prev;
-        return [nextComment, ...prev];
-      });
+      replaceItems((prev) => upsertComment(prev, nextComment));
     };
 
     ws.onerror = () => {

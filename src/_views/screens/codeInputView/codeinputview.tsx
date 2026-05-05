@@ -3,7 +3,13 @@ import InputGroup from "react-bootstrap/InputGroup";
 import Form from "react-bootstrap/Form"
 import Button from "react-bootstrap/Button";
 
-export default function CodeInputView({prompt, onComplete, onResendClick}:{prompt:string, onComplete:()=>void, onResendClick:()=>void}){
+const OTP_SLOTS = ["otp-0", "otp-1", "otp-2", "otp-3", "otp-4", "otp-5"] as const;
+
+export default function CodeInputView({
+  prompt,
+  onComplete,
+  onResendClick,
+}: Readonly<{ prompt: string; onComplete: () => void; onResendClick: () => void }>) {
   
   const [otp, setOtp] = useState(new Array(6).fill(''));
   const inputRefs = useRef<HTMLInputElement[]>([]);
@@ -69,16 +75,18 @@ export default function CodeInputView({prompt, onComplete, onResendClick}:{promp
 
   return <>
     <InputGroup className="mb-3 justify-content-center">
-      {otp.map((digit, index) => (
+      {OTP_SLOTS.map((slot, index) => (
         <Form.Control
-          key={index}
+          key={slot}
           type="text" // Use 'text' to control input length and content
           maxLength={1}
-          value={digit}
+          value={otp[index]}
           inputMode="numeric"
           onChange={(e:React.ChangeEvent<HTMLInputElement>) => handleChange(e, index)}
           onKeyDown={(e:React.KeyboardEvent<HTMLInputElement>) => handleKeyDown(e, index)}
-          ref={(el:never) => (inputRefs.current[index] = el)}
+          ref={(el) => {
+            if (el) inputRefs.current[index] = el;
+          }}
           className="text-center"
           style={{ width: '40px', margin: "0 2px 0 1px" }} // Adjust width as needed
           name={`texbox-${index}`}

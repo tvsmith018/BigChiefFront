@@ -14,8 +14,8 @@ interface Props {
 }
 
 export default function NavigationClientRoot({
-  isAuthenticated,
-  user,
+  isAuthenticated: _isAuthenticated,
+  user: _user,
   sideLinks,
 }: Props) {
   return (
@@ -26,8 +26,6 @@ export default function NavigationClientRoot({
         />
 
         <NavigationPrimary
-          isAuthenticated={isAuthenticated}
-          user={user}
           sideLinks={sideLinks}
         />
       </header>

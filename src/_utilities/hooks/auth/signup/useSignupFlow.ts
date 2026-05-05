@@ -10,6 +10,11 @@ import { useAppDispatch } from "@/_store/hooks/UseAppDispatch";
 import { setAuthTransitioning } from "@/_store/reducers/app/appSlice";
 import { useRouter } from "next/navigation";  
 
+function getFormStringValue(formData: FormData, key: string) {
+  const value = formData.get(key);
+  return typeof value === "string" ? value : "";
+}
+
 export function useSignupFlow() {
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -57,7 +62,7 @@ export function useSignupFlow() {
       setError(undefined);
       try {
         const result = await completeSignupWithMultipart({
-          confirmPassword: String(formData.get("confirmnewpassword") ?? ""),
+          confirmPassword: getFormStringValue(formData, "confirmnewpassword"),
           password: password ?? "",
           email: email ?? "",
           firstname: firstname ?? "",
@@ -72,7 +77,7 @@ export function useSignupFlow() {
           dispatch(storeUser(result.user));
           router.replace("/profile");
           router.refresh();
-          window.setTimeout(() => {
+          globalThis.window.setTimeout(() => {
             dispatch(setAuthTransitioning(false));
           }, 1500);
           return;
@@ -144,7 +149,6 @@ export function useSignupFlow() {
     if (screen === ScreenNames.confirm_password_screen) {
       setPassword(undefined);
       setScreen(ScreenNames.new_password_screen);
-      return;
     }
   };
 
@@ -174,52 +178,79 @@ export function useSignupFlow() {
       return;
     }
 
-    if (signupState.errors && screen === ScreenNames.email_screen) setError(signupState.errors.email);
-    if (signupState.errors && screen === ScreenNames.firstname_screen) setError(signupState.errors.firstname);
-    if (signupState.errors && screen === ScreenNames.lastname_screen) setError(signupState.errors.lastname);
-    if (signupState.errors && screen === ScreenNames.dob_screen) setError(signupState.errors.dob);
+    if (signupState.errors) {
+      switch (screen) {
+        case ScreenNames.email_screen:
+          setError(signupState.errors.email);
+          break;
+        case ScreenNames.firstname_screen:
+          setError(signupState.errors.firstname);
+          break;
+        case ScreenNames.lastname_screen:
+          setError(signupState.errors.lastname);
+          break;
+        case ScreenNames.dob_screen:
+          setError(signupState.errors.dob);
+          break;
+        default:
+          break;
+      }
+    }
 
     if (signupState.networkError) setError(signupState.networkError);
     if (signupState.codeError) setError(signupState.codeError);
     if (signupState.passwordError) setError(signupState.passwordError.password);
     if (signupState.confirmError) setError(signupState.confirmError);
 
-    if (signupState.screen === "code-screen" && !signupState.errors) {
-      setGeneratedID(signupState.gen_code);
-      setEmail(signupState.payload?.email);
-      setScreen(ScreenNames.code_screen);
-    }
-
-    if (signupState.screen === "firstname-screen" && !signupState.codeError) {
-      setScreen(ScreenNames.firstname_screen);
-    }
-
-    if (signupState.screen === "lastname-screen" && !signupState.errors) {
-      setFirstname(signupState.payload?.firstname);
-      setScreen(ScreenNames.lastname_screen);
-    }
-
-    if (signupState.screen === "dob-screen" && !signupState.errors) {
-      setLastname(signupState.payload?.lastname);
-      setScreen(ScreenNames.dob_screen);
-    }
-
-    if (signupState.screen === "image-screen" && !signupState.errors) {
-      setScreen(ScreenNames.image_screen);
-    }
-
-    if (signupState.screen === "new-password-screen" && !signupState.passwordError) {
-      setScreen(ScreenNames.new_password_screen);
-    }
-
-    if (signupState.screen === "confirm-password-screen" && !signupState.confirmError) {
-      setPassword(signupState.payload?.password);
-      setScreen(ScreenNames.confirm_password_screen);
-    }
-
-    if (signupState.screen === "success-screen" && !signupState.networkError) {
-      setScreen(ScreenNames.success_screen);
-      setError(undefined);
+    switch (signupState.screen) {
+      case "code-screen":
+        if (!signupState.errors) {
+          setGeneratedID(signupState.gen_code);
+          setEmail(signupState.payload?.email);
+          setScreen(ScreenNames.code_screen);
+        }
+        break;
+      case "firstname-screen":
+        if (!signupState.codeError) {
+          setScreen(ScreenNames.firstname_screen);
+        }
+        break;
+      case "lastname-screen":
+        if (!signupState.errors) {
+          setFirstname(signupState.payload?.firstname);
+          setScreen(ScreenNames.lastname_screen);
+        }
+        break;
+      case "dob-screen":
+        if (!signupState.errors) {
+          setLastname(signupState.payload?.lastname);
+          setScreen(ScreenNames.dob_screen);
+        }
+        break;
+      case "image-screen":
+        if (!signupState.errors) {
+          setScreen(ScreenNames.image_screen);
+        }
+        break;
+      case "new-password-screen":
+        if (!signupState.passwordError) {
+          setScreen(ScreenNames.new_password_screen);
+        }
+        break;
+      case "confirm-password-screen":
+        if (!signupState.confirmError) {
+          setPassword(signupState.payload?.password);
+          setScreen(ScreenNames.confirm_password_screen);
+        }
+        break;
+      case "success-screen":
+        if (!signupState.networkError) {
+          setScreen(ScreenNames.success_screen);
+          setError(undefined);
+        }
+        break;
+      default:
+        break;
     }
   }, [flowVersion, screen, signupState]);
 

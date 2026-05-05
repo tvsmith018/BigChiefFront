@@ -1,6 +1,5 @@
-import { httpClient } from "@/_network";
+import { auth_end, httpClient } from "@/_network";
 import { OTPResponse } from "@/_types/auth/otp/otpresponse";
-import { auth_end } from "@/_network";
 import { normalizeOtp } from "../auth.helpers";
 import { ResetPasswordResponse } from "@/_types/auth/passwordrest/resetpasswordresponse";
 
@@ -12,10 +11,7 @@ export class PasswordResetService {
         body: { email: email.toLowerCase(), otp_type: "password-reset" },
       }, {cache:"no-store"});
   
-      // httpClient returns res.json() directly — might not be ApiResponse<T>
-      // so we treat it as unknown and normalize
-  
-      return normalizeOtp(res as OTPResponse);
+      return normalizeOtp(res);
     }
   
     static async submitNewPassword(email: string, password: string) {
@@ -24,7 +20,7 @@ export class PasswordResetService {
         body: { email: email.toLowerCase(), password:password },
       }, {cache:"no-store"});
   
-      return res as ResetPasswordResponse;
+      return res;
     }
   }
 

@@ -4,17 +4,15 @@ import Image from "next/image";
 import NavbarBrand from "react-bootstrap/NavbarBrand";
 import logo from "../../../public/images/newlogo.jpg";
 import NavigationOverlay from "../overlay/NavigationOverlay";
-import { NavigationLink, NavigationUser } from "../../_types/navigation/navigation.types";
+import { NavigationLink } from "../../_types/navigation/navigation.types";
 
 interface Props {
-  isAuthenticated: boolean;
-  user?: NavigationUser;
   sideLinks: NavigationLink[];
 }
 
 export default function NavigationPrimary({
   sideLinks,
-}: Props) {
+}: Readonly<Props>) {
 
   return (
     <Navbar>

@@ -94,7 +94,7 @@ export default function ArticleDetailSidebar({
   category,
   relatedPageInfo,
   commentsPageInfo
-}: Props) {
+}: Readonly<Props>) {
     const [articleCollapse, setArticleCollapse] = useState("....Read More");
     const [tab, setTab] = useState<DetailTab>("comment");
     const [tabButtonStyle, setTabButtonStyle] = useState(false);
@@ -353,20 +353,14 @@ export default function ArticleDetailSidebar({
             <p>
               {articleCollapse === "....Read More" ? body.substring(0, 200) : body}
               &nbsp;&nbsp;
-              <span
-                role="button"
-                tabIndex={0}
+              <button
+                type="button"
+                className="border-0 bg-transparent p-0 fw-bold"
                 style={{ cursor: "pointer" }}
                 onClick={toggleArticleCollapse}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    toggleArticleCollapse();
-                  }
-                }}
               >
-                <strong>{articleCollapse}</strong>
-              </span>
+                {articleCollapse}
+              </button>
             </p>
           </div>
         </div>
@@ -690,20 +684,14 @@ export default function ArticleDetailSidebar({
           <p>
             {articleCollapse === "....Read More" ? body.substring(0, 200) : body}
             &nbsp;&nbsp;
-            <span
-              role="button"
-              tabIndex={0}
+            <button
+              type="button"
+              className="border-0 bg-transparent p-0 fw-bold"
               style={{ cursor: "pointer" }}
               onClick={toggleArticleCollapse}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  toggleArticleCollapse();
-                }
-              }}
             >
-              <strong>{articleCollapse}</strong>
-            </span>
+              {articleCollapse}
+            </button>
           </p>
         </div>
       )}
