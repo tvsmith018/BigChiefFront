@@ -14,8 +14,8 @@ export default function NavigationTopBar({
       <Container>
         <div className="d-flex justify-content-between align-items-center my-2">
           <ul className="nav">
-            {links.map((link, index) => (
-              <li className="nav-item" key={index}>
+            {links.map((link) => (
+              <li className="nav-item" key={link}>
                 <Link
                   className="nav-link"
                   href={`/information/${link.replace("/", "_")}`}

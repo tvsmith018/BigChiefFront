@@ -9,8 +9,8 @@ export default function TabsView({children, defaultKey, keys}:Readonly<{children
         <Row className='mt-4'>
             <Col style={{position:"relative"}}>
                 <Nav className="justify-content-center" variant="pills">
-                    {keys?.map((key,index)=>{
-                        return <Nav.Item key={index}>
+                    {keys?.map((key)=>{
+                        return <Nav.Item key={String(key)}>
                             <Nav.Link id={String(key)} className='px-4 py-2 fs-4' eventKey={key}>{key}</Nav.Link>
                         </Nav.Item>
                     })}
@@ -21,7 +21,7 @@ export default function TabsView({children, defaultKey, keys}:Readonly<{children
             <Col>
                 <Tab.Content>
                 {keys?.map((key,index)=>{
-                        return <Tab.Pane eventKey={key} key={index}>
+                        return <Tab.Pane eventKey={key} key={String(key)}>
                             {childrenArray[index]}
                         </Tab.Pane>
                     })}

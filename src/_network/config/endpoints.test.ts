@@ -11,21 +11,21 @@ import {
   resolveWebSocketBaseUrl,
 } from "./endpoints";
 
-describe("endpoints", () => {
-  function withEnv<T>(key: string, value: string, run: () => T): T {
-    const previous = process.env[key];
-    process.env[key] = value;
-    try {
-      return run();
-    } finally {
-      if (previous === undefined) {
-        delete process.env[key];
-      } else {
-        process.env[key] = previous;
-      }
+function withEnv<T>(key: string, value: string, run: () => T): T {
+  const previous = process.env[key];
+  process.env[key] = value;
+  try {
+    return run();
+  } finally {
+    if (previous === undefined) {
+      delete process.env[key];
+    } else {
+      process.env[key] = previous;
     }
   }
+}
 
+describe("endpoints", () => {
   it("normalizeApiBaseUrl strips graphql suffix and trailing slashes", () => {
     expect(normalizeApiBaseUrl("https://example.com/graphql/")).toBe("https://example.com");
     expect(normalizeApiBaseUrl("https://example.com/api///")).toBe("https://example.com/api");

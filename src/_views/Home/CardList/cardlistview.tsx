@@ -61,8 +61,8 @@ export default function CardListView({ list, title, pageInfo ,category }: Props)
         <h3 className="mb-4">{title}</h3>
 
         <Row className="g-4 mb-2">
-          {articles.map(({ node }, index) => (
-            <Col sm={6} lg={4} key={index}>
+          {articles.map(({ node }) => (
+            <Col sm={6} lg={4} key={node.id ?? `${node.title}-${node.created}`}>
               <Card>
                 <div className="ratio ratio-16x9">
                   <Image

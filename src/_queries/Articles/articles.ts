@@ -260,31 +260,3 @@ export const RELATED_ARTICLES_QUERY = (category: string, articleid:string, first
     }
   }
 `;
-
-// export const CATEGORY_ARTICLES_QUERY = (category: string, articleid:string, first:number=5, after?:string) => `
-//   query {
-// 	  categoryArticles(category:"tea", first:12){
-//       edges{
-//         cursor
-//         node{
-//           id
-//           title
-//           image4x3Url
-//           category
-//           badgeColor
-//           altImage
-//           created
-//           author{
-//             firstname
-//             lastname
-//             avatarUrl
-//           }
-//         }
-//       }
-//       pageInfo{
-//         hasNextPage
-//         endCursor
-//       }
-//     }
-//    }
-// `

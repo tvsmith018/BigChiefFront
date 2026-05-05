@@ -15,6 +15,45 @@ import { removeUser } from "@/_store/reducers/user/userSlice";
 import { PROFILE_AVATAR_PLACEHOLDER } from "@/_constants/profilePlaceholders";
 import { toHttpsUrl } from "@/_utilities/url/toHttpsUrl";
 
+function GuestLinks() {
+  return (
+    <>
+      <Dropdown.Item href="/auth">
+        <i className="bi bi-box-arrow-in-right me-2"></i>
+        {" "}
+        Login
+      </Dropdown.Item>
+      <div className="border-bottom border-2 border-primary opacity-1 mx-4 my-1"></div>
+      <Dropdown.Item href="/auth">
+        <i className="bi bi-door-open-fill me-2"></i>
+        {" "}
+        Create Profile
+      </Dropdown.Item>
+    </>
+  );
+}
+
+interface AuthLinksProps {
+  handleLogout: () => Promise<void>;
+  isLoggingOut: boolean;
+}
+
+function AuthLinks({ handleLogout, isLoggingOut }: AuthLinksProps) {
+  return (
+    <>
+      <Dropdown.Item href="/profile" role="button">
+        <i className="bi bi-box-arrow-in-left me-2"></i>
+        {" "}
+        Profile
+      </Dropdown.Item>
+      <Dropdown.Item as="button" role="button" onClick={handleLogout} disabled={isLoggingOut}>
+        <i className="bi bi-box-arrow-in-left me-2"></i>
+        {isLoggingOut ? "Logging out..." : "Logout"}
+      </Dropdown.Item>
+    </>
+  );
+}
+
 export default function UserIconView() {
   const data = useAppSelector((state) => state.user.data);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
@@ -40,36 +79,6 @@ export default function UserIconView() {
       setIsLoggingOut(false);
     }
   };
-
-  const GuestLinks = () => (
-    <>
-      <Dropdown.Item href="/auth">
-        <i className="bi bi-box-arrow-in-right me-2"></i>
-        {" "}
-        Login
-      </Dropdown.Item>
-      <div className="border-bottom border-2 border-primary opacity-1 mx-4 my-1"></div>
-      <Dropdown.Item href="/auth">
-        <i className="bi bi-door-open-fill me-2"></i>
-        {" "}
-        Create Profile
-      </Dropdown.Item>
-    </>
-  );
-
-  const AuthLinks = () => (
-    <>
-      <Dropdown.Item href="/profile" role="button">
-        <i className="bi bi-box-arrow-in-left me-2"></i>
-        {" "}
-        Profile
-      </Dropdown.Item>
-      <Dropdown.Item as="button" role="button" onClick={handleLogout} disabled={isLoggingOut}>
-        <i className="bi bi-box-arrow-in-left me-2"></i>
-        {isLoggingOut ? "Logging out..." : "Logout"}
-      </Dropdown.Item>
-    </>
-  );
 
   return (
     <Dropdown as={NavItem}>
@@ -102,7 +111,13 @@ export default function UserIconView() {
           <i className="bi bi-person-circle" style={{ fontSize: "20px" }}></i>
         )}
       </Dropdown.Toggle>
-      <Dropdown.Menu>{isAuthenticated ? <AuthLinks /> : <GuestLinks />}</Dropdown.Menu>
+      <Dropdown.Menu>
+        {isAuthenticated ? (
+          <AuthLinks handleLogout={handleLogout} isLoggingOut={isLoggingOut} />
+        ) : (
+          <GuestLinks />
+        )}
+      </Dropdown.Menu>
     </Dropdown>
   );
 }

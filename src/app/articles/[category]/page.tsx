@@ -5,7 +5,7 @@ type tParams = Promise<{ category:string }>;
 
 export default async function Category({params}:{params:tParams}){
     const {category} = await params;
-    const data = await ArticleService.getArticle(category,undefined);
+    const data = await ArticleService.getArticle(category);
     const articles = data.articles.edges;
     const pageInfo = data.articles.pageInfo
 

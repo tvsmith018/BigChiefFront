@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -38,6 +38,8 @@ export function ContentCarousel<T>({
   breakpoints = DEFAULT_BREAKPOINTS,
   className,
 }: ContentCarouselProps<T>) {
+  const objectKeyCacheRef = useRef(new WeakMap<object, string>());
+  const nextObjectKeyRef = useRef(0);
   const [slidesPerView, setSlidesPerView] = useState<number>(
     breakpoints.desktop ?? 3
   );
@@ -71,6 +73,30 @@ export function ContentCarousel<T>({
     [autoplay]
   );
 
+  const keyedItems = useMemo(
+    () => {
+      const primitiveCounts = new Map<string, number>();
+      return items.map((item) => {
+        if (item !== null && typeof item === "object") {
+          const objectItem = item as object;
+          let key = objectKeyCacheRef.current.get(objectItem);
+          if (!key) {
+            key = `obj-${nextObjectKeyRef.current}`;
+            nextObjectKeyRef.current += 1;
+            objectKeyCacheRef.current.set(objectItem, key);
+          }
+          return { key, item };
+        }
+
+        const primitiveBaseKey = `${typeof item}:${String(item)}`;
+        const currentCount = primitiveCounts.get(primitiveBaseKey) ?? 0;
+        primitiveCounts.set(primitiveBaseKey, currentCount + 1);
+        return { key: `${primitiveBaseKey}:${currentCount}`, item };
+      });
+    },
+    [items]
+  );
+
   if (!items?.length) return null;
 
   return (
@@ -87,8 +113,8 @@ export function ContentCarousel<T>({
               autoplay={autoplayConfig}
               modules={autoplay ? [Autoplay] : []}
             >
-              {items.map((item, index) => (
-                <SwiperSlide key={index}>
+              {keyedItems.map(({ item, key }, index) => (
+                <SwiperSlide key={key}>
                   {renderItem(item, index)}
                 </SwiperSlide>
               ))}

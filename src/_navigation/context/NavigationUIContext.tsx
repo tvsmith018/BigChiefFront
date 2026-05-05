@@ -6,7 +6,7 @@ import {
   useState,
   useCallback,
   ReactNode,
-  useEffect,
+  useMemo,
 } from "react";
 
 /**
@@ -39,23 +39,31 @@ export function NavigationUIProvider({ children }: { children: ReactNode }) {
   const closeMenu = useCallback(() => setMenuOpen(false), []); 
   const toggleMenu = useCallback(() => setMenuOpen((prev) => !prev), []);
 
-  useEffect(()=>{
-    
-  })
+  const contextValue = useMemo(
+    () => ({
+      isSearchOpen,
+      isMenuOpen,
+      openSearch,
+      closeSearch,
+      toggleSearch,
+      openMenu,
+      closeMenu,
+      toggleMenu,
+    }),
+    [
+      closeMenu,
+      closeSearch,
+      isMenuOpen,
+      isSearchOpen,
+      openMenu,
+      openSearch,
+      toggleMenu,
+      toggleSearch,
+    ]
+  );
 
   return (
-    <NavigationUIContext.Provider
-      value={{
-        isSearchOpen,
-        isMenuOpen,
-        openSearch,
-        closeSearch,
-        toggleSearch,
-        openMenu,
-        closeMenu,
-        toggleMenu,
-      }}
-    >
+    <NavigationUIContext.Provider value={contextValue}>
       {children}
     </NavigationUIContext.Provider>
   );

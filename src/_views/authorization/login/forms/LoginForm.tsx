@@ -6,7 +6,6 @@ import Spinner from "react-bootstrap/Spinner";
 
 import { LoginErrors } from "../errors/LoginErrors";
 import ResetView from "@/_views/authorization/passwordreset/resetview";
-// import ResetView from "../../passwordreset/ResetView";
 
 interface LoginFormProps {
   action: (payload: FormData) => void;

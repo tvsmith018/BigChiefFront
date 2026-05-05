@@ -29,6 +29,8 @@ export default function ResetView() {
     passwordresetaction,
     passwordpending,
   } = usePasswordResetFlow();
+  const submitLabel =
+    screen == ScreenNames.confirm_password_screen ? "Submit" : "Continue";
 
   return (
     <>
@@ -133,10 +135,8 @@ export default function ResetView() {
             >
               {passwordpending ? (
                 <Spinner animation="border" role="status" size="sm" />
-              ) : screen == ScreenNames.confirm_password_screen ? (
-                "Submit"
               ) : (
-                "Continue"
+                submitLabel
               )}
             </Button>
           </Modal.Footer>

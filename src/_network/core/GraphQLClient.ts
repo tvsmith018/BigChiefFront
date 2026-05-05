@@ -2,7 +2,7 @@ type GraphQLEndpointResolver = string | (() => string);
 const DEFAULT_GRAPHQL_TIMEOUT_MS = 8_000;
 
 export class GraphQLClient {
-  constructor(private endpoint: GraphQLEndpointResolver) {}
+  constructor(private readonly endpoint: GraphQLEndpointResolver) {}
 
   private getEndpoint() {
     if (typeof this.endpoint === "function") {
