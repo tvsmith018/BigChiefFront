@@ -2,8 +2,6 @@ import { SignupService } from "./signupservice";
 import { SignupMultipartResult } from "@/_types/auth/signup/signupmultipartResult";
 import { LoginService } from "@/_services/auth/login/loginservice";
 import { createSession } from "@/_navigation";
-import { JWTToken } from "@/_utilities/datatype/Auth/types/token";
-import { User } from "@/_types/auth/user";
 import { extractUser } from "../auth.helpers";
 import {
   type SignupConfirmInput,
