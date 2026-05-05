@@ -18,6 +18,7 @@ const GUEST_HEARTBEAT_MS = 300_000;
 const UNAUTH_STREAK_REQUIRED = 2;
 const PROTECT_WINDOW_AFTER_AUTH_MS = 12_000;
 const SESSION_SYNC_MIN_GAP_MS = 4_000;
+const INITIAL_SYNC_JITTER_MS = 3_000;
 
 function sameUser(a?: User, b?: User | null) {
   if (!a && !b) return true;
@@ -28,6 +29,13 @@ function sameUser(a?: User, b?: User | null) {
     a.lastname === b.lastname &&
     a.avatar === b.avatar
   );
+}
+
+function randomInt(maxExclusive: number) {
+  if (maxExclusive <= 0) return 0;
+  const bytes = new Uint32Array(1);
+  crypto.getRandomValues(bytes);
+  return bytes[0] % maxExclusive;
 }
 
 export function SessionSync() {
@@ -108,7 +116,7 @@ export function SessionSync() {
       }
     };
 
-    const initialDelayMs = Math.floor(Math.random() * 3000);
+    const initialDelayMs = randomInt(INITIAL_SYNC_JITTER_MS);
     const initialTimer = window.setTimeout(() => {
       void sync();
     }, initialDelayMs);
