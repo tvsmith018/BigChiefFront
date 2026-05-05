@@ -21,56 +21,67 @@ type SettingRow = {
   defaultValue: boolean;
 };
 
-const settingsRows: SettingRow[] = [
-  {
-    key: "profileIsPublic",
-    title: "Public profile",
-    description: "Let other users discover your profile and view allowed sections.",
-    defaultValue: true,
-  },
-  {
-    key: "allowMessages",
-    title: "Allow direct messages",
-    description: "Allow users to start new conversations with you.",
-    defaultValue: true,
-  },
-  {
-    key: "showActivityFeed",
-    title: "Show activity feed",
-    description: "Display your profile feed posts on your public profile.",
-    defaultValue: true,
-  },
-  {
-    key: "showWatchHistory",
-    title: "Show watch history",
-    description: "Show watched article history to viewers who can access your profile.",
-    defaultValue: true,
-  },
-  {
-    key: "showRatings",
-    title: "Show ratings",
-    description: "Display article ratings and rating summary activity.",
-    defaultValue: true,
-  },
-  {
-    key: "showUploadedImages",
-    title: "Show uploaded images",
-    description: "Display your uploaded photos gallery to profile viewers.",
-    defaultValue: true,
-  },
-  {
-    key: "receiveNotifications",
-    title: "Receive notifications",
-    description: "Get alerts for comments, replies, mentions, and message activity.",
-    defaultValue: true,
-  },
-  {
-    key: "receiveMarketingNotifications",
-    title: "Receive marketing notifications",
-    description: "Receive platform announcements and campaign opportunities.",
-    defaultValue: false,
-  },
+const settingSpecs: Array<
+  [keyof ProfileSettingsDraft, string, string, boolean]
+> = [
+  [
+    "profileIsPublic",
+    "Public profile",
+    "Let other users discover your profile and view allowed sections.",
+    true,
+  ],
+  [
+    "allowMessages",
+    "Allow direct messages",
+    "Allow users to start new conversations with you.",
+    true,
+  ],
+  [
+    "showActivityFeed",
+    "Show activity feed",
+    "Display your profile feed posts on your public profile.",
+    true,
+  ],
+  [
+    "showWatchHistory",
+    "Show watch history",
+    "Show watched article history to viewers who can access your profile.",
+    true,
+  ],
+  [
+    "showRatings",
+    "Show ratings",
+    "Display article ratings and rating summary activity.",
+    true,
+  ],
+  [
+    "showUploadedImages",
+    "Show uploaded images",
+    "Display your uploaded photos gallery to profile viewers.",
+    true,
+  ],
+  [
+    "receiveNotifications",
+    "Receive notifications",
+    "Get alerts for comments, replies, mentions, and message activity.",
+    true,
+  ],
+  [
+    "receiveMarketingNotifications",
+    "Receive marketing notifications",
+    "Receive platform announcements and campaign opportunities.",
+    false,
+  ],
 ];
+
+const settingsRows: SettingRow[] = settingSpecs.map(
+  ([key, title, description, defaultValue]) => ({
+    key,
+    title,
+    description,
+    defaultValue,
+  }),
+);
 
 const initialSettings = settingsRows.reduce<ProfileSettingsDraft>(
   (draft, row) => ({ ...draft, [row.key]: row.defaultValue }),
@@ -91,12 +102,23 @@ type PreviewPill = {
   offText: string;
 };
 
-const previewPills: PreviewPill[] = [
-  { key: "profileIsPublic", label: "Profile", onText: "Public", offText: "Private" },
-  { key: "allowMessages", label: "Messages", onText: "Allowed", offText: "Blocked" },
-  { key: "receiveNotifications", label: "Notifications", onText: "On", offText: "Off" },
-  { key: "receiveMarketingNotifications", label: "Marketing", onText: "On", offText: "Off" },
+const previewPillSpecs: Array<
+  [keyof ProfileSettingsDraft, string, string, string]
+> = [
+  ["profileIsPublic", "Profile", "Public", "Private"],
+  ["allowMessages", "Messages", "Allowed", "Blocked"],
+  ["receiveNotifications", "Notifications", "On", "Off"],
+  ["receiveMarketingNotifications", "Marketing", "On", "Off"],
 ];
+
+const previewPills: PreviewPill[] = previewPillSpecs.map(
+  ([key, label, onText, offText]) => ({
+    key,
+    label,
+    onText,
+    offText,
+  }),
+);
 
 export default function SettingsView() {
   const [settings, setSettings] = useState<ProfileSettingsDraft>(initialSettings);
