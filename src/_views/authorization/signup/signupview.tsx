@@ -15,6 +15,12 @@ import ImagePreView from "@/_views/screens/ImagePreView/imagepreview";
 import NewPasswordnputView from "@/_views/screens/passwordview/passwordview";
 import ConfirmPasswordnputView from "@/_views/screens/passwordview/confirmpasswordview";
 import SuccessView from "@/_views/screens/successView/successView";
+import {
+  AUTH_PRIMARY_BUTTON_STYLE,
+  AuthBackButton,
+  AuthBrandHeader,
+  AuthErrorBanner,
+} from "@/_views/authorization/shared/AuthModalShared";
 
 import { useSignupFlow } from "@/_utilities/hooks/auth/signup/useSignupFlow";
 
@@ -49,12 +55,7 @@ export default function SignupView() {
         <Button
           onClick={open}
           type="button"
-          style={{
-            backgroundColor: "#9c7248",
-            borderColor: "#9c7248",
-            fontSize: "16px",
-            height: "50px",
-          }}
+          style={{ ...AUTH_PRIMARY_BUTTON_STYLE, height: "50px" }}
         >
           Lets Get Started
         </Button>
@@ -76,23 +77,12 @@ export default function SignupView() {
               }
             }}
           >
-            <div className="mt-2" style={{ display: "flex", justifyContent: "center" }}>
-              <div>
-                <p style={{ fontFamily: "exlibris", fontSize: "50px", lineHeight: "20px", color: "black" }}>
-                  BIG CHIEF
-                  <br />
-                  <span style={{ fontFamily: "teleMarines", fontSize: "16px", fontWeight: "bold" }}>
-                    enteRtainMent
-                  </span>
-                </p>
-              </div>
-            </div>
+            <AuthBrandHeader />
             <div>
-              {error && screen != ScreenNames.new_password_screen && (
-                <p className="mt-2" style={{ color: "#F2003C", padding: "0 7px", fontWeight: "600" }}>
-                  {error}
-                </p>
-              )}
+              <AuthErrorBanner
+                error={error}
+                hide={screen == ScreenNames.new_password_screen}
+              />
             </div>
 
             {screen == ScreenNames.email_screen && (
@@ -150,19 +140,7 @@ export default function SignupView() {
           {screen != ScreenNames.email_screen &&
             screen != ScreenNames.firstname_screen &&
             screen != ScreenNames.success_screen && (
-              <Button
-                style={{
-                  backgroundColor: "#9c7248",
-                  borderColor: "#9c7248",
-                  fontSize: "16px",
-                  width: "100px",
-                  height: "50px",
-                  marginRight: "auto",
-                }}
-                onClick={back}
-              >
-                Back
-              </Button>
+              <AuthBackButton onClick={back} />
             )}
 
           {screen != ScreenNames.success_screen && (
@@ -170,14 +148,7 @@ export default function SignupView() {
               disabled={signuppending}
               form="signup"
               type="submit"
-              
-              style={{
-                backgroundColor: "#9c7248",
-                borderColor: "#9c7248",
-                fontSize: "16px",
-                width: "100px",
-                height: "50px",
-              }}
+              style={AUTH_PRIMARY_BUTTON_STYLE}
             >
               {signuppending ? <Spinner animation="border" role="status" size="sm" /> : "Continue"}
             </Button>
