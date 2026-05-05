@@ -31,7 +31,7 @@ export function usePaginatedCollection<
   const [cursor, setCursor] = useState<TCursor | null>(initialCursor);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<unknown | null>(null);
+  const [error, setError] = useState<unknown>(null);
 
   const cursorRef = useRef<TCursor | null>(initialCursor);
   const hasMoreRef = useRef(initialHasMore);

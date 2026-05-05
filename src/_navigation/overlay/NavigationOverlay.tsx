@@ -14,7 +14,7 @@ interface Props {
 
 export default function NavigationOverlay({
   sideLinks,
-}: Props) {
+}: Readonly<Props>) {
   const pathname = usePathname();
   const {
     isSearchOpen,

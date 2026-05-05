@@ -6,13 +6,15 @@ import { useAppSelector } from "@/_store/hooks/UseAppSelector";
 
 type Mode = "guest" | "auth";
 
+interface AuthGateProps {
+  children: React.ReactNode;
+  mode: Mode;
+}
+
 export function AuthGate({
   children,
   mode,
-}: {
-  children: React.ReactNode;
-  mode: Mode;
-}) {
+}: Readonly<AuthGateProps>) {
   const router = useRouter();
 
   const isHydrated = useAppSelector((state) => state.app.isHydrated);
@@ -28,7 +30,6 @@ export function AuthGate({
 
     if (mode === "auth" && !isAuthenticated) {
       router.replace("/auth");
-      return;
     }
   }, [isHydrated, isAuthenticated, mode, router]);
 

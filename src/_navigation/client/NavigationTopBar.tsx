@@ -8,7 +8,7 @@ interface Props {
 
 export default function NavigationTopBar({
   links,
-}: Props) {
+}: Readonly<Props>) {
   return (
     <div className="navbar-top d-block small">
       <Container>

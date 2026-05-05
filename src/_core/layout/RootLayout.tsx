@@ -5,12 +5,14 @@ import { DevTools } from "@/_core/scripts/DevTools";
 import { WebVitalsReporter } from "@/_core/observability/WebVitalsReporter";
 import { authProxy } from "@/_services/auth/authproxy";
 
+interface RootLayoutProps {
+  children: React.ReactNode;
+}
+
 /** Syncs session on every request: refresh access (~20m backend TTL), validate /me, clear cookies if invalid. Cached per request via `authProxy`. */
 export default async function RootLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+}: Readonly<RootLayoutProps>) {
   const user = await authProxy();
   const preloadedState = {
     user: user

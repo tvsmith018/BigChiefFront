@@ -8,7 +8,7 @@ interface RelativeTimeProps {
 export function RelativeTime({
   value,
   fallback = "Just now",
-}: RelativeTimeProps) {
+}: Readonly<RelativeTimeProps>) {
   try {
     return <span>{formatRelativeTime(value)}</span>;
   } catch {

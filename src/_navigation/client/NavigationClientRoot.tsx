@@ -17,7 +17,7 @@ export default function NavigationClientRoot({
   isAuthenticated: _isAuthenticated,
   user: _user,
   sideLinks,
-}: Props) {
+}: Readonly<Props>) {
   return (
     
       <header className="navbar-light navbar-sticky header-static">

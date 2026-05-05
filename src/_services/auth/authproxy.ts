@@ -31,7 +31,11 @@ function getErrorName(error: unknown): string {
 
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error) return error.message;
-  return String(error ?? "");
+  if (typeof error === "string") return error;
+  if (typeof error === "number" || typeof error === "boolean" || typeof error === "bigint") {
+    return String(error);
+  }
+  return "";
 }
 
 function isTransientAuthProxyError(error: unknown): boolean {

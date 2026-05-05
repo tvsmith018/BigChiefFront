@@ -40,8 +40,8 @@ export function useLogin() {
 
     // Force full document navigation so server-side cookies/session state are
     // guaranteed to be applied before profile guard checks run.
-    window.location.assign("/profile");
-    window.setTimeout(() => {
+    globalThis.location.assign("/profile");
+    globalThis.setTimeout(() => {
       dispatch(setAuthTransitioning(false));
     }, 1500);
   }, [dispatch, state]);

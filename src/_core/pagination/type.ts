@@ -45,7 +45,7 @@ export interface UsePaginatedCollectionReturn<TItem, TCursor = string> {
   isInitialEmpty: boolean;
   hasMore: boolean;
   cursor: TCursor | null;
-  error: unknown | null;
+  error: unknown;
 
   loadMore: () => Promise<void>;
   retry: () => Promise<void>;

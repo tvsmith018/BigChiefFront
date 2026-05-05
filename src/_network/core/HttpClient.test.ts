@@ -5,6 +5,12 @@ function asHeaders(input: RequestInit["headers"]): Headers {
   return input instanceof Headers ? input : new Headers(input);
 }
 
+function requestInputToUrl(input: RequestInfo | URL): string {
+  if (typeof input === "string") return input;
+  if (input instanceof URL) return input.href;
+  return input.url;
+}
+
 describe("HttpClient", () => {
   const originalFetch = globalThis.fetch;
 
@@ -92,7 +98,7 @@ describe("HttpClient", () => {
 
   it("uses dynamic baseUrl when constructor receives a function", async () => {
     globalThis.fetch = vi.fn(async (input: RequestInfo | URL) => {
-      expect(String(input)).toContain("https://dynamic.example.com");
+      expect(requestInputToUrl(input)).toContain("https://dynamic.example.com");
       return new Response(JSON.stringify({ ok: 1 }), {
         status: 200,
         headers: { "Content-Type": "application/json" },

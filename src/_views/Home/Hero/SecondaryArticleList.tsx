@@ -16,11 +16,11 @@ interface SecondaryArticleListProps {
 
 export function SecondaryArticleList({
   articles,
-}: SecondaryArticleListProps) {
+}: Readonly<SecondaryArticleListProps>) {
   return (
     <>
-      {articles!.map((nodeEdge, index) => {
-        const node = nodeEdge.node
+      {articles.map((nodeEdge, index) => {
+        const node = nodeEdge.node;
         return(
         <Card className="mb-3" key={node.id ?? index}>
           <Row className="g-3 mb-3">

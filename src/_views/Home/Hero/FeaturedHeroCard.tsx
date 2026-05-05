@@ -13,8 +13,10 @@ interface FeaturedHeroCardProps {
   articleNode: {node:Article};
 }
 
-export function FeaturedHeroCard({ articleNode }: FeaturedHeroCardProps) {
-    const article = articleNode!.node
+export function FeaturedHeroCard({
+  articleNode,
+}: Readonly<FeaturedHeroCardProps>) {
+    const article = articleNode.node;
   return (
     <Card
       className="card-overlay-bottom h-400 h-lg-560 rounded-3"

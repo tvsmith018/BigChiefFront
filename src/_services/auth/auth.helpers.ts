@@ -65,6 +65,9 @@ export function normalizeOtp(resp: OTPResponse) {
 
 export function readOtp(formData: FormData) {
   let otp = "";
-  for (let i = 0; i <= 5; i++) otp += String(formData.get(`texbox-${i}`) ?? "");
+  for (let i = 0; i <= 5; i++) {
+    const value = formData.get(`texbox-${i}`);
+    otp += typeof value === "string" ? value : "";
+  }
   return otp;
 }

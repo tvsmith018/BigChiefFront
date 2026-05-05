@@ -7,8 +7,8 @@ const createNoopStorage = () => ({
 });
 
 const storage =
-  typeof window !== "undefined"
-    ? createWebStorage("local")
-    : createNoopStorage();
+  typeof globalThis.window === "undefined"
+    ? createNoopStorage()
+    : createWebStorage("local");
 
 export default storage;

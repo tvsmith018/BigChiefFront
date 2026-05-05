@@ -27,7 +27,9 @@ const NavigationUIContext = createContext<NavigationUIState | undefined>(
   undefined
 );
 
-export function NavigationUIProvider({ children }: { children: ReactNode }) {
+export function NavigationUIProvider({
+  children,
+}: Readonly<{ children: ReactNode }>) {
   const [isSearchOpen, setSearchOpen] = useState(false);
   const [isMenuOpen, setMenuOpen] = useState(false);
 

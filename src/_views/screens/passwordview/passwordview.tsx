@@ -1,7 +1,15 @@
 import Form from 'react-bootstrap/Form';
 import { Dispatch, SetStateAction } from "react";
 
-export default function NewPasswordnputView({error, removeError}:{error?:string[], removeError:Dispatch<SetStateAction<string[] | undefined>>}){
+interface NewPasswordInputViewProps {
+  error?: string[];
+  removeError: Dispatch<SetStateAction<string[] | undefined>>;
+}
+
+export default function NewPasswordnputView({
+  error,
+  removeError,
+}: Readonly<NewPasswordInputViewProps>){
     const handleChange = async (e:React.ChangeEvent<HTMLInputElement>)=>{
         const value:string = e.target.value;
         
@@ -16,7 +24,7 @@ export default function NewPasswordnputView({error, removeError}:{error?:string[
                 removeError(newError)
             }
 
-            if (/[0-9]/.test(value) && error.includes("Contain at least one number.")) {
+            if (/\d/.test(value) && error.includes("Contain at least one number.")) {
                 const newError = error.filter(error => error !== "Contain at least one number.")
                 removeError(newError)
             }
