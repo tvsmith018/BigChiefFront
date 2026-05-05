@@ -1,9 +1,10 @@
-"use client"
+"use client";
+
 import { useId, useRef } from "react";
-import Script from 'next/script';
+import Script from "next/script";
 import { useNavigationUI } from "@/_navigation";
 
-type YouTubePlayerInstance = object;
+type YouTubePlayerInstance = Record<string, unknown>;
 
 type YouTubePlayerConstructor = new (
   elementId: string,
@@ -23,11 +24,25 @@ type YouTubePlayerConstructor = new (
 
 declare global {
   interface Window {
-    YT: {
+    YT?: {
       Player?: YouTubePlayerConstructor;
     };
-    onYouTubeIframeAPIReady: () => void;
+    onYouTubeIframeAPIReady?: () => void;
   }
+}
+
+type VideoViewProps = {
+  videoLink: string;
+  videoType: "youtube" | "facebook";
+  title: string;
+};
+
+function trimLeadingSlashes(value: string) {
+  let start = 0;
+  while (start < value.length && value[start] === "/") {
+    start += 1;
+  }
+  return value.slice(start);
 }
 
 function normalizeYouTubeVideoId(input: string) {
@@ -42,15 +57,17 @@ function normalizeYouTubeVideoId(input: string) {
     const hostname = parsed.hostname.toLowerCase();
 
     if (hostname.includes("youtu.be")) {
-      return parsed.pathname.replace(/^\/+/, "").slice(0, 11);
+      return trimLeadingSlashes(parsed.pathname).slice(0, 11);
     }
 
     if (hostname.includes("youtube.com")) {
       const fromQuery = parsed.searchParams.get("v");
       if (fromQuery) return fromQuery.slice(0, 11);
-
-      const embedded = parsed.pathname.match(/\/embed\/([a-zA-Z0-9_-]{11})/);
-      if (embedded?.[1]) return embedded[1];
+      const embedPrefix = "/embed/";
+      const embedStart = parsed.pathname.indexOf(embedPrefix);
+      if (embedStart >= 0) {
+        return parsed.pathname.slice(embedStart + embedPrefix.length, embedStart + embedPrefix.length + 11);
+      }
     }
   } catch {
     // Fallback below
@@ -59,30 +76,15 @@ function normalizeYouTubeVideoId(input: string) {
   return value.slice(0, 11);
 }
 
-export default function VideoView({videoLink}:{videoLink:string, videoType:"youtube"|"facebook", title:string}){
-
-    const {isMenuOpen, isSearchOpen} = useNavigationUI()
-
-    const playerElementId = useId().replaceAll(":", "_");
-    const playerRef = useRef<YouTubePlayerInstance | null>(null);
-
-    const handleScriptLoad = () => {
-    if (window.YT && window.YT.Player) {
-      initializePlayer();
-    } else {
-      // Fallback: If YT exists but Player doesn't, wait for the global callback
-      window.onYouTubeIframeAPIReady = () => {
-        initializePlayer();
-      };
-    }
-  };
+export default function VideoView({ videoLink }: Readonly<VideoViewProps>) {
+  const { isMenuOpen, isSearchOpen } = useNavigationUI();
+  const playerElementId = useId().replaceAll(":", "_");
+  const playerRef = useRef<YouTubePlayerInstance | null>(null);
 
   const initializePlayer = () => {
-    if (playerRef.current || !window.YT.Player) return; // Prevent double initialization
-
+    if (playerRef.current || !window.YT?.Player) return; // Prevent double initialization
     const normalizedVideoId = normalizeYouTubeVideoId(videoLink);
     if (!normalizedVideoId) return;
-
     playerRef.current = new window.YT.Player(playerElementId, {
       height: "100%",
       width: "100%",
@@ -94,7 +96,17 @@ export default function VideoView({videoLink}:{videoLink:string, videoType:"yout
       events: { onReady: () => undefined },
     });
   };
-   
+
+  const handleScriptLoad = () => {
+    if (window.YT?.Player) {
+      initializePlayer();
+    } else {
+      // Fallback: If YT exists but Player doesn't, wait for the global callback
+      window.onYouTubeIframeAPIReady = () => {
+        initializePlayer();
+      };
+    }
+  };
 
   return (
     <div className="w-100 d-flex flex-column">
