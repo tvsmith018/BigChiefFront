@@ -27,7 +27,7 @@ const accountCenterItems = [
   { icon: "bi-credit-card-2-front-fill", label: "Advertising Account" },
 ];
 
-export default function ProfilePageContent({ profile }: { profile: ProfileViewPayloadMe }) {
+export default function ProfilePageContent({ profile }: Readonly<{ profile: ProfileViewPayloadMe }>) {
     const [tab, setTab] = useState<ProfileTab>("Feed");
     const avatarSrc = profile.user.avatarUrl ?? PROFILE_AVATAR_PLACEHOLDER;
 
@@ -101,9 +101,9 @@ export default function ProfilePageContent({ profile }: { profile: ProfileViewPa
                         <Card.Body className="p-0">
                             <div className="p-2">
                                 <Nav className="bc-profile-tabs" variant="tabs">
-                                {activityTabs.map((tabname, index) => (
+                                {activityTabs.map((tabname) => (
                                     <Nav.Item key={tabname.label}>
-                                        <Nav.Link active={tabname.tab == tab ? true:false} onClick={()=>setTab(tabname.tab as ProfileTab)}>
+                                        <Nav.Link active={tabname.tab === tab} onClick={()=>setTab(tabname.tab as ProfileTab)}>
                                             <i className={`bi ${tabname.icon} me-2`} />
                                             {tabname.label}
                                         </Nav.Link>

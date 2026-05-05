@@ -195,7 +195,7 @@ export default function ArticleDetailSidebar({
 
   const handleShare = (commentKey: string) => {
     setSharedCommentKey(commentKey);
-    window.setTimeout(() => setSharedCommentKey((current) => (current === commentKey ? null : current)), 1600);
+    globalThis.setTimeout(() => setSharedCommentKey((current) => (current === commentKey ? null : current)), 1600);
   };
 
   const handleReplyDraftChange = (commentKey: string, value: string) => {

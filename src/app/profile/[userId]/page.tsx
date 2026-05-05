@@ -6,6 +6,7 @@ import OtherUserProfile from "@/_views/profile/otherUserProfile";
 import { mapMemberProfileToView } from "@/_utilities/profile/mapProfileViewPayload";
 
 type PageParams = Promise<{ userId: string }>;
+type PageProps = Readonly<{ params: PageParams }>;
 
 /**
  * Reads the current user from session cookies (refresh-aware) and logs their id.
@@ -17,7 +18,7 @@ export async function logSessionUserId(): Promise<string | number | undefined> {
   return userId
 }
 
-export default async function Page({ params }: { params: PageParams }) {
+export default async function Page({ params }: PageProps) {
   const { userId } = await params;
   const decodeId = decodeURIComponent(userId);
 
