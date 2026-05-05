@@ -22,7 +22,7 @@ export function LoginForm({
   pending,
   errors,
   netError,
-}: LoginFormProps) {
+}: Readonly<LoginFormProps>) {
   return (
     <Form name="login" action={action} noValidate>
       <LoginErrors errors={errors} netError={netError} />

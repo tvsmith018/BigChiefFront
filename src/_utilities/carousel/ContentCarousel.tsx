@@ -37,7 +37,7 @@ export function ContentCarousel<T>({
   loop = true,
   breakpoints = DEFAULT_BREAKPOINTS,
   className,
-}: ContentCarouselProps<T>) {
+}: Readonly<ContentCarouselProps<T>>) {
   const objectKeyCacheRef = useRef(new WeakMap<object, string>());
   const nextObjectKeyRef = useRef(0);
   const [slidesPerView, setSlidesPerView] = useState<number>(

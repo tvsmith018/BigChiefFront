@@ -4,6 +4,7 @@ import path from "node:path";
 import { notFound } from "next/navigation";
 
 type PageParams = Promise<{ info: string }>;
+type InfoPageProps = { params: PageParams };
 
 interface InfoImage {
   altImage: string;
@@ -165,7 +166,7 @@ function ImageGallery({ data }: Readonly<{ data?: ImageGalleryData }>) {
   );
 }
 
-export default async function Page({ params }: { params: PageParams }) {
+export default async function Page({ params }: Readonly<InfoPageProps>) {
   const { info } = await params;
   const itemData = await readInfoFile(info);
 

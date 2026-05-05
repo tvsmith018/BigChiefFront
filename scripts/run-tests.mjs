@@ -20,6 +20,34 @@ import {
 } from "../src/_services/auth/auth.helpers.ts";
 import { validateSignupConfirmInput } from "../src/_services/auth/signup/signupValidation.ts";
 
+function restoreEnvVar(key, value) {
+  if (value === undefined) {
+    delete process.env[key];
+    return;
+  }
+  process.env[key] = value;
+}
+
+function withEnvVars(overrides, run) {
+  const previous = new Map();
+  for (const [key, value] of Object.entries(overrides)) {
+    previous.set(key, process.env[key]);
+    if (value === undefined) {
+      delete process.env[key];
+    } else {
+      process.env[key] = value;
+    }
+  }
+
+  try {
+    return run();
+  } finally {
+    for (const [key, value] of previous.entries()) {
+      restoreEnvVar(key, value);
+    }
+  }
+}
+
 async function testEndpoints() {
   assert.equal(
     normalizeApiBaseUrl("https://example.com/graphql/"),
@@ -63,16 +91,15 @@ async function testEndpoints() {
     "https://api.example.com/graphql/"
   );
   const originalSiteUrl = process.env.NEXT_PUBLIC_SITE_URL;
-  process.env.NEXT_PUBLIC_SITE_URL = "https://www.bigchiefnewz.com";
-  assert.equal(
-    resolveGraphQLEndpoint("https://api.example.com", false),
-    "https://www.bigchiefnewz.com/api/graphql"
+  withEnvVars(
+    { NEXT_PUBLIC_SITE_URL: "https://www.bigchiefnewz.com" },
+    () => {
+      assert.equal(
+        resolveGraphQLEndpoint("https://api.example.com", false),
+        "https://www.bigchiefnewz.com/api/graphql"
+      );
+    }
   );
-  if (originalSiteUrl === undefined) {
-    delete process.env.NEXT_PUBLIC_SITE_URL;
-  } else {
-    process.env.NEXT_PUBLIC_SITE_URL = originalSiteUrl;
-  }
   assert.equal(
     resolveHttpBaseUrl("https://api.example.com", true),
     API_BROWSER_BASE_PATH
@@ -81,47 +108,36 @@ async function testEndpoints() {
     resolveHttpBaseUrl("https://api.example.com", false),
     "https://api.example.com"
   );
-  process.env.NEXT_PUBLIC_SITE_URL = "www.bigchiefnewz.com";
-  assert.equal(
-    resolveHttpBaseUrl("https://api.example.com", false),
-    "https://www.bigchiefnewz.com/api/backend"
+  withEnvVars(
+    { NEXT_PUBLIC_SITE_URL: "www.bigchiefnewz.com" },
+    () => {
+      assert.equal(
+        resolveHttpBaseUrl("https://api.example.com", false),
+        "https://www.bigchiefnewz.com/api/backend"
+      );
+    }
   );
-  if (originalSiteUrl === undefined) {
-    delete process.env.NEXT_PUBLIC_SITE_URL;
-  } else {
-    process.env.NEXT_PUBLIC_SITE_URL = originalSiteUrl;
-  }
-  const originalNodeEnv = process.env.NODE_ENV;
-  const originalInternalAppOrigin = process.env.INTERNAL_APP_ORIGIN;
-  const originalNextInternalAppOrigin = process.env.NEXT_INTERNAL_APP_ORIGIN;
-  const originalVercelUrl = process.env.VERCEL_URL;
-  const originalNextPublicVercelUrl = process.env.NEXT_PUBLIC_VERCEL_URL;
-  process.env.NODE_ENV = "production";
-  delete process.env.INTERNAL_APP_ORIGIN;
-  delete process.env.NEXT_INTERNAL_APP_ORIGIN;
-  delete process.env.VERCEL_URL;
-  delete process.env.NEXT_PUBLIC_SITE_URL;
-  delete process.env.NEXT_PUBLIC_VERCEL_URL;
-  assert.equal(
-    resolveGraphQLEndpoint("https://api.example.com", false),
-    "https://www.bigchiefnewz.com/api/graphql"
+  withEnvVars(
+    {
+      NODE_ENV: "production",
+      INTERNAL_APP_ORIGIN: undefined,
+      NEXT_INTERNAL_APP_ORIGIN: undefined,
+      VERCEL_URL: undefined,
+      NEXT_PUBLIC_SITE_URL: undefined,
+      NEXT_PUBLIC_VERCEL_URL: undefined,
+    },
+    () => {
+      assert.equal(
+        resolveGraphQLEndpoint("https://api.example.com", false),
+        "https://www.bigchiefnewz.com/api/graphql"
+      );
+      assert.equal(
+        resolveHttpBaseUrl("https://api.example.com", false),
+        "https://www.bigchiefnewz.com/api/backend"
+      );
+    }
   );
-  assert.equal(
-    resolveHttpBaseUrl("https://api.example.com", false),
-    "https://www.bigchiefnewz.com/api/backend"
-  );
-  if (originalNodeEnv === undefined) delete process.env.NODE_ENV;
-  else process.env.NODE_ENV = originalNodeEnv;
-  if (originalInternalAppOrigin === undefined) delete process.env.INTERNAL_APP_ORIGIN;
-  else process.env.INTERNAL_APP_ORIGIN = originalInternalAppOrigin;
-  if (originalNextInternalAppOrigin === undefined) delete process.env.NEXT_INTERNAL_APP_ORIGIN;
-  else process.env.NEXT_INTERNAL_APP_ORIGIN = originalNextInternalAppOrigin;
-  if (originalVercelUrl === undefined) delete process.env.VERCEL_URL;
-  else process.env.VERCEL_URL = originalVercelUrl;
-  if (originalSiteUrl === undefined) delete process.env.NEXT_PUBLIC_SITE_URL;
-  else process.env.NEXT_PUBLIC_SITE_URL = originalSiteUrl;
-  if (originalNextPublicVercelUrl === undefined) delete process.env.NEXT_PUBLIC_VERCEL_URL;
-  else process.env.NEXT_PUBLIC_VERCEL_URL = originalNextPublicVercelUrl;
+  restoreEnvVar("NEXT_PUBLIC_SITE_URL", originalSiteUrl);
   assert.equal(AUTH_ENDPOINTS.refreshToken, "/authorized/token/refresh/");
   assert.equal(
     resolveApiBaseUrl({ NEXT_PUBLIC_API_URL: "https://only-api.example.com" }),
@@ -305,8 +321,10 @@ async function main() {
   console.log("Smoke tests passed.");
 }
 
-main().catch((error) => {
+try {
+  await main();
+} catch (error) {
   console.error("Smoke tests failed.");
   console.error(error);
   process.exit(1);
-});
+}

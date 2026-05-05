@@ -50,7 +50,6 @@ export function usePasswordResetFlow() {
       setScreen(ScreenNames.new_password_screen);
       setPassword("");
       setError(undefined);
-      return;
     }
   };
 

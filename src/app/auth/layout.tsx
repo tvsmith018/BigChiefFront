@@ -6,7 +6,12 @@ import type { ReactNode } from "react";
 
 import { requireGuest } from "@/_services/auth/authproxy";
 
-export default async function Layout(props: { login: ReactNode; signup: ReactNode }) {
+interface AuthLayoutProps {
+  login: ReactNode;
+  signup: ReactNode;
+}
+
+export default async function Layout(props: Readonly<AuthLayoutProps>) {
   await requireGuest("/profile");
 
   return (

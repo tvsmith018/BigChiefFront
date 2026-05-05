@@ -4,13 +4,15 @@ import { useEffect } from "react";
 
 import { logError } from "@/_utilities/observability/logger";
 
+interface GlobalErrorProps {
+  error: Error & { digest?: string };
+  reset: () => void;
+}
+
 export default function GlobalError({
   error,
   reset,
-}: {
-  error: Error & { digest?: string };
-  reset: () => void;
-}) {
+}: Readonly<GlobalErrorProps>) {
   useEffect(() => {
     logError("global_error_boundary", error, { digest: error.digest });
   }, [error]);

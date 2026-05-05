@@ -25,10 +25,10 @@ function sameUser(a?: User, b?: User) {
 export function ReduxProvider({
   children,
   preloadedState,
-}: {
+}: Readonly<{
   children: React.ReactNode;
   preloadedState?: PreloadedState;
-}) {
+}>) {
   const storeRef = useRef<ReturnType<typeof makeStore> | null>(null);
   const persistorRef = useRef<ReturnType<typeof makePersistor> | null>(null);
 

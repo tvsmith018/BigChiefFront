@@ -1,3 +1,3 @@
-export default function SuccessView({prompt}:{prompt:string}){
+export default function SuccessView({prompt}: Readonly<{prompt:string}>){
     return <p>{prompt}</p>
 }

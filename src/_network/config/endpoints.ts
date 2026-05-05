@@ -72,7 +72,7 @@ export function resolveApiBaseUrl(
 
 export function resolveGraphQLEndpoint(
   apiBaseUrl: string,
-  isBrowser: boolean = typeof window !== "undefined"
+  isBrowser: boolean = globalThis.window !== undefined
 ) {
   if (isBrowser) {
     return GRAPHQL_BROWSER_PATH;
@@ -87,7 +87,7 @@ export function resolveGraphQLEndpoint(
 
 export function resolveHttpBaseUrl(
   apiBaseUrl: string,
-  isBrowser: boolean = typeof window !== "undefined"
+  isBrowser: boolean = globalThis.window !== undefined
 ) {
   if (isBrowser) {
     return API_BROWSER_BASE_PATH;

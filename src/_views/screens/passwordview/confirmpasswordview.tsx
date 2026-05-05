@@ -1,6 +1,8 @@
 import Form from 'react-bootstrap/Form';
 
-export default function ConfirmPasswordnputView({removeError}:{removeError:(e:React.ChangeEvent<HTMLInputElement>)=>void}){
+export default function ConfirmPasswordnputView({
+  removeError,
+}: Readonly<{removeError:(e:React.ChangeEvent<HTMLInputElement>)=>void}>){
   return <>
     <Form.Control type="text" autoComplete="username" style={{display: "none"}}/> 
     <Form.Control className="mb-3" type="password" placeholder="Confirm Password" name="confirmnewpassword" autoComplete="off" style={{borderColor:""}}  onChange={removeError}/>

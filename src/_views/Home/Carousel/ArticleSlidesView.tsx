@@ -12,11 +12,13 @@ import { RelativeTime } from "@/_core/date/RelativeTime";
 import { Article } from "@/_types/articles/article.types";
 import { toHttpsUrl } from "@/_utilities/url/toHttpsUrl";
 
+interface FeaturedArticlesCarouselProps {
+  articles: { node: Article }[];
+}
+
 export default function FeaturedArticlesCarousel({
   articles,
-}: {
-  articles: { node: Article }[];
-}) {
+}: Readonly<FeaturedArticlesCarouselProps>) {
   return (
     <ContentCarousel
       title="Featured"

@@ -29,7 +29,12 @@ interface Props {
   }
 }
 
-export default function CardListView({ list, title, pageInfo ,category }: Props) {
+export default function CardListView({
+  list,
+  title,
+  pageInfo,
+  category,
+}: Readonly<Props>) {
 
   const {
     items: articles,

@@ -2,8 +2,9 @@ import { ArticleService } from "@/_services/articles/articleservices";
 import CardListView from '@/_views/Home/CardList/cardlistview';
 
 type tParams = Promise<{ category:string }>;
+type CategoryPageProps = { params: tParams };
 
-export default async function Category({params}:{params:tParams}){
+export default async function Category({params}: Readonly<CategoryPageProps>){
     const {category} = await params;
     const data = await ArticleService.getArticle(category);
     const articles = data.articles.edges;

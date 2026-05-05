@@ -4,13 +4,15 @@ import { useEffect } from "react";
 
 import { logError } from "@/_utilities/observability/logger";
 
+interface AppErrorPageProps {
+  error: Error & { digest?: string };
+  reset: () => void;
+}
+
 export default function AppErrorPage({
   error,
   reset,
-}: {
-  error: Error & { digest?: string };
-  reset: () => void;
-}) {
+}: Readonly<AppErrorPageProps>) {
   useEffect(() => {
     logError("route_error_boundary", error, { digest: error.digest });
   }, [error]);

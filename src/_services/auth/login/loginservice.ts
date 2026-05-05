@@ -13,7 +13,7 @@ export class LoginService {
       { cache: "no-store" }
     );
 
-    return res as JWTToken;
+    return res;
   }
 
   static async getUser(token: { refresh: string; access: string }) {

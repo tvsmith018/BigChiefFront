@@ -16,7 +16,7 @@ interface HeaderSectionProps {
 export default function HeaderSection({
   featured,
   secondary,
-}: HeaderSectionProps) {
+}: Readonly<HeaderSectionProps>) {
   return (
     <section className="pt-4 pb-2">
       <Container>

@@ -31,7 +31,9 @@ function Probe() {
 }
 
 describe("useLogin", () => {
-  const assignSpy = vi.spyOn(window.location, "assign").mockImplementation(() => {});
+  const assignSpy = vi
+    .spyOn(globalThis.location, "assign")
+    .mockImplementation(() => {});
 
   beforeEach(() => {
     dispatchMock.mockClear();

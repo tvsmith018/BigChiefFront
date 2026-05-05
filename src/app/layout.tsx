@@ -6,6 +6,10 @@ import  "bootstrap/dist/css/bootstrap.min.css"
 import 'swiper/css';
 import "./globals.css"
 
+interface AppLayoutProps {
+  children: React.ReactNode;
+}
+
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
@@ -49,8 +53,6 @@ export const metadata: Metadata = {
 
 export default function Layout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+}: Readonly<AppLayoutProps>) {
   return <RootLayout>{children}</RootLayout>;
 }

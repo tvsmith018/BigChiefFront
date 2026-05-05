@@ -50,7 +50,10 @@ export default function CodeInputView({
     intervalRef.current = setInterval(() => {
       setTimeRemaining((prevTime) => {
         if (prevTime <= 1) {
-          clearInterval(intervalRef.current!);
+          const currentInterval = intervalRef.current;
+          if (currentInterval) {
+            clearInterval(currentInterval);
+          }
           setDisabled(false);
           return 0;
         }

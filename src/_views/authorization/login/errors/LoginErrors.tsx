@@ -8,7 +8,7 @@ interface LoginErrorsProps {
   netError?: string;
 }
 
-export function LoginErrors({ errors, netError }: LoginErrorsProps) {
+export function LoginErrors({ errors, netError }: Readonly<LoginErrorsProps>) {
   if (!errors && !netError) return null;
 
   return (

@@ -6,7 +6,7 @@ type ImagePreViewProps = {
   setFile: Dispatch<SetStateAction<File | undefined>>;
 };
 
-export default function ImagePreView({ setFile }: ImagePreViewProps) {
+export default function ImagePreView({ setFile }: Readonly<ImagePreViewProps>) {
   const [previewUrl, setPreviewUrl] = useState('');
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     

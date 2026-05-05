@@ -1,1 +1,1 @@
-export {};
+// Intentionally empty module placeholder.

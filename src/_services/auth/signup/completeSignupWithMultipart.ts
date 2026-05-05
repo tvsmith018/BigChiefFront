@@ -48,10 +48,9 @@ export async function completeSignupWithMultipart(
       };
     }
 
-    const jwt = loginResponse as JWTToken;
     const token = {
-      refresh: jwt.refresh ?? "",
-      access: jwt.access ?? "",
+      refresh: loginResponse.refresh ?? "",
+      access: loginResponse.access ?? "",
     };
 
     const [userResponse] = await Promise.all([
@@ -59,7 +58,7 @@ export async function completeSignupWithMultipart(
       createSession(token),
     ]);
 
-    const user = extractUser(userResponse as User | { data?: User });
+    const user = extractUser(userResponse);
     if (!user) {
       return { networkError: ["Unable to load user profile. Our apologies!"] };
     }
