@@ -174,6 +174,11 @@ export function ProfileThreeColumnLayout<T extends string>({
           </Col>
           <Col xl={6} lg={8} className="bc-profile-center-scroll">
             <section className="bc-profile-main">
+              <div className="d-block d-lg-none gap-3">
+                <ProfileAvatarCard avatarSrc={avatarSrc} firstName={firstName} lastName={lastName}>
+                  {primaryAction}
+                </ProfileAvatarCard>
+              </div>
               <ProfileMobileTabNav activityTabs={activityTabs} tab={tab} setTab={setTab} />
               <div>{children}</div>
             </section>
