@@ -31,7 +31,7 @@ export class GraphQLClient {
         headers.set(key, value);
       });
 
-      if (typeof globalThis.window === "undefined") {
+      if (globalThis.window === undefined) {
         headers.set("x-bff-internal-request", "1");
       }
 
