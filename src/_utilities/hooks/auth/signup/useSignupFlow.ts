@@ -253,7 +253,7 @@ export function useSignupFlow() {
     };
 
     const transition = transitions[state.screen];
-    if (!transition || !transition.canAdvance(state)) {
+    if (!transition?.canAdvance(state)) {
       return;
     }
     transition.advance(state);
