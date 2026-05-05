@@ -48,15 +48,23 @@ export default function OtherUserProfile({ profile }: { profile: ProfileViewPayl
                                 <Card.Body className="p-3">
                                     <div className="bc-profile-side-nav mt-3">
                                         {activityTabs.map((item) => (
-                                            item.label != "Notification" && <div className={`bc-profile-side-nav__item ${tab === item.tab ? "active-lg" : ""}`} key={item.label} style={{cursor:"pointer"}} onClick={()=>setTab(item.tab as ProfileTab)}>
-                                                <div className="d-flex align-items-center gap-2">
-                                                    <i className={`bi ${item.icon}`} />
-                                                    <span>{item.label}</span>
-                                                </div>
-                                                {item.badge ? <span className="bc-profile-side-nav__badge">
-                                                    {item.badge}
-                                                </span>:null}
-                                            </div>
+                                            item.label != "Notification" && (
+                                                <button
+                                                    type="button"
+                                                    key={item.label}
+                                                    className={`bc-profile-side-nav__item ${tab === item.tab ? "active-lg" : ""}`}
+                                                    onClick={() => setTab(item.tab as ProfileTab)}
+                                                    aria-current={tab === item.tab ? "true" : undefined}
+                                                >
+                                                    <span className="d-flex align-items-center gap-2">
+                                                        <i className={`bi ${item.icon}`} aria-hidden />
+                                                        <span>{item.label}</span>
+                                                    </span>
+                                                    {item.badge ? (
+                                                        <span className="bc-profile-side-nav__badge">{item.badge}</span>
+                                                    ) : null}
+                                                </button>
+                                            )
                                         ))}
                                     </div>
                                 </Card.Body>

@@ -19492,6 +19492,16 @@ div.nav.nav-pills div.nav-item a.nav-link.active{
     transform 0.2s ease;
 }
 
+button.bc-profile-side-nav__item {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}
+
 .bc-profile-sidebar .bc-profile-name {
   font-size: clamp(2rem, 1.5vw, 2.45rem);
 }
