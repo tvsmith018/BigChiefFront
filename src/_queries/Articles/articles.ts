@@ -123,6 +123,55 @@ export const SEARCH_ARTICLE = (value:string)=>(
     `
 )
 
+export const NAVIGATION_SEARCH_QUERY = `
+  query NavigationSearch($q: String!, $first: Int = 5) {
+    articles(search: $q, first: $first) {
+      edges {
+        node {
+          id
+          title
+          image1x1Url
+          altImage
+          created
+        }
+      }
+    }
+
+    usersByFirstname: users(firstname: $q, first: $first) {
+      edges {
+        node {
+          id
+          firstname
+          lastname
+          avatarUrl
+        }
+      }
+    }
+
+    usersByLastname: users(lastname: $q, first: $first) {
+      edges {
+        node {
+          id
+          firstname
+          lastname
+          avatarUrl
+        }
+      }
+    }
+
+    usersByEmail: users(email: $q, first: $first) {
+      edges {
+        node {
+          id
+          firstname
+          lastname
+          avatarUrl
+        }
+      }
+    }
+  }
+`;
+
 export const ARTICLE_DETAIL_QUERY = (id: string) => `
   query {
     articles(id: "${id}") {

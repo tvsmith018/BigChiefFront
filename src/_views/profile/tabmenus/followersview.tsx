@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { Button, Card, Form } from "react-bootstrap";
+import { PROFILE_AVATAR_PLACEHOLDER } from "@/_constants/profilePlaceholders";
 
 type FollowStatus = "active" | "muted" | "blocked";
 
@@ -21,7 +22,7 @@ const mockFollowers: MockFollower[] = [
     id: 1,
     fullname: "Alicia Stone",
     username: "@aliciastone",
-    avatarUrl: "/images/about/victor.jpg",
+    avatarUrl: PROFILE_AVATAR_PLACEHOLDER,
     status: "active",
     followedAtLabel: "2h ago",
     isFollowingBack: true,
@@ -30,7 +31,7 @@ const mockFollowers: MockFollower[] = [
     id: 2,
     fullname: "Marcus Reed",
     username: "@marcuscreates",
-    avatarUrl: "/images/1x1placeholder.png",
+    avatarUrl: PROFILE_AVATAR_PLACEHOLDER,
     status: "active",
     followedAtLabel: "Today",
     isFollowingBack: false,
@@ -39,7 +40,7 @@ const mockFollowers: MockFollower[] = [
     id: 3,
     fullname: "Lena Brooks",
     username: "@lenab",
-    avatarUrl: "/images/1x1placeholder.png",
+    avatarUrl: PROFILE_AVATAR_PLACEHOLDER,
     status: "muted",
     followedAtLabel: "Yesterday",
     isFollowingBack: true,
@@ -48,7 +49,7 @@ const mockFollowers: MockFollower[] = [
     id: 4,
     fullname: "Chris Vale",
     username: "@chrisvale",
-    avatarUrl: "/images/1x1placeholder.png",
+    avatarUrl: PROFILE_AVATAR_PLACEHOLDER,
     status: "active",
     followedAtLabel: "3d ago",
     isFollowingBack: true,

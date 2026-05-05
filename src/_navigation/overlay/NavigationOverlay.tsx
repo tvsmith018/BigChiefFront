@@ -1,6 +1,8 @@
 "use client";
+import { useEffect } from "react";
 import Nav from "react-bootstrap/Nav";
 import Offcanvas from "react-bootstrap/Offcanvas";
+import { usePathname } from "next/navigation";
 import NavigationSearchPanel from "./NavigationSearchPanel";
 import NavigationMenuPanel from "./NavigationMenuPanel";
 import { NavigationLink } from "../../_types/navigation/navigation.types";
@@ -13,6 +15,7 @@ interface Props {
 export default function NavigationOverlay({
   sideLinks,
 }: Props) {
+  const pathname = usePathname();
   const {
     isSearchOpen,
     isMenuOpen,
@@ -21,6 +24,11 @@ export default function NavigationOverlay({
     openMenu,
     closeMenu,
   } = useNavigationUI();
+
+  useEffect(() => {
+    closeSearch();
+    closeMenu();
+  }, [pathname, closeSearch, closeMenu]);
 
   return (
     <>

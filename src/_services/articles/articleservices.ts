@@ -1,6 +1,15 @@
 import { graphQLClient,  httpClient} from "@/_network";
 import { API_BASE_URL } from "@/_network/config/endpoints";
-import { home_query, load_article_set, search_query, article_detail_metaData, article_detail_query, article_comment_query, article_related_query} from "@/_queries";
+import {
+  home_query,
+  load_article_set,
+  search_query,
+  navigation_search_query,
+  article_detail_metaData,
+  article_detail_query,
+  article_comment_query,
+  article_related_query,
+} from "@/_queries";
 
 import { ArticleEdge, Article } from "@/_types/articles/article.types";
 import { logInfo, logWarn } from "@/_utilities/observability/logger";
@@ -16,6 +25,33 @@ interface ArticleReturn {
       endCursor: string
     }
   }
+}
+
+type NavigationSearchUser = {
+  id: string;
+  firstname: string;
+  lastname: string;
+  avatarUrl?: string;
+};
+
+interface NavigationUsersConnection {
+  edges: Array<{ node: NavigationSearchUser }>;
+}
+
+interface GraphQLNavigationSearchResponse {
+  articles: {
+    edges: Array<{
+      node: Article;
+    }>;
+  };
+  usersByFirstname: NavigationUsersConnection;
+  usersByLastname: NavigationUsersConnection;
+  usersByEmail: NavigationUsersConnection;
+}
+
+export interface NavigationSearchResult {
+  articles: Array<{ node: Article }>;
+  profiles: NavigationSearchUser[];
 }
 
 interface Author {
@@ -209,6 +245,39 @@ export class ArticleService {
     } catch {
       logWarn("article_search_fetch_failed");
       return [];
+    }
+  }
+
+  static async fetchNavigationSearch(value: string): Promise<NavigationSearchResult> {
+    try {
+      const data = await graphQLClient.query<GraphQLNavigationSearchResponse>(
+        navigation_search_query,
+        { q: value, first: 5 },
+        { cache: "no-store" }
+      );
+
+      const mergedUsers = [
+        ...(data.usersByFirstname?.edges ?? []),
+        ...(data.usersByLastname?.edges ?? []),
+        ...(data.usersByEmail?.edges ?? []),
+      ]
+        .map((entry) => entry.node)
+        .filter((user): user is NavigationSearchUser => Boolean(user?.id));
+
+      const uniqueProfiles = Array.from(
+        new Map(mergedUsers.map((user) => [user.id, user])).values()
+      );
+
+      return {
+        articles: (data.articles?.edges ?? []).slice(0, 5),
+        profiles: uniqueProfiles.slice(0, 5),
+      };
+    } catch {
+      logWarn("navigation_search_fetch_failed");
+      return {
+        articles: [],
+        profiles: [],
+      };
     }
   }
 

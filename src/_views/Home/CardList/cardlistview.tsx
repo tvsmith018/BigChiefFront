@@ -15,6 +15,7 @@ import {
   useInfiniteObserver,
   usePaginatedCollection,
 } from "@/_core/pagination";
+import { PROFILE_AVATAR_PLACEHOLDER } from "@/_constants/profilePlaceholders";
 import { toHttpsUrl } from "@/_utilities/url/toHttpsUrl";
 
 
@@ -95,13 +96,13 @@ export default function CardListView({ list, title, pageInfo ,category }: Props)
                         <div className="d-flex align-items-center position-relative">
                           <div className="avatar avatar-sm">
                             <Image
-                              src={toHttpsUrl(node.author?.avatarUrl) ?? "/images/1x1placeholder.png"}
+                              src={toHttpsUrl(node.author?.avatarUrl) ?? PROFILE_AVATAR_PLACEHOLDER}
                               alt={`${node.author?.firstname} ${node.author?.lastname}`}
                               className="avatar-img rounded-circle"
                               width={100}
                               height={100}
                               placeholder="blur"
-                              blurDataURL="/images/1x1placeholder.png"
+                              blurDataURL={PROFILE_AVATAR_PLACEHOLDER}
                             />
                           </div>
 

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import ProfilePageContent from "../../_views/profile/ProfilePageContent";
 import { ProfileService } from "@/_services/profiles/profileservices";
 import { getSessionAccessToken } from "@/_services/auth/authproxy";
+import { mapProfileMeToView } from "@/_utilities/profile/mapProfileViewPayload";
 import type { ProfileMeApiResponse } from "@/_types/profile/profileMeApiResponse";
 
 function getProfileMeErrorMessage(
@@ -96,7 +97,9 @@ export default async function Page() {
   );
 
   if (profileResponse.success === true) {
-    return <ProfilePageContent profile={profileResponse.data}/>;
+    return (
+      <ProfilePageContent profile={mapProfileMeToView(profileResponse.data)} />
+    );
   }
 
   return <div>Error: {getProfileMeErrorMessage(profileResponse)}</div>;

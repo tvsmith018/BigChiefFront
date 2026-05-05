@@ -1,3 +1,6 @@
+/**
+ * Settings from REST `GET /profiles/me` (snake_case, API contract).
+ */
 export type ProfileSettings = {
   profile_is_public: boolean;
   allow_messages: boolean;
@@ -10,4 +13,24 @@ export type ProfileSettings = {
   disabled_at: string | null;
   delete_requested_at: string | null;
   metadata: Record<string, unknown>;
+};
+
+/**
+ * `userProfileSettings` node from GraphQL (camelCase). Optional fields are nullable from API.
+ */
+export type ProfileSettingsNode = {
+  id: string;
+  profileIsPublic: boolean;
+  allowMessages: boolean;
+  showActivityFeed: boolean;
+  showWatchHistory: boolean;
+  showRatings: boolean;
+  showUploadedImages: boolean;
+  receiveNotifications: boolean;
+  receiveMarketingNotifications: boolean;
+  disabledAt?: string | null;
+  deleteRequestedAt?: string | null;
+  metadata: unknown;
+  createdAt: string;
+  updatedAt: string;
 };

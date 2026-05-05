@@ -3,6 +3,9 @@
 import { useState, useRef, useCallback } from "react";
 import { ArticleService } from "@/_services/articles/articleservices";
 import type { Article } from "@/_types/articles/article.types";
+import type { NavigationSearchResult } from "@/_services/articles/articleservices";
+
+type SearchProfile = NavigationSearchResult["profiles"][number];
 
 /**
  * Navigation-level search logic.
@@ -11,11 +14,15 @@ import type { Article } from "@/_types/articles/article.types";
 export function useNavigationSearch() {
   const [query, setQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-  const [results, setResults] = useState<Array<{ node: Article }>>([]);
+  const [articleResults, setArticleResults] = useState<Array<{ node: Article }>>([]);
+  const [profileResults, setProfileResults] = useState<SearchProfile[]>([]);
 
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const requestIdRef = useRef(0);
 
   const executeSearch = useCallback((value: string) => {
+    setQuery(value);
+
     // Clear previous debounce
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
@@ -23,19 +30,27 @@ export function useNavigationSearch() {
 
     debounceRef.current = setTimeout(async () => {
       if (!value.trim()) {
-        setResults([]);
-        setQuery("");
+        setArticleResults([]);
+        setProfileResults([]);
         return;
       }
 
+      const requestId = ++requestIdRef.current;
       setIsSearching(true);
-      setQuery(value);
 
       try {
-        const search_result = await ArticleService.fetchSearch(value);
-        setResults(search_result ?? []);
+        const searchResult = await ArticleService.fetchNavigationSearch(value);
+
+        if (requestIdRef.current !== requestId) {
+          return;
+        }
+
+        setArticleResults(searchResult.articles ?? []);
+        setProfileResults(searchResult.profiles ?? []);
       } finally {
-        setIsSearching(false);
+        if (requestIdRef.current === requestId) {
+          setIsSearching(false);
+        }
       }
     }, 500);
   }, []);
@@ -45,13 +60,15 @@ export function useNavigationSearch() {
       clearTimeout(debounceRef.current);
     }
     setQuery("");
-    setResults([]);
+    setArticleResults([]);
+    setProfileResults([]);
     setIsSearching(false);
   };
 
   return {
     query,
-    results,
+    articleResults,
+    profileResults,
     isSearching,
     executeSearch,
     resetSearch,

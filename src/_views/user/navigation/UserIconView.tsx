@@ -12,6 +12,7 @@ import { useAppDispatch } from "@/_store/hooks/UseAppDispatch";
 import { useAppSelector } from "@/_store/hooks/UseAppSelector";
 import { setAuthTransitioning } from "@/_store/reducers/app/appSlice";
 import { removeUser } from "@/_store/reducers/user/userSlice";
+import { PROFILE_AVATAR_PLACEHOLDER } from "@/_constants/profilePlaceholders";
 import { toHttpsUrl } from "@/_utilities/url/toHttpsUrl";
 
 export default function UserIconView() {
@@ -85,7 +86,7 @@ export default function UserIconView() {
             }}
           >
             <Image
-              src={toHttpsUrl(data.avatar) ?? "/images/1x1placeholder.png"}
+              src={toHttpsUrl(data.avatar) ?? PROFILE_AVATAR_PLACEHOLDER}
               alt={`Image of ${data.firstname ?? ""} ${data.lastname ?? ""}`}
               width={35}
               height={35}

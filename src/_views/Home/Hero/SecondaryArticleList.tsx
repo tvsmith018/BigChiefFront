@@ -7,6 +7,7 @@ import Link from "next/link";
 
 import { RelativeTime } from "@/_core/date/RelativeTime";
 import { Article } from "@/_types/articles/article.types";
+import { PROFILE_AVATAR_PLACEHOLDER } from "@/_constants/profilePlaceholders";
 import { toHttpsUrl } from "@/_utilities/url/toHttpsUrl";
 
 interface SecondaryArticleListProps {
@@ -61,13 +62,13 @@ export function SecondaryArticleList({
                     <div className="d-flex align-items-center position-relative">
                       <div className="avatar avatar-sm">
                         <Image
-                          src={toHttpsUrl(node.author?.avatarUrl) ?? "/images/1x1placeholder.png"}
+                          src={toHttpsUrl(node.author?.avatarUrl) ?? PROFILE_AVATAR_PLACEHOLDER}
                           alt={`${node.author?.firstname} ${node.author?.lastname}`}
                           className="avatar-img rounded-circle"
                           width={100}
                           height={100}
                           placeholder="blur"
-                          blurDataURL="/images/1x1placeholder.png"
+                          blurDataURL={PROFILE_AVATAR_PLACEHOLDER}
                         />
                       </div>
 
