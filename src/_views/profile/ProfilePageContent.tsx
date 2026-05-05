@@ -20,6 +20,7 @@ import { ProfileThreeColumnLayout, type ProfileActivityTabItem } from "./Profile
 
 type ProfileTab =
   | "Feed"
+  | "Post"
   | "Messages"
   | "Notifications"
   | "History"
@@ -30,6 +31,7 @@ type ProfileTab =
 
 const activityTabs: ProfileActivityTabItem<ProfileTab>[] = [
   { icon: "bi-newspaper", label: "The Feed", tab: "Feed" },
+  { icon: "bi-postcard", label: "My Post", tab: "Post" },
   { icon: "bi-chat-right-dots-fill", label: "Messages", badge: "0", tab: "Messages" },
   { icon: "bi bi-person-arms-up", label: "Followers", badge: "0", tab: "Followers" },
   { icon: "bi-eye", label: "Watch History", tab: "History" },
@@ -81,6 +83,7 @@ export default function ProfilePageContent({ profile }: Readonly<{ profile: Prof
       rightAsideExtra={<ProfileListCard title="Choose Destiny" items={accountCenterItems} />}
     >
       {tab === "Feed" && <FeedView />}
+      {tab === "Post" && <FeedView />}
       {tab === "Messages" && <MessageView />}
       {tab === "History" && <HistoryView />}
       {tab === "Stats" && <StatsView />}

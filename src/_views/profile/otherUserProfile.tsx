@@ -12,7 +12,7 @@ import { ProfileThreeColumnLayout, type ProfileActivityTabItem } from "./Profile
 type ProfileTab = "Posts" | "Photos" | "Followers";
 
 const activityTabs: ProfileActivityTabItem<ProfileTab>[] = [
-  { icon: "bi-newspaper", label: "Posts", tab: "Posts" },
+  { icon: "bi-postcard", label: "Posts", tab: "Posts" },
   { icon: "bi bi-person-arms-up", label: "Followers", badge: "0", tab: "Followers" },
   { icon: "bi-images", label: "Photos", tab: "Photos" },
 ];

@@ -10,6 +10,10 @@ Last reviewed: 2026-05-05
 - `FRONTEND_BACKEND_ALIGNMENT.md` - current integration mapping and known gaps.
 - `SCALING_READINESS_CHECKLIST.md` - no-behavior-change scaling plan and validation gates.
 
+## Project-wide compliance reference
+
+- `../../../SOC2_TYPE2_READINESS_TRACKER.md` - project-wide SOC 2 Type 2 readiness matrix, evidence expectations, and execution plan.
+
 ## Verification snapshots
 
 - Latest: `FRONTEND_VERIFICATION_2026-05-05.md`
