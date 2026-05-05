@@ -8,7 +8,6 @@ import {
 import { logInfo, logWarn } from "@/_utilities/observability/logger";
 import {
   buildJsonErrorResponse,
-  buildSecurityHeaders,
   getClientIp,
   getLimitState,
   hasAuthContext,
