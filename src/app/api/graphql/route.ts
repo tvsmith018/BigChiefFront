@@ -33,6 +33,24 @@ function consumeRateLimit(key: string) {
   return { allowed, remaining, resetAt: existing.resetAt };
 }
 
+function getDefaultLimitState() {
+  return {
+    allowed: true,
+    remaining: GRAPHQL_RATE_LIMIT_MAX,
+    resetAt: Date.now() + RATE_LIMIT_WINDOW_MS,
+  };
+}
+
+function getLimitState(
+  isInternalServerRequest: boolean,
+  clientIp: string | null
+) {
+  if (isInternalServerRequest || !clientIp) {
+    return getDefaultLimitState();
+  }
+  return consumeRateLimit(`graphql:${clientIp}`);
+}
+
 async function refreshAccessToken(refreshToken: string) {
   const refreshResponse = await fetch(`${API_BASE_URL}${AUTH_ENDPOINTS.refreshToken}`, {
     method: "POST",
@@ -89,19 +107,78 @@ function buildSecurityHeaders(contentType: string) {
   };
 }
 
+function buildCacheControlHeader(hasAuthContext: boolean) {
+  return hasAuthContext ? CACHE_CONTROL_PRIVATE : CACHE_CONTROL_PUBLIC;
+}
+
+function buildJsonErrorResponse(
+  detail: string,
+  status: number,
+  requestId: string,
+  retryAfterSeconds?: number
+) {
+  return NextResponse.json(
+    { detail },
+    {
+      status,
+      headers: {
+        ...buildSecurityHeaders("application/json"),
+        "x-request-id": requestId,
+        "cache-control": CACHE_CONTROL_PRIVATE,
+        ...(retryAfterSeconds !== undefined
+          ? { "retry-after": String(retryAfterSeconds) }
+          : {}),
+      },
+    }
+  );
+}
+
+async function fetchGraphQlUpstream(
+  body: string,
+  headers: Headers
+) {
+  return fetch(GRAPHQL_UPSTREAM_URL, {
+    method: "POST",
+    headers,
+    body,
+    cache: "no-store",
+  });
+}
+
+async function fetchGraphQlWithRetry(
+  request: NextRequest,
+  requestId: string,
+  body: string,
+  proxyHeaders: Headers
+) {
+  const upstreamResponse = await fetchGraphQlUpstream(body, proxyHeaders);
+  if (upstreamResponse.status !== 401) {
+    return upstreamResponse;
+  }
+
+  const refreshToken = request.cookies.get("session")?.value;
+  if (!refreshToken) {
+    return upstreamResponse;
+  }
+
+  const refreshedAccessToken = await refreshAccessToken(refreshToken);
+  if (!refreshedAccessToken) {
+    return upstreamResponse;
+  }
+
+  const retryHeaders = new Headers(proxyHeaders);
+  retryHeaders.set("authorization", `Bearer ${refreshedAccessToken}`);
+  retryHeaders.set("x-request-id", requestId);
+  return fetchGraphQlUpstream(body, retryHeaders);
+}
+
 export async function POST(request: NextRequest) {
   const requestId = request.headers.get("x-request-id") ?? crypto.randomUUID();
   const startedAt = Date.now();
   const clientIp = getClientIp(request);
   const isInternalServerRequest =
     request.headers.get("x-bff-internal-request") === "1";
-  const limit = !isInternalServerRequest && clientIp
-    ? consumeRateLimit(`graphql:${clientIp}`)
-    : {
-        allowed: true,
-        remaining: GRAPHQL_RATE_LIMIT_MAX,
-        resetAt: Date.now() + RATE_LIMIT_WINDOW_MS,
-      };
+  const limit = getLimitState(isInternalServerRequest, clientIp);
   const hasAuthContext = Boolean(
     request.headers.get("authorization") ||
       request.cookies.get("access")?.value ||
@@ -110,49 +187,25 @@ export async function POST(request: NextRequest) {
 
   if (!limit.allowed) {
     logWarn("bff_graphql_rate_limited", { requestId, clientIp });
-    return NextResponse.json(
-      { detail: "Rate limit exceeded." },
-      {
-        status: 429,
-        headers: {
-          ...buildSecurityHeaders("application/json"),
-          "x-request-id": requestId,
-          "cache-control": CACHE_CONTROL_PRIVATE,
-          "retry-after": String(Math.ceil((limit.resetAt - Date.now()) / 1000)),
-        },
-      }
+    return buildJsonErrorResponse(
+      "Rate limit exceeded.",
+      429,
+      requestId,
+      Math.ceil((limit.resetAt - Date.now()) / 1000)
     );
   }
 
   try {
     const body = await request.text();
-    let proxyHeaders = await buildProxyHeaders(request);
+    const proxyHeaders = await buildProxyHeaders(request);
     proxyHeaders.set("x-request-id", requestId);
 
-    let upstreamResponse = await fetch(GRAPHQL_UPSTREAM_URL, {
-      method: "POST",
-      headers: proxyHeaders,
+    const upstreamResponse = await fetchGraphQlWithRetry(
+      request,
+      requestId,
       body,
-      cache: "no-store",
-    });
-
-    if (upstreamResponse.status === 401) {
-      const refreshToken = request.cookies.get("session")?.value;
-      if (refreshToken) {
-        const refreshedAccessToken = await refreshAccessToken(refreshToken);
-        if (refreshedAccessToken) {
-          proxyHeaders = new Headers(proxyHeaders);
-          proxyHeaders.set("authorization", `Bearer ${refreshedAccessToken}`);
-          proxyHeaders.set("x-request-id", requestId);
-          upstreamResponse = await fetch(GRAPHQL_UPSTREAM_URL, {
-            method: "POST",
-            headers: proxyHeaders,
-            body,
-            cache: "no-store",
-          });
-        }
-      }
-    }
+      proxyHeaders
+    );
 
     const responseText = await upstreamResponse.text();
     const contentType =
@@ -163,9 +216,7 @@ export async function POST(request: NextRequest) {
       headers: {
         ...buildSecurityHeaders(contentType),
         "x-request-id": requestId,
-        "cache-control": hasAuthContext
-          ? CACHE_CONTROL_PRIVATE
-          : CACHE_CONTROL_PUBLIC,
+        "cache-control": buildCacheControlHeader(hasAuthContext),
       },
     });
   } catch {
@@ -174,16 +225,10 @@ export async function POST(request: NextRequest) {
       clientIp,
       latency_ms: Date.now() - startedAt,
     });
-    return NextResponse.json(
-      { detail: "GraphQL upstream unreachable." },
-      {
-        status: 503,
-        headers: {
-          ...buildSecurityHeaders("application/json"),
-          "x-request-id": requestId,
-          "cache-control": CACHE_CONTROL_PRIVATE,
-        },
-      }
+    return buildJsonErrorResponse(
+      "GraphQL upstream unreachable.",
+      503,
+      requestId
     );
   } finally {
     logInfo("bff_graphql_proxy_completed", {

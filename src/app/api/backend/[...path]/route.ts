@@ -58,6 +58,46 @@ function getLimitState(
   return consumeRateLimit(`backend:${clientIp}`);
 }
 
+function buildSecurityHeaders(contentType: string) {
+  return {
+    "content-type": contentType,
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "referrer-policy": "strict-origin-when-cross-origin",
+  };
+}
+
+function buildCacheControlHeader(
+  method: string,
+  hasAuthContext: boolean
+) {
+  return method === "GET" && !hasAuthContext
+    ? CACHE_CONTROL_PUBLIC
+    : CACHE_CONTROL_PRIVATE;
+}
+
+function buildJsonErrorResponse(
+  detail: string,
+  status: number,
+  requestId: string,
+  retryAfterSeconds?: number
+) {
+  return NextResponse.json(
+    { detail },
+    {
+      status,
+      headers: {
+        ...buildSecurityHeaders("application/json"),
+        "x-request-id": requestId,
+        "cache-control": CACHE_CONTROL_PRIVATE,
+        ...(retryAfterSeconds !== undefined
+          ? { "retry-after": String(retryAfterSeconds) }
+          : {}),
+      },
+    }
+  );
+}
+
 function buildUpstreamUrl(request: NextRequest) {
   let upstreamPath = request.nextUrl.pathname.replace(
     new RegExp(`^${API_BROWSER_BASE_PATH}`),
@@ -173,6 +213,23 @@ async function retryUnauthorizedRequest(
   return fetchUpstream(upstreamUrl, request, retryHeaders, requestBody);
 }
 
+function buildProxyResponseHeaders(
+  contentType: string | null,
+  requestId: string,
+  cacheControl: string
+) {
+  const outHeaders = new Headers();
+  if (contentType) {
+    outHeaders.set("content-type", contentType);
+  }
+  outHeaders.set("x-content-type-options", "nosniff");
+  outHeaders.set("x-frame-options", "DENY");
+  outHeaders.set("referrer-policy", "strict-origin-when-cross-origin");
+  outHeaders.set("x-request-id", requestId);
+  outHeaders.set("cache-control", cacheControl);
+  return outHeaders;
+}
+
 async function proxyRequest(request: NextRequest, context: RouteContext) {
   await context.params;
   const upstreamUrl = buildUpstreamUrl(request);
@@ -195,19 +252,11 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
       method: request.method,
       path: request.nextUrl.pathname,
     });
-    return NextResponse.json(
-      { detail: "Rate limit exceeded." },
-      {
-        status: 429,
-        headers: {
-          "x-content-type-options": "nosniff",
-          "x-frame-options": "DENY",
-          "referrer-policy": "strict-origin-when-cross-origin",
-          "x-request-id": requestId,
-          "cache-control": CACHE_CONTROL_PRIVATE,
-          "retry-after": String(Math.ceil((limit.resetAt - Date.now()) / 1000)),
-        },
-      }
+    return buildJsonErrorResponse(
+      "Rate limit exceeded.",
+      429,
+      requestId,
+      Math.ceil((limit.resetAt - Date.now()) / 1000)
     );
   }
 
@@ -233,20 +282,10 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
     );
 
     const responseBuf = await finalResponse.arrayBuffer();
-    const outHeaders = new Headers();
-    const ct = finalResponse.headers.get("content-type");
-    if (ct) {
-      outHeaders.set("content-type", ct);
-    }
-    outHeaders.set("x-content-type-options", "nosniff");
-    outHeaders.set("x-frame-options", "DENY");
-    outHeaders.set("referrer-policy", "strict-origin-when-cross-origin");
-    outHeaders.set("x-request-id", requestId);
-    outHeaders.set(
-      "cache-control",
-      request.method === "GET" && !hasAuthContext
-        ? CACHE_CONTROL_PUBLIC
-        : CACHE_CONTROL_PRIVATE
+    const outHeaders = buildProxyResponseHeaders(
+      finalResponse.headers.get("content-type"),
+      requestId,
+      buildCacheControlHeader(request.method, hasAuthContext)
     );
 
     const response = new NextResponse(responseBuf.byteLength ? responseBuf : null, {
@@ -275,18 +314,10 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
       upstream: upstreamUrl,
       latency_ms: Date.now() - startedAt,
     });
-    return NextResponse.json(
-      { detail: "Upstream API unreachable." },
-      {
-        status: 503,
-        headers: {
-          "x-content-type-options": "nosniff",
-          "x-frame-options": "DENY",
-          "referrer-policy": "strict-origin-when-cross-origin",
-          "x-request-id": requestId,
-          "cache-control": CACHE_CONTROL_PRIVATE,
-        },
-      }
+    return buildJsonErrorResponse(
+      "Upstream API unreachable.",
+      503,
+      requestId
     );
   }
 }
