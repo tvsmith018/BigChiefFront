@@ -38,7 +38,7 @@ interface AuthLinksProps {
   isLoggingOut: boolean;
 }
 
-function AuthLinks({ handleLogout, isLoggingOut }: AuthLinksProps) {
+function AuthLinks({ handleLogout, isLoggingOut }: Readonly<AuthLinksProps>) {
   return (
     <>
       <Dropdown.Item href="/profile" role="button">
